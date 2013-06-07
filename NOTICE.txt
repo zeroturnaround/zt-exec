@@ -1,0 +1,8 @@
+====  The following is the original NOTICE.txt file from the Apache Commons Exec project
+      that this project is derived from.
+
+Apache Commons Exec
+Copyright 2005-2010 The Apache Software Foundation
+
+This product includes software developed by
+The Apache Software Foundation (http://www.apache.org/).
