@@ -1,5 +1,7 @@
-target/
-*.log
 .classpath
+.hg/
+.hgignore
+.hgtags
 .project
 .settings/
+target/
