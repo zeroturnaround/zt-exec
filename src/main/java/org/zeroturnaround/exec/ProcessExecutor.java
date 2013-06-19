@@ -42,6 +42,7 @@ import org.zeroturnaround.exec.listener.DestroyerListenerAdapter;
 import org.zeroturnaround.exec.listener.ProcessDestroyer;
 import org.zeroturnaround.exec.listener.ProcessListener;
 import org.zeroturnaround.exec.listener.ShutdownHookProcessDestroyer;
+import org.zeroturnaround.exec.stream.CallerLoggerUtil;
 import org.zeroturnaround.exec.stream.ExecuteStreamHandler;
 import org.zeroturnaround.exec.stream.PumpStreamHandler;
 import org.zeroturnaround.exec.stream.Slf4jDebugOutputStream;
@@ -521,21 +522,7 @@ public class ProcessExecutor {
    * @return SLF4J Logger instance.
    */
   private Logger getCallerLogger(String name) {
-    String fullName;
-    if (name == null)
-      fullName = getCallerClassName(4);
-    else if (name.contains("."))
-      fullName = name;
-    else
-      fullName = getCallerClassName(4) + "." + name;
-    return LoggerFactory.getLogger(fullName);
-  }
-
-  /**
-   * @return caller class name of the given level.
-   */
-  private static String getCallerClassName(int level) {
-    return Thread.currentThread().getStackTrace()[level].getClassName();
+    return LoggerFactory.getLogger(CallerLoggerUtil.getName(name, 2));
   }
 
   /**
