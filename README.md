@@ -58,7 +58,7 @@ Some of the reasons for this crazy endeavour
 new ProcessExecutor().command("java", "-version").execute();
 ```
 
-* * *
+<hr/>
 
 * Returning the exit code
 * Does not complain about any exit value
