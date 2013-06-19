@@ -11,55 +11,24 @@ the user gets the functionality from both **java.lang.ProcessBuilder** and [Apac
 
 TODO
 
-## Background
+## Motivation
 
-JRE Library (Runtime.exec(), ProcessBuilder) is lacking:
+There are many approaches to take when running external processes from Java. There are the **JRE** options such as the **Runtime.exec()** and **ProcessBuilder**. Also there is the [Apache Commons Exec](http://commons.apache.org/proper/commons-exec/). Nevertheless we created yet another process library (**YAPL**). 
 
-1. simple stream reading (Java 7 is a bit better) - even if user doesn't need streams they still have to be consumed to avoid getting stuck 
-2. setting timeout for process running
-3. checking exit codes
+Some of the reasons for this crazy endeavour
 
-[Apache Commons Exec](http://commons.apache.org/proper/commons-exec/) resolves them but
-
-1. API is not user-friendly
-  1. cannot use one line to execute a process other than trivial case
-  2. have to explicitly create instances of other classes
-  3. no quick support for reading output into String
-2. no ProcessBuilder support which is available since Java 5
-  1. cannot redirect error stream to output stream
-  2. environemnt Map is converted into Strings
-3. no distinguishing between timeout and normal error
-4. no direct access to Process object
-5. no java.util.concurrent.Future support
-6. no logging
-7. error messages are printed to System.err
-
-In addition:
-
-8. cannot run more than one process at a time using same executor
-9. checking the timeout requires additional thread
-10. LogOutputStream has dummy field 'level'
-11. need to add new classs for redirecting stream to a logger
-
-To sump up zt-exec features:
-
-1. handling process streams (copied from Commons Exec library) (redirected to null stream by default)
-2. redirecting process error to process output stream (enabled by default)
-3. destroying process on VM exit (copied from Commons Exec library) (disabled by default)
-4. checking process exit code (only 0 is allowed by default)
-5. setting a timeout for running the process (disabled by default)
-6. either waiting for the process to finish or returning a java.util.concurrent.Future
-7. reading the process output stream into a buffer
-8. redirecting process output to a given [SLF4J API](http://www.slf4j.org/) logger
-
-In addition:
-
-1. it's simple to use - process can be started with a single line of code
-2. same executor can be reused before previous process has stopped.
-3. standard java.util.concurrent.Future to represent an asynchronous computation
-4. standard java.util.concurrent.TimeoutException is used to indicate a timeout
-5. user gets direct access to java.lang.Process object
-6. executor logs its events via [SLF4J API](http://www.slf4j.org/) not System.out or System.err
+* Improved handling of streams
+ ** Reading/writing to streams
+ ** Redirecting stderr to stdout
+* Improved handling of timeouts
+* Improved checking of exit codes
+* Improved API
+ ** One liners for quite complex usecases
+ ** One liners to get process output into a String
+ ** Access to the **Process** object available
+ ** Support for async processes (**Future**) 
+* Improved logging with [SLF4J API](http://www.slf4j.org/)
+* Support for multiple processes
 
 ## Examples
 
