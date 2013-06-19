@@ -1,0 +1,163 @@
+2013-06-07 15:11:05 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.BigOutput]...
+2013-06-07 15:11:05 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@464c4975
+2013-06-07 15:11:06 DEBUG [WaitForProcess] java.lang.UNIXProcess@464c4975 stopped with exit code 0
+2013-06-07 15:11:06 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.BigOutput]...
+2013-06-07 15:11:06 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@73901437
+2013-06-07 15:11:07 DEBUG [WaitForProcess] java.lang.UNIXProcess@73901437 stopped with exit code 0
+2013-06-07 15:11:07 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.BigOutput]...
+2013-06-07 15:11:07 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@2dafae45
+2013-06-07 15:11:08 DEBUG [WaitForProcess] java.lang.UNIXProcess@2dafae45 stopped with exit code 0
+2013-06-07 15:11:08 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.BigOutput]...
+2013-06-07 15:11:08 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@1055e55f
+2013-06-07 15:11:08 DEBUG [WaitForProcess] java.lang.UNIXProcess@1055e55f stopped with exit code 0
+2013-06-07 15:11:08 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.BigOutput]...
+2013-06-07 15:11:08 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@303bc257
+2013-06-07 15:11:09 DEBUG [WaitForProcess] java.lang.UNIXProcess@303bc257 stopped with exit code 0
+2013-06-07 15:11:09 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.BigOutput]...
+2013-06-07 15:11:09 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@2e958bb8
+2013-06-07 15:11:10 DEBUG [WaitForProcess] java.lang.UNIXProcess@2e958bb8 stopped with exit code 0
+2013-06-07 15:11:10 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.HelloWorld]...
+2013-06-07 15:11:10 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@77f297e7
+2013-06-07 15:11:10 DEBUG [WaitForProcess] java.lang.UNIXProcess@77f297e7 stopped with exit code 0
+2013-06-07 15:11:10 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.HelloWorld]...
+2013-06-07 15:11:10 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@2c19e15c
+2013-06-07 15:11:10 DEBUG [WaitForProcess] java.lang.UNIXProcess@2c19e15c stopped with exit code 0
+2013-06-07 15:11:10 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.HelloWorld]...
+2013-06-07 15:11:10 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@2ce1899b
+2013-06-07 15:11:10 DEBUG [WaitForProcess] java.lang.UNIXProcess@2ce1899b stopped with exit code 0
+2013-06-07 15:11:10 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.HelloWorld]...
+2013-06-07 15:11:10 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@643c0007
+2013-06-07 15:11:10 DEBUG [WaitForProcess] java.lang.UNIXProcess@643c0007 stopped with exit code 0
+2013-06-07 15:11:10 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.HelloWorld]...
+2013-06-07 15:11:10 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@647109c4
+2013-06-07 15:11:10 DEBUG [WaitForProcess] java.lang.UNIXProcess@647109c4 stopped with exit code 0
+2013-06-07 15:11:10 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.HelloWorld]...
+2013-06-07 15:11:10 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@7b36a43c
+2013-06-07 15:11:10 DEBUG [WaitForProcess] java.lang.UNIXProcess@7b36a43c stopped with exit code 0
+2013-06-07 15:11:10 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.HelloWorld]...
+2013-06-07 15:11:10 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@4eedf3f6
+2013-06-07 15:11:11 DEBUG [WaitForProcess] java.lang.UNIXProcess@4eedf3f6 stopped with exit code 0
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.HelloWorld]...
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@219ce060
+2013-06-07 15:11:11 DEBUG [WaitForProcess] java.lang.UNIXProcess@219ce060 stopped with exit code 0
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.HelloWorld]...
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@6b359c1b
+2013-06-07 15:11:11 DEBUG [WaitForProcess] java.lang.UNIXProcess@6b359c1b stopped with exit code 0
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.HelloWorld]...
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@7426dbec
+2013-06-07 15:11:11 DEBUG [WaitForProcess] java.lang.UNIXProcess@7426dbec stopped with exit code 0
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.HelloWorld]...
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@6076ab2f
+2013-06-07 15:11:11 DEBUG [WaitForProcess] java.lang.UNIXProcess@6076ab2f stopped with exit code 0
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Executing [unknown command]...
+2013-06-07 15:11:11 ERROR [ProcessExecutor] Could not start process:
+java.io.IOException: Cannot run program "unknown command": error=2, No such file or directory
+	at java.lang.ProcessBuilder.start(ProcessBuilder.java:470)
+	at org.zeroturnaround.exec.ProcessExecutor.startInternal(ProcessExecutor.java:648)
+	at org.zeroturnaround.exec.ProcessExecutor.execute(ProcessExecutor.java:610)
+	at org.zeroturnaround.exec.test.ProcessExecutorMainTest.testNoSuchFile(ProcessExecutorMainTest.java:44)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.junit.runners.model.FrameworkMethod$1.runReflectiveCall(FrameworkMethod.java:44)
+	at org.junit.internal.runners.model.ReflectiveCallable.run(ReflectiveCallable.java:15)
+	at org.junit.runners.model.FrameworkMethod.invokeExplosively(FrameworkMethod.java:41)
+	at org.junit.internal.runners.statements.InvokeMethod.evaluate(InvokeMethod.java:20)
+	at org.junit.internal.runners.statements.ExpectException.evaluate(ExpectException.java:22)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:28)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:31)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:73)
+	at org.junit.runners.BlockJUnit4ClassRunner.runChild(BlockJUnit4ClassRunner.java:46)
+	at org.junit.runners.ParentRunner.runChildren(ParentRunner.java:180)
+	at org.junit.runners.ParentRunner.access$000(ParentRunner.java:41)
+	at org.junit.runners.ParentRunner$1.evaluate(ParentRunner.java:173)
+	at org.junit.internal.runners.statements.RunBefores.evaluate(RunBefores.java:28)
+	at org.junit.internal.runners.statements.RunAfters.evaluate(RunAfters.java:31)
+	at org.junit.runners.ParentRunner.run(ParentRunner.java:220)
+	at org.apache.maven.surefire.junit4.JUnit4TestSet.execute(JUnit4TestSet.java:53)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.executeTestSet(JUnit4Provider.java:123)
+	at org.apache.maven.surefire.junit4.JUnit4Provider.invoke(JUnit4Provider.java:104)
+	at sun.reflect.NativeMethodAccessorImpl.invoke0(Native Method)
+	at sun.reflect.NativeMethodAccessorImpl.invoke(NativeMethodAccessorImpl.java:39)
+	at sun.reflect.DelegatingMethodAccessorImpl.invoke(DelegatingMethodAccessorImpl.java:25)
+	at java.lang.reflect.Method.invoke(Method.java:597)
+	at org.apache.maven.surefire.util.ReflectionUtils.invokeMethodWithArray(ReflectionUtils.java:164)
+	at org.apache.maven.surefire.booter.ProviderFactory$ProviderProxy.invoke(ProviderFactory.java:110)
+	at org.apache.maven.surefire.booter.SurefireStarter.invokeProvider(SurefireStarter.java:175)
+	at org.apache.maven.surefire.booter.SurefireStarter.runSuitesInProcessWhenForked(SurefireStarter.java:107)
+	at org.apache.maven.surefire.booter.ForkedBooter.main(ForkedBooter.java:68)
+Caused by: java.io.IOException: error=2, No such file or directory
+	at java.lang.UNIXProcess.forkAndExec(Native Method)
+	at java.lang.UNIXProcess.<init>(UNIXProcess.java:53)
+	at java.lang.ProcessImpl.start(ProcessImpl.java:91)
+	at java.lang.ProcessBuilder.start(ProcessBuilder.java:452)
+	... 34 more
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@106caf16
+2013-06-07 15:11:11 DEBUG [WaitForProcess] java.lang.UNIXProcess@106caf16 stopped with exit code 0
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@1505bd58
+2013-06-07 15:11:11 DEBUG [WaitForProcess] java.lang.UNIXProcess@1505bd58 stopped with exit code 0
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@704f459c
+2013-06-07 15:11:11 DEBUG [WaitForProcess] java.lang.UNIXProcess@704f459c stopped with exit code 0
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@8888e6c
+2013-06-07 15:11:11 DEBUG [WaitForProcess] java.lang.UNIXProcess@8888e6c stopped with exit code 0
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:11 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@42bad8a8
+2013-06-07 15:11:12 DEBUG [WaitForProcess] java.lang.UNIXProcess@42bad8a8 stopped with exit code 0
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@6f9bb25a
+2013-06-07 15:11:12 DEBUG [WaitForProcess] java.lang.UNIXProcess@6f9bb25a stopped with exit code 0
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@48067064
+2013-06-07 15:11:12 DEBUG [WaitForProcess] java.lang.UNIXProcess@48067064 stopped with exit code 0
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@62da3a1e
+2013-06-07 15:11:12 DEBUG [WaitForProcess] java.lang.UNIXProcess@62da3a1e stopped with exit code 0
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@4f9a32e0
+2013-06-07 15:11:12 DEBUG [WaitForProcess] java.lang.UNIXProcess@4f9a32e0 stopped with exit code 0
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@1ff82982
+2013-06-07 15:11:12 INFO  [testJavaVersionLogInfo] java version "1.7.0_11"
+2013-06-07 15:11:12 INFO  [testJavaVersionLogInfo] Java(TM) SE Runtime Environment (build 1.7.0_11-b21)
+2013-06-07 15:11:12 INFO  [testJavaVersionLogInfo] Java HotSpot(TM) 64-Bit Server VM (build 23.6-b04, mixed mode)
+2013-06-07 15:11:12 DEBUG [WaitForProcess] java.lang.UNIXProcess@1ff82982 stopped with exit code 0
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@7d742700
+2013-06-07 15:11:12 INFO  [testJavaVersionLogInfoAndOutput] java version "1.7.0_11"
+2013-06-07 15:11:12 INFO  [testJavaVersionLogInfoAndOutput] Java(TM) SE Runtime Environment (build 1.7.0_11-b21)
+2013-06-07 15:11:12 INFO  [testJavaVersionLogInfoAndOutput] Java HotSpot(TM) 64-Bit Server VM (build 23.6-b04, mixed mode)
+2013-06-07 15:11:12 DEBUG [WaitForProcess] java.lang.UNIXProcess@7d742700 stopped with exit code 0
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@1089cc5e
+2013-06-07 15:11:12 INFO  [testJavaVersionLogInfoAndOutputFuture] java version "1.7.0_11"
+2013-06-07 15:11:12 INFO  [testJavaVersionLogInfoAndOutputFuture] Java(TM) SE Runtime Environment (build 1.7.0_11-b21)
+2013-06-07 15:11:12 INFO  [testJavaVersionLogInfoAndOutputFuture] Java HotSpot(TM) 64-Bit Server VM (build 23.6-b04, mixed mode)
+2013-06-07 15:11:12 DEBUG [WaitForProcess] java.lang.UNIXProcess@1089cc5e stopped with exit code 0
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@7b2884e0
+2013-06-07 15:11:12 DEBUG [WaitForProcess] java.lang.UNIXProcess@7b2884e0 stopped with exit code 0
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@5bcdbf6
+2013-06-07 15:11:12 DEBUG [WaitForProcess] java.lang.UNIXProcess@5bcdbf6 stopped with exit code 0
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Executing [java, -version]...
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@40110c31
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.HelloWorld]...
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@2565a3c2
+2013-06-07 15:11:12 DEBUG [WaitForProcess] java.lang.UNIXProcess@2565a3c2 stopped with exit code 0
+2013-06-07 15:11:12 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.HelloWorld]...
+2013-06-07 15:11:13 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@2f242b11
+2013-06-07 15:11:13 DEBUG [WaitForProcess] java.lang.UNIXProcess@2f242b11 stopped with exit code 0
+2013-06-07 15:11:13 DEBUG [ProcessExecutor] Executing [java, -cp, test-classes, org.zeroturnaround.exec.test.HelloWorld]...
+2013-06-07 15:11:13 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@15f48262
+2013-06-07 15:11:13 DEBUG [WaitForProcess] java.lang.UNIXProcess@15f48262 stopped with exit code 0
+2013-06-07 15:11:13 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.ExitLikeABoss, 17]...
+2013-06-07 15:11:13 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@f9da4fc
+2013-06-07 15:11:13 DEBUG [WaitForProcess] java.lang.UNIXProcess@f9da4fc stopped with exit code 17
+2013-06-07 15:11:13 DEBUG [ProcessExecutor] Executing [java, -cp, target/test-classes, org.zeroturnaround.exec.test.ExitLikeABoss, 17]...
+2013-06-07 15:11:13 DEBUG [ProcessExecutor] Started java.lang.UNIXProcess@38ee6681
+2013-06-07 15:11:13 DEBUG [WaitForProcess] java.lang.UNIXProcess@38ee6681 stopped with exit code 17

@@ -14,11 +14,13 @@ TODO
 ## Background
 
 JRE Library (Runtime.exec(), ProcessBuilder) is lacking:
+
 1. simple stream reading (Java 7 is a bit better) - even if user doesn't need streams they still have to be consumed to avoid getting stuck 
 2. setting timeout for process running
 3. checking exit codes
 
 [Apache Commons Exec](http://commons.apache.org/proper/commons-exec/) resolves them but
+
 1. API is not user-friendly
   1. cannot use one line to execute a process other than trivial case
   2. have to explicitly create instances of other classes
@@ -31,7 +33,9 @@ JRE Library (Runtime.exec(), ProcessBuilder) is lacking:
 5. no java.util.concurrent.Future support
 6. no logging
 7. error messages are printed to System.err
+
 In addition:
+
 8. cannot run more than one process at a time using same executor
 9. checking the timeout requires additional thread
 10. LogOutputStream has dummy field 'level'
