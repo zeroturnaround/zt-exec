@@ -52,8 +52,6 @@ Some of the reasons for this crazy endeavour
 
 ## Examples
 
-#### Running a command
-
 * Output is pumped to NullOutputStream
 ```java
 new ProcessExecutor().command("java", "-version").execute();
@@ -67,9 +65,12 @@ new ProcessExecutor().command("java", "-version").execute();
 int exit = new ProcessExecutor().command("java", "-version").exitValueAny().execute().exitValue();
 ```
 
-#### Running a command and returning its output as UTF-8 String
+* Return output as UTF8 String
+
 ```java
-String output = new ProcessExecutor().command("java", "-version").readOutput(true).execute().outputUTF8();    
+String output = new ProcessExecutor().command("java", "-version")
+                  .readOutput(true).execute()
+                  .outputUTF8();    
 ```
 
 #### Running a command and pumping its output to a logger (with info level)
