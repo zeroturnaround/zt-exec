@@ -90,8 +90,6 @@ String output = new ProcessExecutor().command("java", "-version")
         .readOutput(true).execute().outputUTF8();
 ```
 
-#### Running a command and pumping its error stream to a logger (with info level) but returning its output stream as UTF-8 String
-
 * Pumping the stderr to a logger
 * Returning the output as UTF8 String
 ```java
