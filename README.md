@@ -3,9 +3,9 @@ Process Executor
 
 ### Quick Overview
 
-The project was launched by Rein Raudjärv to merge similar functionality from many LiveRebel sub projects into single codebase.
-It's designed to be powerful but still simple to use. By only using single class org.zeroturnaround.exec.ProcessExecutor
-user gets the functionality from both java.lang.ProcessBuilder and [Apache Commons Exec](http://commons.apache.org/proper/commons-exec/).
+The project was created to merge similar functionality of projects at [ZeroTurnaround](http://zeroturnaround.com/) into a single codebase.
+It's designed to be powerful but still simple to use. By using a single class *org.zeroturnaround.exec.ProcessExecutor*
+the user gets the functionality from both *java.lang.ProcessBuilder* and [Apache Commons Exec](http://commons.apache.org/proper/commons-exec/).
 
 ### Installation
 
