@@ -92,6 +92,7 @@ String output = new ProcessExecutor().command("java", "-version")
 
 * Pumping the stderr to a logger
 * Returning the output as UTF8 String
+
 ```java
 String output = new ProcessExecutor().command("java", "-version")
       .redirectErrorStream(false)
@@ -109,6 +110,7 @@ new ProcessExecutor().command("java", "-version")
 ```
 
 * Pumping output to another OutputStream
+
 ```java
 OutputStream out = ...;
 new ProcessExecutor().command("java", "-version")
