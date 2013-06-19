@@ -41,23 +41,6 @@
 		</snapshotRepository>
 	</distributionManagement>
 
-	<repositories>
-		<repository>
-			<id>zt-public</id>
-			<url>http://repos.zeroturnaround.com/nexus/content/repositories/zt-public</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-		<repository>
-			<id>zt-releases</id>
-			<url>http://repos.zeroturnaround.com/nexus/content/repositories/zt-releases</url>
-			<snapshots>
-				<enabled>true</enabled>
-			</snapshots>
-		</repository>
-	</repositories>
-
 	<dependencies>
 		<dependency>
 			<groupId>commons-io</groupId>
