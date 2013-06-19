@@ -15,26 +15,24 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package org.zeroturnaround.exec.stream;
+package org.zeroturnaround.exec.stream.slf4j;
 
 import org.slf4j.Logger;
 
 /**
- * Output stream that writes <code>warn</code> level messages to a given {@link Logger}.
+ * Output stream that writes <code>debug</code> level messages to a given {@link Logger}.
  *
  * @author Rein Raudjärv
  */
-public class Slf4jWarnOutputStream extends LogOutputStream {
+public class Slf4jDebugOutputStream extends Slf4jOutputStream {
 
-  private final Logger log;
-
-  public Slf4jWarnOutputStream(Logger logger) {
-    this.log = logger;
+  public Slf4jDebugOutputStream(Logger logger) {
+    super(logger);
   }
 
   @Override
   protected void processLine(String line) {
-    log.warn(line);
+    log.debug(line);
   }
 
 }

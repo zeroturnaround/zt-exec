@@ -45,8 +45,8 @@ import org.zeroturnaround.exec.listener.ShutdownHookProcessDestroyer;
 import org.zeroturnaround.exec.stream.CallerLoggerUtil;
 import org.zeroturnaround.exec.stream.ExecuteStreamHandler;
 import org.zeroturnaround.exec.stream.PumpStreamHandler;
-import org.zeroturnaround.exec.stream.Slf4jDebugOutputStream;
-import org.zeroturnaround.exec.stream.Slf4jInfoOutputStream;
+import org.zeroturnaround.exec.stream.slf4j.Slf4jDebugOutputStream;
+import org.zeroturnaround.exec.stream.slf4j.Slf4jInfoOutputStream;
 
 
 

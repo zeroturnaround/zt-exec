@@ -23,7 +23,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.stream.PumpStreamHandler;
-import org.zeroturnaround.exec.stream.Slf4jInfoOutputStream;
+import org.zeroturnaround.exec.stream.slf4j.Slf4jInfoOutputStream;
 
 
 public class ProcessExecutorLoggerTest {
