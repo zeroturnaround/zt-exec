@@ -146,12 +146,16 @@ catch (InvalidExitValueException e) {
 }
 ```
 
-#### Running a command and returning its output as UTF-8 String while allowing exit code 3 only
+* Throw exception when wrong exit code
+* Return output as UTF8 String 
+
 ```java
 String output;
 boolean success = false;
 try {
-  output = new ProcessExecutor().command("java", "-version").readOutput(true).exitValues(3).execute().outputUTF8();
+  output = new ProcessExecutor().command("java", "-version")
+                .readOutput(true).exitValues(3)
+                .execute().outputUTF8();
   success = true;
 }
 catch (InvalidExitValueException e) {
@@ -160,16 +164,25 @@ catch (InvalidExitValueException e) {
 }
 ```
 
-#### Starting a command in background (output is pumped to NullOutputStream)
+* Starting process in the background
+* Output is pumped to NullOutputStream
+
 ```java
-Future<ProcessResult> future = new ProcessExecutor().command("java", "-version").start();
+Future<ProcessResult> future = new ProcessExecutor()
+                                    .command("java", "-version")
+                                    .start();
 // do some stuff
 future.get(60, TimeUnit.SECONDS);
 ```
 
-#### Starting a command in background and returning its output as UTF-8 String
+* Start process in the background
+* Return output as UTF8 String
+
 ```java
-Future<ProcessResult> future = new ProcessExecutor().command("java", "-version").readOutput(true).start();
+Future<ProcessResult> future = new ProcessExecutor()
+                                    .command("java", "-version")
+                                    .readOutput(true)
+                                    .start();
 // do some stuff
 String output = future.get(60, TimeUnit.SECONDS).outputUTF8();
 ```
