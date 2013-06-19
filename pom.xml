@@ -126,6 +126,25 @@
 	<url>https://github.com/zeroturnaround/zt-exec</url>
 	<description>A lightweight library to execute external processes from Java.</description>
 
+	<developers>
+		<developer>
+			<id>rein</id>
+			<name>Rein</name>
+			<email>rein@zeroturnaround.com</email>
+			<url>http://www.linkedin.com/in/reinra</url>
+			<organization>ZeroTurnaround</organization>
+			<organizationUrl>http://zeroturnaround.com</organizationUrl>
+		</developer>
+		<developer>
+			<id>toomasr</id>
+			<name>Toomas</name>
+			<email>toomas@zeroturnaround.com</email>
+			<url>http://www.linkedin.com/in/toomasr</url>
+			<organization>ZeroTurnaround</organization>
+			<organizationUrl>http://zeroturnaround.com</organizationUrl>
+		</developer>
+	</developers>
+
 	<licenses>
 		<license>
 			<name>The Apache Software License, Version 2.0</name>
