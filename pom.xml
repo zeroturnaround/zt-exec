@@ -22,10 +22,6 @@
 		<developerConnection>scm:git:git@github.com:zeroturnaround/zt-exec.git</developerConnection>
 	</scm>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-	</properties>
-
 	<distributionManagement>
 		<repository>
 			<id>sonatype-nexus-staging</id>
@@ -40,6 +36,11 @@
 			<layout>default</layout>
 		</snapshotRepository>
 	</distributionManagement>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+	</properties>
 
 	<dependencies>
 		<dependency>
