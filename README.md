@@ -98,9 +98,20 @@ String output = new ProcessExecutor().command("java", "-version").redirectErrorS
 new ProcessExecutor().command("java", "-version").timeout(60, TimeUnit.SECONDS).execute();
 ```
 
+#### Running a command and pumping its output to another OutputStream
+```java
+OutputStream out = ...
+new ProcessExecutor().command("java", "-version").redirectOutput(out).execute();
+```
+
 #### Running a command and destroying it in case of a shutdown (output is pumped to NullOutputStream)
 ```java
 new ProcessExecutor().command("java", "-version").destroyOnExit().execute();
+```
+
+#### Running a command by adding an environment variable to it (output is pumped to NullOutputStream)
+```java
+new ProcessExecutor().command("java", "-version").environment(new HashMap<String, String>() { { put("foo", "bar"); } }).execute();
 ```
 
 #### Running a command by allowing exit code 3 only (output is pumped to NullOutputStream)
