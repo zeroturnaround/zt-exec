@@ -53,9 +53,12 @@ Some of the reasons for this crazy endeavour
 ## Examples
 
 * Output is pumped to NullOutputStream
+
 ```java
 new ProcessExecutor().command("java", "-version").execute();
 ```
+
+* * *
 
 * Returning the exit code
 * Does not complain about any exit value
