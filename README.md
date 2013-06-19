@@ -32,12 +32,17 @@ Some of the reasons for this crazy endeavour
 
 ## Examples
 
-#### Running a command (output is pumped to NullOutputStream)
+#### Running a command
+
+* Output is pumped to NullOutputStream
 ```java
 new ProcessExecutor().command("java", "-version").execute();
 ```
 
-#### Running a command and returning its exit code (by default only 0 is allowed, output is pumped to NullOutputStream)
+* Returning the exit code
+* Does not complain about any exit value
+* Output is pumped to NullOutputStream
+
 ```java
 int exit = new ProcessExecutor().command("java", "-version").exitValueAny().execute().exitValue();
 ```
