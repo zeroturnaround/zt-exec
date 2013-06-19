@@ -91,35 +91,55 @@ String output = new ProcessExecutor().command("java", "-version")
 ```
 
 #### Running a command and pumping its error stream to a logger (with info level) but returning its output stream as UTF-8 String
+
+* Pumping the stderr to a logger
+* Returning the output as UTF8 String
 ```java
-String output = new ProcessExecutor().command("java", "-version").redirectErrorStream(false).redirectErrorAsInfo(LoggerFactory.getLogger(getClass())).readOutput(true).execute().outputUTF8();
+String output = new ProcessExecutor().command("java", "-version")
+      .redirectErrorStream(false)
+      .redirectErrorAsInfo(LoggerFactory.getLogger(getClass()))
+      .readOutput(true).execute()
+      .outputUTF8();
 ```
 
-#### Running a command with a timeout of 60 seconds (output is pumped to NullOutputStream)
+* Running with a timeout of **60** seconds
+* Output pumped to NullOutputStream
+
 ```java
-new ProcessExecutor().command("java", "-version").timeout(60, TimeUnit.SECONDS).execute();
+new ProcessExecutor().command("java", "-version")
+      .timeout(60, TimeUnit.SECONDS).execute();
 ```
 
-#### Running a command and pumping its output to another OutputStream
+* Pumping output to another OutputStream
 ```java
-OutputStream out = ...
-new ProcessExecutor().command("java", "-version").redirectOutput(out).execute();
+OutputStream out = ...;
+new ProcessExecutor().command("java", "-version")
+      .redirectOutput(out).execute();
 ```
 
-#### Running a command and destroying it in case of a shutdown (output is pumped to NullOutputStream)
+* Destroy the running process when VM exits
+* Output pumped to NullOutputStream
+
 ```java
 new ProcessExecutor().command("java", "-version").destroyOnExit().execute();
 ```
 
-#### Running a command by adding an environment variable to it (output is pumped to NullOutputStream)
+* Run process with a specific environment
+* Output pumped to NullOutputStream
+
 ```java
-new ProcessExecutor().command("java", "-version").environment(new HashMap<String, String>() { { put("foo", "bar"); } }).execute();
+new ProcessExecutor().command("java", "-version")
+    .environment(new HashMap<String, String>() { { put("foo", "bar"); } })
+    .execute();
 ```
 
-#### Running a command by allowing exit code 3 only (output is pumped to NullOutputStream)
+* Throw exception when wrong exit code
+* Output is pumped to NullOutputStream
+
 ```java
 try {
-  new ProcessExecutor().command("java", "-version").exitValues(3).execute();
+  new ProcessExecutor().command("java", "-version")
+        .exitValues(3).execute();
 }
 catch (InvalidExitValueException e) {
   System.out.println("Process exited with " + e.exitValue());
