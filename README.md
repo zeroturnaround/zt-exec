@@ -69,6 +69,8 @@ int exit = new ProcessExecutor().command("java", "-version")
                   .exitValueAny().execute().exitValue();
 ```
 
+<hr/>
+
 * Return output as UTF8 String
 
 ```java
@@ -77,12 +79,16 @@ String output = new ProcessExecutor().command("java", "-version")
                   .outputUTF8();    
 ```
 
+<hr/>
+
 * Pumping the output to a logger
 
 ```java
 new ProcessExecutor().command("java", "-version")
       .info(LoggerFactory.getLogger(getClass())).execute();
 ```
+
+<hr/>
 
 * Pumping the output to a logger
 * Returning output as UTF8 String
@@ -92,6 +98,8 @@ String output = new ProcessExecutor().command("java", "-version")
         .info(LoggerFactory.getLogger(getClass()))
         .readOutput(true).execute().outputUTF8();
 ```
+
+<hr/>
 
 * Pumping the stderr to a logger
 * Returning the output as UTF8 String
@@ -104,6 +112,8 @@ String output = new ProcessExecutor().command("java", "-version")
       .outputUTF8();
 ```
 
+<hr/>
+
 * Running with a timeout of **60** seconds
 * Output pumped to NullOutputStream
 
@@ -111,6 +121,8 @@ String output = new ProcessExecutor().command("java", "-version")
 new ProcessExecutor().command("java", "-version")
       .timeout(60, TimeUnit.SECONDS).execute();
 ```
+
+<hr/>
 
 * Pumping output to another OutputStream
 
@@ -120,12 +132,16 @@ new ProcessExecutor().command("java", "-version")
       .redirectOutput(out).execute();
 ```
 
+<hr/>
+
 * Destroy the running process when VM exits
 * Output pumped to NullOutputStream
 
 ```java
 new ProcessExecutor().command("java", "-version").destroyOnExit().execute();
 ```
+
+<hr/>
 
 * Run process with a specific environment
 * Output pumped to NullOutputStream
@@ -135,6 +151,8 @@ new ProcessExecutor().command("java", "-version")
     .environment(new HashMap<String, String>() { { put("foo", "bar"); } })
     .execute();
 ```
+
+<hr/>
 
 * Throw exception when wrong exit code
 * Output is pumped to NullOutputStream
@@ -148,6 +166,8 @@ catch (InvalidExitValueException e) {
   System.out.println("Process exited with " + e.exitValue());
 }
 ```
+
+<hr/>
 
 * Throw exception when wrong exit code
 * Return output as UTF8 String 
@@ -167,6 +187,8 @@ catch (InvalidExitValueException e) {
 }
 ```
 
+<hr/>
+
 * Starting process in the background
 * Output is pumped to NullOutputStream
 
@@ -177,6 +199,8 @@ Future<ProcessResult> future = new ProcessExecutor()
 // do some stuff
 future.get(60, TimeUnit.SECONDS);
 ```
+
+<hr/>
 
 * Start process in the background
 * Return output as UTF8 String
