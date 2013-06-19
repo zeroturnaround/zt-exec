@@ -18,15 +18,15 @@ There are many approaches to take when running external processes from Java. The
 Some of the reasons for this crazy endeavour
 
 * Improved handling of streams
- ** Reading/writing to streams
- ** Redirecting stderr to stdout
+** Reading/writing to streams
+** Redirecting stderr to stdout
 * Improved handling of timeouts
 * Improved checking of exit codes
 * Improved API
- ** One liners for quite complex usecases
- ** One liners to get process output into a String
- ** Access to the **Process** object available
- ** Support for async processes (**Future**) 
+** One liners for quite complex usecases
+** One liners to get process output into a String
+** Access to the **Process** object available
+** Support for async processes ( **Future** ) 
 * Improved logging with [SLF4J API](http://www.slf4j.org/)
 * Support for multiple processes
 
