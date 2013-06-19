@@ -54,12 +54,12 @@ public class ProcessExecutorHelloWorldTest {
   }
 
   @Test
-  public void testRedirectOutputAndErrorDummy() throws Exception {
+  public void testRedirectOutputAndErrorMerged() throws Exception {
     ByteArrayOutputStream out = new ByteArrayOutputStream();
     ByteArrayOutputStream err = new ByteArrayOutputStream();
     helloWorld().redirectOutput(out).redirectError(err).execute();
-    Assert.assertEquals("Hello world!", new String(out.toByteArray()));
-    Assert.assertEquals("", new String(err.toByteArray()));
+    Assert.assertEquals("Hello ", new String(out.toByteArray()));
+    Assert.assertEquals("world!", new String(err.toByteArray()));
   }
 
   @Test

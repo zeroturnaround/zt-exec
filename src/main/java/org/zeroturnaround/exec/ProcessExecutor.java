@@ -87,7 +87,7 @@ public class ProcessExecutor {
   /**
    * Process builder used by this executor.
    */
-  private final ProcessBuilder builder = new ProcessBuilder().redirectErrorStream(DEFAULT_REDIRECT_ERROR_STREAM);
+  private final ProcessBuilder builder = new ProcessBuilder();
 
   /**
    * Set of accepted exit codes or <code>null</code> if all exit codes are allowed.
@@ -121,6 +121,7 @@ public class ProcessExecutor {
     redirectOutput(null);
     redirectError(null);
     destroyer(null);
+    redirectErrorStream(DEFAULT_REDIRECT_ERROR_STREAM);
   }
 
   /**
@@ -319,6 +320,9 @@ public class ProcessExecutor {
    * Redirects the process' error stream to given output stream.
    * If this method is invoked multiple times each call overwrites the previous.
    * Use {@link #redirectErrorAlsoTo(OutputStream)} if you want to redirect the error to multiple streams.
+   * <p>
+   * Calling this method automatically disables merging the process error stream to its output stream.
+   * </p>
    *
    * @param output output stream where the process error is redirected to (<code>null</code> means {@link NullOutputStream} which acts like a <code>/dev/null</code>).
    * @return This process executor.
@@ -328,7 +332,9 @@ public class ProcessExecutor {
       output = NullOutputStream.NULL_OUTPUT_STREAM;
     PumpStreamHandler pumps = pumps();
     // Only set the error stream handler, preserve the same output stream handler
-    return streams(new PumpStreamHandler(pumps == null ? null : pumps.getOut(), output, pumps == null ? null : pumps.getInput()));
+    streams(new PumpStreamHandler(pumps == null ? null : pumps.getOut(), output, pumps == null ? null : pumps.getInput()));
+    redirectErrorStream(false);
+    return this;
   }
 
   /**
@@ -344,11 +350,16 @@ public class ProcessExecutor {
   /**
    * Redirects the process' error stream also to a given output stream.
    * This method can be used to redirect error to multiple streams.
+   * <p>
+   * Calling this method automatically disables merging the process error stream to its output stream.
+   * </p>
    *
    * @return This process executor.
    */
   public ProcessExecutor redirectErrorAlsoTo(OutputStream output) {
-    return streams(redirectErrorAlsoTo(pumps(), output));
+    streams(redirectErrorAlsoTo(pumps(), output));
+    redirectErrorStream(false);
+    return this;
   }
 
   /**

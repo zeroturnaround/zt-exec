@@ -117,7 +117,6 @@ String output = new ProcessExecutor().command("java", "-version")
 
 ```java
 String output = new ProcessExecutor().command("java", "-version")
-      .redirectErrorStream(false)
       .redirectErrorAsInfo(LoggerFactory.getLogger(getClass()))
       .readOutput(true).execute()
       .outputUTF8();
