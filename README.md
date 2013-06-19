@@ -4,8 +4,8 @@ Process Executor
 ### Quick Overview
 
 The project was created to merge similar functionality of projects at [ZeroTurnaround](http://zeroturnaround.com/) into a single codebase.
-It's designed to be powerful but still simple to use. By using a single class *org.zeroturnaround.exec.ProcessExecutor*
-the user gets the functionality from both *java.lang.ProcessBuilder* and [Apache Commons Exec](http://commons.apache.org/proper/commons-exec/).
+It's designed to be powerful but still simple to use. By using a single class **ProcessExecutor**
+the user gets the functionality from both **java.lang.ProcessBuilder** and [Apache Commons Exec](http://commons.apache.org/proper/commons-exec/).
 
 ### Installation
 
