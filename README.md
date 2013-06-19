@@ -128,8 +128,13 @@ String output = new ProcessExecutor().command("java", "-version")
 * Output pumped to NullOutputStream
 
 ```java
-new ProcessExecutor().command("java", "-version")
-      .timeout(60, TimeUnit.SECONDS).execute();
+try {
+  new ProcessExecutor().command("java", "-version")
+        .timeout(60, TimeUnit.SECONDS).execute();
+}
+catch (TimeoutException e) {
+  // process is automatically destroyed
+}
 ```
 
 <hr/>
