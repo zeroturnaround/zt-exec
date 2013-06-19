@@ -9,24 +9,17 @@ the user gets the functionality from both **java.lang.ProcessBuilder** and [Apac
 
 ### Installation
 
-TODO Use released version once 1.4 gets released
+The project artifacts are available in [Maven Central Repository](http://search.maven.org/#browse%7C895841167).
 
-To include the current snapshot in your Maven project you need to define the repository and the dependency:
+To include it in your maven project then you have to specify the dependency.
 
 ```xml
-<repository>
-  <id>zt-public-snapshots</id>
-  <url>http://repos.zeroturnaround.com/nexus/content/repositories/zt-public-snapshots</url>
-  <releases>
-    <enabled>false</enabled>
-  </releases>
-</repository>
-
 ...
 <dependency>
-  <groupId>org.zeroturnaround</groupId>
-  <artifactId>zt-exec</artifactId>
-  <version>1.4-SNAPSHOT</version>
+    <groupId>org.zeroturnaround</groupId>
+    <artifactId>zt-exec</artifactId>
+    <version>1.4-SNAPSHOT</version>
+    <type>jar</type>
 </dependency>
 ...
 ```
