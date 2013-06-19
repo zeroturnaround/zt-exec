@@ -62,7 +62,8 @@ new ProcessExecutor().command("java", "-version").execute();
 * Output is pumped to NullOutputStream
 
 ```java
-int exit = new ProcessExecutor().command("java", "-version").exitValueAny().execute().exitValue();
+int exit = new ProcessExecutor().command("java", "-version")
+                  .exitValueAny().execute().exitValue();
 ```
 
 * Return output as UTF8 String
@@ -73,14 +74,20 @@ String output = new ProcessExecutor().command("java", "-version")
                   .outputUTF8();    
 ```
 
-#### Running a command and pumping its output to a logger (with info level)
+* Pumping the output to a logger
+
 ```java
-new ProcessExecutor().command("java", "-version").info(LoggerFactory.getLogger(getClass())).execute();
+new ProcessExecutor().command("java", "-version")
+      .info(LoggerFactory.getLogger(getClass())).execute();
 ```
 
-#### Running a command and pumping its output to a logger (with info level) and also returning its output as UTF-8 String
+* Pumping the output to a logger
+* Returning output as UTF8 String
+
 ```java
-String output = new ProcessExecutor().command("java", "-version").info(LoggerFactory.getLogger(getClass())).readOutput(true).execute().outputUTF8();
+String output = new ProcessExecutor().command("java", "-version")
+        .info(LoggerFactory.getLogger(getClass()))
+        .readOutput(true).execute().outputUTF8();
 ```
 
 #### Running a command and pumping its error stream to a logger (with info level) but returning its output stream as UTF-8 String
