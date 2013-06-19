@@ -20,19 +20,20 @@ package org.zeroturnaround.exec.stream;
 import org.slf4j.Logger;
 
 /**
- * Output stream that writes <code>trace</code> level messages to a given {@link Logger}.
+ * Output stream that writes to a given {@link Logger}.
  *
  * @author Rein Raudjärv
  */
-public class Slf4jTraceOutputStream extends Slf4jOutputStream {
+public abstract class Slf4jOutputStream extends LogOutputStream {
 
-  public Slf4jTraceOutputStream(Logger logger) {
-    super(logger);
+  protected final Logger log;
+
+  public Slf4jOutputStream(Logger logger) {
+    this.log = logger;
   }
 
-  @Override
-  protected void processLine(String line) {
-    log.trace(line);
+  public Logger getLogger() {
+    return log;
   }
 
 }

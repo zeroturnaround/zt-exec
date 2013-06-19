@@ -24,12 +24,10 @@ import org.slf4j.Logger;
  *
  * @author Rein Raudjärv
  */
-public class Slf4jDebugOutputStream extends LogOutputStream {
-
-  private final Logger log;
+public class Slf4jDebugOutputStream extends Slf4jOutputStream {
 
   public Slf4jDebugOutputStream(Logger logger) {
-    this.log = logger;
+    super(logger);
   }
 
   @Override

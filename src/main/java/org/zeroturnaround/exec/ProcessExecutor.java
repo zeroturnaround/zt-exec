@@ -282,6 +282,13 @@ public class ProcessExecutor {
   }
 
   /**
+   * @return current stream handler for the process being executed.
+   */
+  public ExecuteStreamHandler streams() {
+    return streams;
+  }
+
+  /**
    * Sets a stream handler for the process being executed.
    * @return This process executor.
    */
@@ -302,7 +309,7 @@ public class ProcessExecutor {
   public ProcessExecutor redirectOutput(OutputStream output) {
     if (output == null)
       output = NullOutputStream.NULL_OUTPUT_STREAM;
-    PumpStreamHandler pumps = getPumps();
+    PumpStreamHandler pumps = pumps();
     // Only set the output stream handler, preserve the same error stream handler
     return streams(new PumpStreamHandler(output, pumps == null ? null : pumps.getErr(), pumps == null ? null : pumps.getInput()));
   }
@@ -318,7 +325,7 @@ public class ProcessExecutor {
   public ProcessExecutor redirectError(OutputStream output) {
     if (output == null)
       output = NullOutputStream.NULL_OUTPUT_STREAM;
-    PumpStreamHandler pumps = getPumps();
+    PumpStreamHandler pumps = pumps();
     // Only set the error stream handler, preserve the same output stream handler
     return streams(new PumpStreamHandler(pumps == null ? null : pumps.getOut(), output, pumps == null ? null : pumps.getInput()));
   }
@@ -330,7 +337,7 @@ public class ProcessExecutor {
    * @return This process executor.
    */
   public ProcessExecutor redirectOutputAlsoTo(OutputStream output) {
-    return streams(redirectOutputAlsoTo(getPumps(), output));
+    return streams(redirectOutputAlsoTo(pumps(), output));
   }
 
   /**
@@ -340,14 +347,16 @@ public class ProcessExecutor {
    * @return This process executor.
    */
   public ProcessExecutor redirectErrorAlsoTo(OutputStream output) {
-    return streams(redirectErrorAlsoTo(getPumps(), output));
+    return streams(redirectErrorAlsoTo(pumps(), output));
   }
 
   /**
    * @return current PumpStreamHandler (maybe <code>null</code>).
-   * @throws IllegalStateException if the current stream handler is not an instace of {@link PumpStreamHandler}.
+   * @throws IllegalStateException if the current stream handler is not an instance of {@link PumpStreamHandler}.
+   *
+   * @see #streams()
    */
-  private PumpStreamHandler getPumps() {
+  public PumpStreamHandler pumps() {
     if (streams == null)
       return null;
     if (!(streams instanceof PumpStreamHandler))
@@ -677,7 +686,7 @@ public class ProcessExecutor {
       }
       streams.start();
     }
-    Set<Integer> exitValues = allowedExitValues == null ? null : new HashSet<Integer>(allowedExitValues); 
+    Set<Integer> exitValues = allowedExitValues == null ? null : new HashSet<Integer>(allowedExitValues);
     WaitForProcess result = new WaitForProcess(process, exitValues, streams, out, listeners.clone());
     // Invoke listeners - changing this executor does not affect the started process any more
     listeners.afterStart(process, this);
