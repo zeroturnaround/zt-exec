@@ -422,6 +422,7 @@ public class ProcessExecutor {
   /**
    * Logs the process' output to a given {@link Logger} with <code>info</code> level.
    * @return This process executor.
+   * @deprecated use {@link #redirectOutputAsInfo(Logger)
    */
   public ProcessExecutor info(Logger log) {
     return redirectOutput(new Slf4jInfoOutputStream(log));
@@ -430,6 +431,7 @@ public class ProcessExecutor {
   /**
    * Logs the process' output to a given {@link Logger} with <code>debug</code> level.
    * @return This process executor.
+   * @deprecated use {@link #redirectOutputAsDebug(Logger)
    */
   public ProcessExecutor debug(Logger log) {
     return redirectOutput(new Slf4jDebugOutputStream(log));
@@ -438,6 +440,7 @@ public class ProcessExecutor {
   /**
    * Logs the process' output to a {@link Logger} with given name using <code>info</code> level.
    * @return This process executor.
+   * @deprecated use {@link #redirectOutputAsInfo(String)
    */
   public ProcessExecutor info(String name) {
     return info(getCallerLogger(name));
@@ -446,6 +449,7 @@ public class ProcessExecutor {
   /**
    * Logs the process' output to a {@link Logger} with given name using <code>debug</code> level.
    * @return This process executor.
+   * @deprecated use {@link #redirectOutputAsDebug(String)
    */
   public ProcessExecutor debug(String name) {
     return debug(getCallerLogger(name));
@@ -454,6 +458,7 @@ public class ProcessExecutor {
   /**
    * Logs the process' output to a {@link Logger} of the caller class using <code>info</code> level.
    * @return This process executor.
+   * @deprecated use {@link #redirectOutputAsInfo()}
    */
   public ProcessExecutor info() {
     return info(getCallerLogger(null));
@@ -462,9 +467,58 @@ public class ProcessExecutor {
   /**
    * Logs the process' output to a {@link Logger} of the caller class using <code>debug</code> level.
    * @return This process executor.
+   * @deprecated use {@link #redirectOutputAsDebug()}
    */
   public ProcessExecutor debug() {
     return debug(getCallerLogger(null));
+  }
+
+  /**
+   * Logs the process' output to a given {@link Logger} with <code>info</code> level.
+   * @return This process executor.
+   */
+  public ProcessExecutor redirectOutputAsInfo(Logger log) {
+    return redirectOutput(new Slf4jInfoOutputStream(log));
+  }
+
+  /**
+   * Logs the process' output to a given {@link Logger} with <code>debug</code> level.
+   * @return This process executor.
+   */
+  public ProcessExecutor redirectOutputAsDebug(Logger log) {
+    return redirectOutput(new Slf4jDebugOutputStream(log));
+  }
+
+  /**
+   * Logs the process' output to a {@link Logger} with given name using <code>info</code> level.
+   * @return This process executor.
+   */
+  public ProcessExecutor redirectOutputAsInfo(String name) {
+    return info(getCallerLogger(name));
+  }
+
+  /**
+   * Logs the process' output to a {@link Logger} with given name using <code>debug</code> level.
+   * @return This process executor.
+   */
+  public ProcessExecutor redirectOutputAsDebug(String name) {
+    return redirectOutputAsDebug(getCallerLogger(name));
+  }
+
+  /**
+   * Logs the process' output to a {@link Logger} of the caller class using <code>info</code> level.
+   * @return This process executor.
+   */
+  public ProcessExecutor redirectOutputAsInfo() {
+    return redirectOutputAsInfo(getCallerLogger(null));
+  }
+
+  /**
+   * Logs the process' output to a {@link Logger} of the caller class using <code>debug</code> level.
+   * @return This process executor.
+   */
+  public ProcessExecutor redirectOutputAsDebug() {
+    return redirectOutputAsDebug(getCallerLogger(null));
   }
 
   /**

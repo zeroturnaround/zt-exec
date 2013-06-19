@@ -78,7 +78,25 @@ String output = new ProcessExecutor().command("java", "-version")
 
 ```java
 new ProcessExecutor().command("java", "-version")
-      .info(LoggerFactory.getLogger(getClass())).execute();
+      .redirectOutputAsInfo(LoggerFactory.getLogger(getClass().getName() + ".MyProcess")).execute();
+```
+
+<hr/>
+
+* Pumping the output to a logger (short form for previous)
+
+```java
+new ProcessExecutor().command("java", "-version")
+      .redirectOutputAsInfo("MyProcess").execute();
+```
+
+<hr/>
+
+* Pumping the output to the logger of the caller class
+
+```java
+new ProcessExecutor().command("java", "-version")
+      .redirectOutputAsInfo().execute();
 ```
 
 <hr/>
@@ -88,7 +106,7 @@ new ProcessExecutor().command("java", "-version")
 
 ```java
 String output = new ProcessExecutor().command("java", "-version")
-        .info(LoggerFactory.getLogger(getClass()))
+        .redirectOutputAsInfo(LoggerFactory.getLogger(getClass()))
         .readOutput(true).execute().outputUTF8();
 ```
 
