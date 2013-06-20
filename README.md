@@ -1,6 +1,9 @@
 Process Executor
 ================
 
+### Continuous Integration
+[![Build Status](https://travis-ci.org/zeroturnaround/zt-exec.png)](https://travis-ci.org/zeroturnaround/zt-exec)
+
 ### Quick Overview
 
 The project was created to merge similar functionality of projects at [ZeroTurnaround](http://zeroturnaround.com/) into a single codebase.
