@@ -21,12 +21,9 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import org.apache.commons.lang.StringUtils;
 import org.junit.Assert;
 import org.junit.Test;
-import org.zeroturnaround.exec.InvalidExitValueException;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
 import org.zeroturnaround.exec.stream.ExecuteStreamHandler;
@@ -60,16 +57,6 @@ public class ProcessExecutorMainTest {
   public void testJavaVersionFuture() throws Exception {
     int exit = new ProcessExecutor().command("java", "-version").start().future().get().exitValue();
     Assert.assertEquals(0, exit);
-  }
-
-  @Test(expected=InvalidExitValueException.class)
-  public void testJavaVersionExitValueCheck() throws Exception {
-    new ProcessExecutor().command("java", "-version").exitValues(3).execute();
-  }
-
-  @Test(expected=InvalidExitValueException.class)
-  public void testJavaVersionExitValueCheckTimeout() throws Exception {
-    new ProcessExecutor().command("java", "-version").exitValues(3).timeout(60, TimeUnit.SECONDS).execute();
   }
 
   @Test
@@ -161,7 +148,7 @@ public class ProcessExecutorMainTest {
     ProcessResult result = exec.readOutput(true).execute();
     Assert.assertEquals("Hello world!", result.outputUTF8());
   }
-  
+
   @Test
   public void testProcessExecutorCommand() throws Exception {
     // Use timeout in case we get stuck
@@ -178,7 +165,7 @@ public class ProcessExecutorMainTest {
     ProcessResult result = exec.readOutput(true).execute();
     Assert.assertEquals("Hello world!", result.outputUTF8());
   }
-  
+
   @Test
   public void testProcessExecutorSetDirectory() throws Exception {
     // Use timeout in case we get stuck
@@ -194,36 +181,5 @@ public class ProcessExecutorMainTest {
     exec.command(args);
     ProcessResult result = exec.readOutput(true).execute();
     Assert.assertEquals("Hello world!", result.outputUTF8());
-  }
-  
-  @Test
-  public void testProcessExecutorExitValues() throws Exception {
-    // Use timeout in case we get stuck
-    List<String> args = new ArrayList<String>() {
-      {
-        add("java");
-        add("-cp");
-        add("target/test-classes");
-        add(ExitLikeABoss.class.getName());
-        add("17");
-      }
-    };
-    ProcessExecutor exec = new ProcessExecutor().exitValues(new int[]{17});
-    exec.command(args);
-    // no exception!
-    exec.execute();
-    
-    // now lets make it throw an exception
-    exec = new ProcessExecutor().exitValues(new int[]{15});
-    exec.command(args);
-    // no exception!
-    boolean exceptionHappened = false;
-    try {
-      exec.execute();
-    }
-    catch (InvalidExitValueException e) {
-      exceptionHappened = true;
-    }
-    Assert.assertTrue(exceptionHappened);
   }
 }
