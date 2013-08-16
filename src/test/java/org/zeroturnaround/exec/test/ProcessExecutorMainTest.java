@@ -85,13 +85,13 @@ public class ProcessExecutorMainTest {
   @Test
   public void testJavaVersionLogInfo() throws Exception {
     // Just expect no errors - don't check the log file itself
-    new ProcessExecutor().command("java", "-version").info("testJavaVersionLogInfo").execute();
+    new ProcessExecutor().command("java", "-version").redirectOutputAsInfo("testJavaVersionLogInfo").execute();
   }
 
   @Test
   public void testJavaVersionLogInfoAndOutput() throws Exception {
     // Just expect no errors - don't check the log file itself
-    ProcessResult result = new ProcessExecutor().command("java", "-version").info("testJavaVersionLogInfoAndOutput").readOutput(true).execute();
+    ProcessResult result = new ProcessExecutor().command("java", "-version").redirectOutputAsInfo("testJavaVersionLogInfoAndOutput").readOutput(true).execute();
     String str = result.outputUTF8();
     Assert.assertFalse(StringUtils.isEmpty(str));
   }
@@ -99,7 +99,7 @@ public class ProcessExecutorMainTest {
   @Test
   public void testJavaVersionLogInfoAndOutputFuture() throws Exception {
     // Just expect no errors - don't check the log file itself
-    ProcessResult result = new ProcessExecutor().command("java", "-version").info("testJavaVersionLogInfoAndOutputFuture").readOutput(true).start().future().get();
+    ProcessResult result = new ProcessExecutor().command("java", "-version").redirectOutputAsInfo("testJavaVersionLogInfoAndOutputFuture").readOutput(true).start().future().get();
     String str = result.outputUTF8();
     Assert.assertFalse(StringUtils.isEmpty(str));
   }

@@ -32,7 +32,7 @@ public class ProcessExecutorLoggerTest {
   public void testFullName() throws Exception {
     String fullName = "my.full.Logger";
     ProcessExecutor executor = new ProcessExecutor();
-    executor.info(fullName);
+    executor.redirectOutputAsInfo(fullName);
     PumpStreamHandler pumps = executor.pumps();
     OutputStream out = pumps.getOut();
     Assert.assertTrue("Slf4jInfoOutputStream expected", out instanceof Slf4jInfoOutputStream);
@@ -44,7 +44,7 @@ public class ProcessExecutorLoggerTest {
     String shortName = "MyLogger";
     String fullName = getClass().getName() + "." + shortName;
     ProcessExecutor executor = new ProcessExecutor();
-    executor.info(shortName);
+    executor.redirectOutputAsInfo(shortName);
     PumpStreamHandler pumps = executor.pumps();
     OutputStream out = pumps.getOut();
     Assert.assertTrue("Slf4jInfoOutputStream expected", out instanceof Slf4jInfoOutputStream);
@@ -55,7 +55,7 @@ public class ProcessExecutorLoggerTest {
   public void testMyClassName() throws Exception {
     String fullName = getClass().getName();
     ProcessExecutor executor = new ProcessExecutor();
-    executor.info();
+    executor.redirectOutputAsInfo();
     PumpStreamHandler pumps = executor.pumps();
     OutputStream out = pumps.getOut();
     Assert.assertTrue("Slf4jInfoOutputStream expected", out instanceof Slf4jInfoOutputStream);
