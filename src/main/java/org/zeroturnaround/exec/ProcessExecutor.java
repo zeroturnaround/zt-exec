@@ -69,7 +69,7 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jInfoOutputStream;
  *   <li>Error stream is redirected to its output stream. Use {@link #redirectErrorStream(boolean)} to override it.</li>
  *   <li>Output stream is pumped to a {@link NullOutputStream}, Use {@link #streams(ExecuteStreamHandler)}, {@link #redirectOutput(OutputStream)},
  *   {@link #info(Logger)}, {@link #info(String)}, {@link #debug(Logger)} or {@link #debug(String)} to override it.</li>
- *   <li>Only <code>0</code> is allowed as an exit code. Use {@link #exitValues(Integer...)} to override it.
+ *   <li>Any exit code is allowed. Use {@link #exitValues(Integer...)} to override it.
  * </li>
  * </p>
  *
@@ -80,7 +80,7 @@ public class ProcessExecutor {
 
   private static final Logger log = LoggerFactory.getLogger(ProcessExecutor.class);
 
-  public static final Integer[] DEFAULT_EXIT_VALUES = { 0 };
+  public static final Integer[] DEFAULT_EXIT_VALUES = null;
 
   public static final boolean DEFAULT_REDIRECT_ERROR_STREAM = true;
 

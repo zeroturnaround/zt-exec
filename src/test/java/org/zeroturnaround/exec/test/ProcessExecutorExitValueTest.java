@@ -38,7 +38,6 @@ public class ProcessExecutorExitValueTest {
     new ProcessExecutor().command("java", "-version").exitValues(3).timeout(60, TimeUnit.SECONDS).execute();
   }
 
-  @Test(expected=InvalidExitValueException.class)
   public void testNonZeroExitValueByDefault() throws Exception {
     new ProcessExecutor(exitLikeABoss(17)).execute();
   }
