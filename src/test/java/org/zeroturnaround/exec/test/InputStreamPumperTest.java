@@ -26,12 +26,7 @@ import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.stream.PumpStreamHandler;
 
 /**
- * Tests that redirect target stream are not closed.
- * 
- * @author Rein Raudjärv
- * 
- * @see ProcessExecutor
- * @see HelloWorld
+ * Tests that test redirected input for the process to be run.
  */
 public class InputStreamPumperTest {
 
