@@ -32,7 +32,7 @@ public class InputStreamPumperTest {
 
   @Test
   public void testPumpFromInputToOutput() throws Exception {
-    String str = "Tere\nMinu\nUus vihik\n";
+    String str = "Tere Minu Uus vihik";
     ByteArrayInputStream bais = new ByteArrayInputStream(str.getBytes());
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
     PumpStreamHandler handler = new PumpStreamHandler(baos, System.err, bais);

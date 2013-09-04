@@ -11,7 +11,7 @@ public class PrintInputToOutput {
     String line = null;
     int count = 0;
     while ((line = br.readLine()) != null) {
-      System.out.println(line);
+      System.out.print(line);
       count++;
       if (count == 3)
         break;
