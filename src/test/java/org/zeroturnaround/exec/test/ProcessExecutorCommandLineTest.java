@@ -52,7 +52,9 @@ public class ProcessExecutorCommandLineTest {
 
   @Test
   public void testQuotes() throws Exception {
-    testArguments("\"a\"", "b \"c\" d", "f \"e\"", "\"g\" h");
+    String[] args = new String[]{"\\\"a\\\"", "b \\\"c\\\" d", "f \\\"e\\\"", "\\\"g\\\" h"};
+    List<String> expected = Arrays.asList("\\\"a\\\"", "b \\\"c\\\" d", "f \\\"e\\\"", "\\\"g\\\" h");
+    testArguments(expected, args);
   }
 
   @Test
@@ -63,6 +65,12 @@ public class ProcessExecutorCommandLineTest {
   private void testArguments(String... args) throws IOException, InterruptedException, TimeoutException {
     byte[] bytes = printArguments(args).execute().output();
     List<String> expected = Arrays.asList(args);
+    List<String> actual = IOUtils.readLines(new ByteArrayInputStream(bytes));
+    Assert.assertEquals(expected, actual);
+  }
+  
+  private void testArguments(List<String> expected, String... args) throws IOException, InterruptedException, TimeoutException {
+    byte[] bytes = printArguments(args).execute().output();
     List<String> actual = IOUtils.readLines(new ByteArrayInputStream(bytes));
     Assert.assertEquals(expected, actual);
   }
