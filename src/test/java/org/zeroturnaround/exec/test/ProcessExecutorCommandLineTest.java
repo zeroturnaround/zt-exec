@@ -52,8 +52,10 @@ public class ProcessExecutorCommandLineTest {
 
   @Test
   public void testQuotes() throws Exception {
-    String[] args = new String[]{"\\\"a\\\"", "b \\\"c\\\" d", "f \\\"e\\\"", "\\\"g\\\" h"};
-    List<String> expected = Arrays.asList("\\\"a\\\"", "b \\\"c\\\" d", "f \\\"e\\\"", "\\\"g\\\" h");
+    String[] args = new String[]{"\"a\"", "b \"c\" d", "f \"e\"", "\"g\" h"};
+    if (System.getProperty("os.name").startsWith("Windows"))
+      args = new String[]{"\\\"a\\\"", "b \\\"c\\\" d", "f \\\"e\"", "\\\"g\\\" h"};
+    List<String> expected = Arrays.asList("\"a\"", "b \"c\" d", "f \"e\"", "\"g\" h");
     testArguments(expected, args);
   }
 
