@@ -22,7 +22,7 @@ import org.zeroturnaround.exec.ProcessExecutor;
 /**
  * Starts {@link WriterLoop} and destroys it on JVM exit.
  */
-public class WriterLoopStarter {
+public class WriterLoopStarterBeforeExit {
 
   private static final long SLEEP_AFTER_START = 2000;
 
