@@ -66,6 +66,9 @@ public class ShutdownHookProcessDestroyer implements ProcessDestroyer, Runnable 
   /** Whether or not this ProcessDestroyer has been registered as a shutdown hook */
   private boolean added = false;
 
+  /** Whether the shut down hook routine was already run **/
+  private volatile boolean shutDownHookExecuted = false;
+
   /**
    * Whether or not this ProcessDestroyer is currently running as shutdown hook
    */
@@ -170,7 +173,16 @@ public class ShutdownHookProcessDestroyer implements ProcessDestroyer, Runnable 
     synchronized (processes) {
       // if this list is empty, register the shutdown hook
       if (processes.size() == 0) {
-        addShutdownHook();
+        try {
+          if(shutDownHookExecuted) {
+              throw new IllegalStateException();
+          }
+          addShutdownHook();
+        }
+        // kill the process now if the JVM is currently shutting down
+        catch (IllegalStateException e) {
+          destroy(process);
+        }
       }
       processes.addElement(process);
       return processes.contains(process);
@@ -190,7 +202,12 @@ public class ShutdownHookProcessDestroyer implements ProcessDestroyer, Runnable 
     synchronized (processes) {
       boolean processRemoved = processes.removeElement(process);
       if (processRemoved && processes.size() == 0) {
-        removeShutdownHook();
+        try {
+          removeShutdownHook();
+        } catch (IllegalStateException e) {
+          /* if the JVM is shutting down, the hook cannot be removed */
+          shutDownHookExecuted = true;
+        }
       }
       return processRemoved;
     }
@@ -209,18 +226,27 @@ public class ShutdownHookProcessDestroyer implements ProcessDestroyer, Runnable 
    * Invoked by the VM when it is exiting.
    */
   public void run() {
+    /* check if running the routine is still necessary */
+    if(shutDownHookExecuted) {
+      return;
+    }
     synchronized (processes) {
       running = true;
       Enumeration e = processes.elements();
       while (e.hasMoreElements()) {
-        Process process = (Process) e.nextElement();
-        try {
-          process.destroy();
-        }
-        catch (Throwable t) {
-          log.error("Unable to terminate process during process shutdown");
-        }
+        destroy((Process) e.nextElement());
       }
+      processes.clear();
+      shutDownHookExecuted = true;
+    }
+  }
+
+  private void destroy(Process process) {
+    try {
+      process.destroy();
+    }
+    catch (Throwable t) {
+      log.error("Unable to terminate process during process shutdown");
     }
   }
 }
