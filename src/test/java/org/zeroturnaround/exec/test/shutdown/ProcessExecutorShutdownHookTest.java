@@ -35,23 +35,24 @@ public class ProcessExecutorShutdownHookTest {
 
   @Test
   public void testDestroyOnExit() throws Exception {
-    testDestroyOnExit(WriterLoopStarterBeforeExit.class);
+    testDestroyOnExit(WriterLoopStarterBeforeExit.class, true);
   }
 
-  // TODO Should be fixed by https://github.com/zeroturnaround/zt-exec/pull/11
-//  @Test
-//  public void testDestroyOnExitInShutdownHook() throws Exception {
-//    testDestroyOnExit(WriterLoopStarterAfterExit.class);
-//  }
+  @Test
+  public void testDestroyOnExitInShutdownHook() throws Exception {
+    testDestroyOnExit(WriterLoopStarterAfterExit.class, false);
+  }
 
-  private void testDestroyOnExit(Class<?> starter) throws Exception {
+  private void testDestroyOnExit(Class<?> starter, boolean fileIsAlwaysCreated) throws Exception {
     File file = WriterLoop.getFile();
     if (file.exists())
       FileUtils.forceDelete(file);
     new ProcessExecutor("java", "-cp", SystemUtils.JAVA_CLASS_PATH, starter.getName()).redirectOutputAsInfo().execute();
     // After WriterLoopStarter has finished we expect that WriterLoop is also finished - no-one is updating the file
-    checkFileStaysTheSame(file);
-    FileUtils.forceDelete(file);
+    if (fileIsAlwaysCreated || file.exists()) {
+      checkFileStaysTheSame(file);
+      FileUtils.forceDelete(file);
+    }
   }
 
   private static void checkFileStaysTheSame(File file) throws InterruptedException {
