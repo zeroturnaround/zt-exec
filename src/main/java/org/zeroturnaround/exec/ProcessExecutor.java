@@ -83,6 +83,8 @@ public class ProcessExecutor {
 
   public static final Integer[] DEFAULT_EXIT_VALUES = null;
 
+  private static final Integer NORMAL_EXIT_VALUE = 0;
+
   public static final boolean DEFAULT_REDIRECT_ERROR_STREAM = true;
 
   /**
@@ -232,6 +234,15 @@ public class ProcessExecutor {
    */
   public ProcessExecutor exitValueAny() {
     return exitValues((Integer[]) null);
+  }
+
+  /**
+   * Allows only <code>0</code> as the exit value for the process being executed.
+   *
+   * @return This process executor.
+   */
+  public ProcessExecutor exitValueNormal() {
+    return exitValues(NORMAL_EXIT_VALUE);
   }
 
   /**
