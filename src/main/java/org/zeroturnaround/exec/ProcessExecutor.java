@@ -30,6 +30,7 @@ import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
@@ -757,7 +758,16 @@ public class ProcessExecutor {
     }
     else {
       // Fork another thread to invoke Process.waitFor()
-      ExecutorService service = Executors.newSingleThreadScheduledExecutor();
+      // Use daemon thread as we don't want to postpone the shutdown
+      // If #destroyOnExit() is used we wait for the process to be destroyed anyway
+      final String name = "WaitForProcess-" + task.getProcess().toString();
+      ExecutorService service = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+        public Thread newThread(Runnable r) {
+          Thread t = new Thread(r, name);
+          t.setDaemon(true);
+          return t;
+        }
+      });
       try {
         result = service.submit(task).get(timeout, timeoutUnit);
       }
