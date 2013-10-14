@@ -12,7 +12,7 @@ the user gets the functionality from both **java.lang.ProcessBuilder** and [Apac
 
 ### Installation
 
-The project artifacts are available in [Maven Central Repository](http://search.maven.org/#browse%7C895841167).
+The project artifacts are available in [Maven Central Repository](http://search.maven.org/#browse%7C1982316413).
 
 To include it in your maven project then you have to specify the dependency.
 
@@ -21,7 +21,7 @@ To include it in your maven project then you have to specify the dependency.
 <dependency>
     <groupId>org.zeroturnaround</groupId>
     <artifactId>zt-exec</artifactId>
-    <version>1.4</version>
+    <version>1.5</version>
 </dependency>
 ...
 ```
