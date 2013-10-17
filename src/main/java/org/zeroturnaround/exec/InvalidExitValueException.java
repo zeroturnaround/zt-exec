@@ -36,7 +36,7 @@ public class InvalidExitValueException extends RuntimeException {
   private final ProcessResult result;
 
   /**
-   * @param exitValue The exit value
+   * @param result result of execution (contains also the exit value)
    */
   public InvalidExitValueException(ProcessResult result, Collection<Integer> allowedExitValues) {
     super("Unexpected exit value: " + result.exitValue() + ", allowed exit values: " + allowedExitValues);

@@ -51,7 +51,7 @@ public class ProcessResult {
 
   /**
    * @return binary output of the finished process.
-   * You have to invoke {@link ProcessExecutor#readOutput()} to set the process output to be read.
+   * You have to invoke {@link ProcessExecutor#readOutput(boolean)} to set the process output to be read.
    * 
    * @throws IllegalStateException if the output was not read.
    */
@@ -63,7 +63,7 @@ public class ProcessResult {
 
   /**
    * @return output of the finished process converted to a String using platform's default encoding.
-   * You have to invoke {@link ProcessExecutor#readOutput()} to set the process output to be read.
+   * You have to invoke {@link ProcessExecutor#readOutput(boolean)} to set the process output to be read.
    *
    * @throws IllegalStateException if the output was not read.
    */
@@ -73,7 +73,7 @@ public class ProcessResult {
 
   /**
    * @return output of the finished process converted to UTF-8 String.
-   * You have to invoke {@link ProcessExecutor#readOutput()} to set the process output to be read.
+   * You have to invoke {@link ProcessExecutor#readOutput(boolean)} to set the process output to be read.
    * 
    * @throws IllegalStateException if the output was not read.
    */
@@ -83,7 +83,7 @@ public class ProcessResult {
 
   /**
    * @return output of the finished process converted to a String.
-   * You have to invoke {@link ProcessExecutor#readOutput()} to set the process output to be read.
+   * You have to invoke {@link ProcessExecutor#readOutput(boolean)} to set the process output to be read.
    * 
    * @param charset The name of a supported char set.
    * @throws IllegalStateException if the output was not read or the char set was not supported.
