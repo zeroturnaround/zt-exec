@@ -1,105 +1,105 @@
 <!-- Copyright (C) 2013 ZeroTurnaround <support@zeroturnaround.com> Contains 
-	fragments of code from Apache Commons Exec, rights owned by Apache Software 
-	Foundation (ASF). Licensed under the Apache License, Version 2.0 (the "License"); 
-	you may not use this file except in compliance with the License. You may 
-	obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
-	Unless required by applicable law or agreed to in writing, software distributed 
-	under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
-	OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
-	the specific language governing permissions and limitations under the License. -->
+  fragments of code from Apache Commons Exec, rights owned by Apache Software 
+  Foundation (ASF). Licensed under the Apache License, Version 2.0 (the "License"); 
+  you may not use this file except in compliance with the License. You may 
+  obtain a copy of the License at http://www.apache.org/licenses/LICENSE-2.0 
+  Unless required by applicable law or agreed to in writing, software distributed 
+  under the License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES 
+  OR CONDITIONS OF ANY KIND, either express or implied. See the License for 
+  the specific language governing permissions and limitations under the License. -->
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>org.zeroturnaround</groupId>
-	<artifactId>zt-exec</artifactId>
-	<packaging>jar</packaging>
-	<name>ZT Process Executor</name>
-	<version>1.6-SNAPSHOT</version>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.zeroturnaround</groupId>
+  <artifactId>zt-exec</artifactId>
+  <packaging>jar</packaging>
+  <name>ZT Process Executor</name>
+  <version>1.6-SNAPSHOT</version>
 
-	<scm>
-		<connection>scm:git:git@github.com:zeroturnaround/zt-exec.git</connection>
-		<url>scm:git:git@github.com:zeroturnaround/zt-exec.git</url>
-		<developerConnection>scm:git:git@github.com:zeroturnaround/zt-exec.git</developerConnection>
-	</scm>
+  <scm>
+    <connection>scm:git:git@github.com:zeroturnaround/zt-exec.git</connection>
+    <url>scm:git:git@github.com:zeroturnaround/zt-exec.git</url>
+    <developerConnection>scm:git:git@github.com:zeroturnaround/zt-exec.git</developerConnection>
+  </scm>
 
-	<distributionManagement>
-		<repository>
-			<id>sonatype-nexus-staging</id>
-			<name>Sonatype OSS Staging</name>
-			<url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
-			<layout>default</layout>
-		</repository>
-		<snapshotRepository>
-			<id>sonatype-nexus-snapshots</id>
-			<name>Sonatype OSS Snapshots</name>
-			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
-			<layout>default</layout>
-		</snapshotRepository>
-	</distributionManagement>
+  <distributionManagement>
+    <repository>
+      <id>sonatype-nexus-staging</id>
+      <name>Sonatype OSS Staging</name>
+      <url>https://oss.sonatype.org/service/local/staging/deploy/maven2</url>
+      <layout>default</layout>
+    </repository>
+    <snapshotRepository>
+      <id>sonatype-nexus-snapshots</id>
+      <name>Sonatype OSS Snapshots</name>
+      <url>https://oss.sonatype.org/content/repositories/snapshots</url>
+      <layout>default</layout>
+    </snapshotRepository>
+  </distributionManagement>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-	</properties>
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+  </properties>
 
-	<dependencies>
-		<dependency>
-			<groupId>commons-io</groupId>
-			<artifactId>commons-io</artifactId>
-			<version>1.4</version>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-api</artifactId>
-			<version>1.7.2</version>
-		</dependency>
+  <dependencies>
+    <dependency>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.7.2</version>
+    </dependency>
 
-		<dependency>
-			<groupId>junit</groupId>
-			<artifactId>junit</artifactId>
-			<version>4.11</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-log4j12</artifactId>
-			<version>1.6.3</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>log4j</groupId>
-			<artifactId>log4j</artifactId>
-			<version>1.2.16</version>
-			<scope>test</scope>
-		</dependency>
-		<dependency>
-			<groupId>commons-lang</groupId>
-			<artifactId>commons-lang</artifactId>
-			<version>2.6</version>
-			<scope>test</scope>
-		</dependency>
-	</dependencies>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-log4j12</artifactId>
+      <version>1.6.3</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.16</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.6</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
 
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>1.5</source>
-					<target>1.5</target>
-				</configuration>
-			</plugin>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-jar-plugin</artifactId>
-				<version>2.3.1</version>
-				<configuration>
-					<archive>
-						<addMavenDescriptor>false</addMavenDescriptor>
-					</archive>
-				</configuration>
-			</plugin>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.3.2</version>
+        <configuration>
+          <source>1.5</source>
+          <target>1.5</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <version>2.3.1</version>
+        <configuration>
+          <archive>
+            <addMavenDescriptor>false</addMavenDescriptor>
+          </archive>
+        </configuration>
+      </plugin>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-source-plugin</artifactId>
@@ -126,8 +126,8 @@
           </execution>
         </executions>
       </plugin>
-		</plugins>
-	</build>
+    </plugins>
+  </build>
   <profiles>
     <profile>
       <id>release-sign-artifacts</id>
@@ -167,37 +167,37 @@
     </profile>
   </profiles>
 
-	<organization>
-		<name>ZeroTurnaround</name>
-		<url>http://zeroturnaround.com/</url>
-	</organization>
-	<url>https://github.com/zeroturnaround/zt-exec</url>
-	<description>A lightweight library to execute external processes from Java.</description>
+  <organization>
+    <name>ZeroTurnaround</name>
+    <url>http://zeroturnaround.com/</url>
+  </organization>
+  <url>https://github.com/zeroturnaround/zt-exec</url>
+  <description>A lightweight library to execute external processes from Java.</description>
 
-	<developers>
-		<developer>
-			<id>rein</id>
-			<name>Rein</name>
-			<email>rein@zeroturnaround.com</email>
-			<url>http://www.linkedin.com/in/reinra</url>
-			<organization>ZeroTurnaround</organization>
-			<organizationUrl>http://zeroturnaround.com</organizationUrl>
-		</developer>
-		<developer>
-			<id>toomasr</id>
-			<name>Toomas</name>
-			<email>toomas@zeroturnaround.com</email>
-			<url>http://www.linkedin.com/in/toomasr</url>
-			<organization>ZeroTurnaround</organization>
-			<organizationUrl>http://zeroturnaround.com</organizationUrl>
-		</developer>
-	</developers>
+  <developers>
+    <developer>
+      <id>rein</id>
+      <name>Rein</name>
+      <email>rein@zeroturnaround.com</email>
+      <url>http://www.linkedin.com/in/reinra</url>
+      <organization>ZeroTurnaround</organization>
+      <organizationUrl>http://zeroturnaround.com</organizationUrl>
+    </developer>
+    <developer>
+      <id>toomasr</id>
+      <name>Toomas</name>
+      <email>toomas@zeroturnaround.com</email>
+      <url>http://www.linkedin.com/in/toomasr</url>
+      <organization>ZeroTurnaround</organization>
+      <organizationUrl>http://zeroturnaround.com</organizationUrl>
+    </developer>
+  </developers>
 
-	<licenses>
-		<license>
-			<name>The Apache Software License, Version 2.0</name>
-			<url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
-			<comments>A business-friendly OSS license</comments>
-		</license>
-	</licenses>
+  <licenses>
+    <license>
+      <name>The Apache Software License, Version 2.0</name>
+      <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+      <comments>A business-friendly OSS license</comments>
+    </license>
+  </licenses>
 </project>
