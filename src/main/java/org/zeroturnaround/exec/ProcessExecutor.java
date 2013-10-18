@@ -603,13 +603,29 @@ public class ProcessExecutor {
   }
 
   /**
+   * Adds a process destroyer to be notified when the process starts and stops.
+   * @param destroyer helper for destroying all processes on certain event such as VM exit (not <code>null</code>).
+   *
+   * @return This process executor.
+   */
+  public ProcessExecutor addDestroyer(ProcessDestroyer destroyer) {
+    return addListener(new DestroyerListenerAdapter(destroyer));
+  }
+
+  /**
    * Sets the process destroyer to be notified when the process starts and stops.
+   * <p>
+   * This methods always removes any other {@link ProcessDestroyer} registered. Use {@link #addDestroyer(ProcessDestroyer)} to keep the existing ones.
+   *
    * @param destroyer helper for destroying all processes on certain event such as VM exit (maybe <code>null</code>).
    *
    * @return This process executor.
    */
   public ProcessExecutor destroyer(ProcessDestroyer destroyer) {
-    return listener(destroyer == null ? null : new DestroyerListenerAdapter(destroyer));
+    removeListeners(DestroyerListenerAdapter.class);
+    if (destroyer != null)
+      addListener(new DestroyerListenerAdapter(destroyer));
+    return this;
   }
 
   /**
@@ -656,6 +672,17 @@ public class ProcessExecutor {
    */
   public ProcessExecutor removeListener(ProcessListener listener) {
     listeners.remove(listener);
+    return this;
+  }
+
+  /**
+   * Unregister existing process event handlers of given type or its sub-types.
+   * @param listenerType process event handler type.
+   *
+   * @return This process executor.
+   */
+  public ProcessExecutor removeListeners(Class<? extends ProcessListener> listenerType) {
+    listeners.removeAll(listenerType);
     return this;
   }
 

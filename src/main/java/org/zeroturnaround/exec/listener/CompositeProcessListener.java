@@ -17,6 +17,7 @@
  */
 package org.zeroturnaround.exec.listener;
 
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
@@ -56,6 +57,18 @@ public class CompositeProcessListener extends ProcessListener implements Cloneab
    */
   public void remove(ProcessListener listener) {
     children.remove(listener);
+  }
+
+  /**
+   * Remove existing listeners of given type or its sub-types.
+   *
+   * @param type listener type.
+   */
+  public void removeAll(Class<? extends ProcessListener> type) {
+    for (Iterator<ProcessListener> it = children.iterator(); it.hasNext();) {
+      if (type.isInstance(it.next()))
+        it.remove();
+    }
   }
 
   /**
