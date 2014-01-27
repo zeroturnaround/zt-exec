@@ -20,6 +20,7 @@ package org.zeroturnaround.exec;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashSet;
@@ -304,12 +305,26 @@ public class ProcessExecutor {
 
   /**
    * Sets a stream handler for the process being executed.
+   * This will overwrite any stream redirection that was previously set to use the provided handler.
    * @return This process executor.
    */
   public ProcessExecutor streams(ExecuteStreamHandler streams) {
     validateStreams(streams, readOutput);
     this.streams = streams;
     return this;
+  }
+
+  /**
+   * Sets the input stream to redirect to the process' input stream.
+   * If this method is invoked multiples times each call overwrites the previous.
+   *
+   * @param input input stream that will be written to the process input stream (<code>null</code> means nothing will be written to the process input stream).
+   * @return This process executor.
+   */
+  public ProcessExecutor withInput(InputStream input) {
+    PumpStreamHandler pumps = pumps();
+    // Only set the input stream handler, preserve the same output and error stream handler
+    return streams(new PumpStreamHandler(pumps == null ? null : pumps.getOut(), pumps == null? null : pumps.getErr(), input));
   }
 
   /**
