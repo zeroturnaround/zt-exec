@@ -19,7 +19,7 @@ public class ProcessExecutorInputStreamTest {
 
     ProcessExecutor exec = new ProcessExecutor("java", "-cp", "target/test-classes",
         PrintInputToOutput.class.getName());
-    exec.withInput(bais).redirectOutput(baos);
+    exec.redirectInput(bais).redirectOutput(baos);
 
     exec.execute();
     Assert.assertEquals(str, baos.toString());

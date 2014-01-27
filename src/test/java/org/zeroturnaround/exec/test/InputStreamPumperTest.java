@@ -52,7 +52,7 @@ public class InputStreamPumperTest {
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
 
     ProcessExecutor exec = new ProcessExecutor("java", "-cp", "target/test-classes",
-        PrintInputToOutput.class.getName()).readOutput(true).withInput(bais);
+        PrintInputToOutput.class.getName()).readOutput(true).redirectInput(bais);
 
     String result = exec.execute().outputUTF8();
     Assert.assertEquals(str, result);
