@@ -7,3 +7,8 @@
 target/
 test.log
 .swp
+
+.idea
+*.iml
+*.ipr
+*.iws

@@ -45,4 +45,17 @@ public class InputStreamPumperTest {
     Assert.assertEquals(str, result);
   }
 
+  @Test
+  public void testPumpFromInputToOutputWithInput() throws Exception {
+    String str = "Tere Minu Uus vihik";
+    ByteArrayInputStream bais = new ByteArrayInputStream(str.getBytes());
+    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+
+    ProcessExecutor exec = new ProcessExecutor("java", "-cp", "target/test-classes",
+        PrintInputToOutput.class.getName()).readOutput(true).withInput(bais);
+
+    String result = exec.execute().outputUTF8();
+    Assert.assertEquals(str, result);
+  }
+
 }
