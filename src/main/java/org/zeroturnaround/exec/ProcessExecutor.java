@@ -316,15 +316,15 @@ public class ProcessExecutor {
 
   /**
    * Sets the input stream to redirect to the process' input stream.
-   * If this method is invoked multiples times each call overwrites the previous.
+   * If this method is invoked multiple times each call overwrites the previous.
    *
    * @param input input stream that will be written to the process input stream (<code>null</code> means nothing will be written to the process input stream).
    * @return This process executor.
    */
-  public ProcessExecutor withInput(InputStream input) {
+  public ProcessExecutor redirectInput(InputStream input) {
     PumpStreamHandler pumps = pumps();
     // Only set the input stream handler, preserve the same output and error stream handler
-    return streams(new PumpStreamHandler(pumps == null ? null : pumps.getOut(), pumps == null? null : pumps.getErr(), input));
+    return streams(new PumpStreamHandler(pumps == null ? null : pumps.getOut(), pumps == null ? null : pumps.getErr(), input));
   }
 
   /**
