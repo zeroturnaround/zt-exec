@@ -50,7 +50,7 @@ class WaitForProcess implements Callable<ProcessResult> {
   private final ExecuteStreamHandler streams;
 
   /**
-   * Buffer where the process output is redirected to or <code>null</code> if it's not used. 
+   * Buffer where the process output is redirected to or <code>null</code> if it's not used.
    */
   private final ByteArrayOutputStream out;
 
@@ -93,7 +93,7 @@ class WaitForProcess implements Callable<ProcessResult> {
           streams.stop();
         closeStreams(process);
       }
-      byte[] output = out == null ? null : out.toByteArray();
+      ProcessOutput output = out == null ? null : new ProcessOutput(out.toByteArray());
       ProcessResult result = new ProcessResult(exit, output);
       checkExit(result);
       return result;
@@ -114,7 +114,7 @@ class WaitForProcess implements Callable<ProcessResult> {
   }
 
   /**
-   * Close the streams belonging to the given Process. 
+   * Close the streams belonging to the given Process.
    */
   private void closeStreams(final Process process) throws IOException {
     IOException caught = null;

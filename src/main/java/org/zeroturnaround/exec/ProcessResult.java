@@ -17,8 +17,6 @@
  */
 package org.zeroturnaround.exec;
 
-import java.io.UnsupportedEncodingException;
-
 /**
  * Exit value and output of a finished process.
  *
@@ -35,9 +33,9 @@ public class ProcessResult {
   /**
    * Process output or <code>null</code> if it wasn't read.
    */
-  private final byte[] output;
+  private final ProcessOutput output;
 
-  public ProcessResult(int exitCode, byte[] output) {
+  public ProcessResult(int exitCode, ProcessOutput output) {
     this.exitValue = exitCode;
     this.output = output;
   }
@@ -50,15 +48,25 @@ public class ProcessResult {
   }
 
   /**
+   * @return output of the finished process.
+   * You have to invoke {@link ProcessExecutor#readOutput(boolean)} to set the process output to be read.
+   *
+   * @throws IllegalStateException if the output was not read.
+   */
+  public ProcessOutput getOutput() {
+    if (output == null)
+      throw new IllegalStateException("Process output was not read. To enable output reading please call ProcessExecutor.readOutput(true) before starting the process.");
+    return output;
+  }
+
+  /**
    * @return binary output of the finished process.
    * You have to invoke {@link ProcessExecutor#readOutput(boolean)} to set the process output to be read.
    *
    * @throws IllegalStateException if the output was not read.
    */
   public byte[] output() {
-    if (output == null)
-      throw new IllegalStateException("Process output was not read. To enable output reading please call ProcessExecutor.readOutput(true) before starting the process.");
-    return output;
+    return getOutput().getBytes();
   }
 
   /**
@@ -68,7 +76,7 @@ public class ProcessResult {
    * @throws IllegalStateException if the output was not read.
    */
   public String outputString() {
-    return new String(output());
+    return getOutput().getString();
   }
 
   /**
@@ -78,7 +86,7 @@ public class ProcessResult {
    * @throws IllegalStateException if the output was not read.
    */
   public String outputUTF8() {
-    return outputString("UTF-8");
+    return getOutput().getUTF8();
   }
 
   /**
@@ -89,12 +97,7 @@ public class ProcessResult {
    * @throws IllegalStateException if the output was not read or the char set was not supported.
    */
   public String outputString(String charset) {
-    try {
-      return new String(output(), charset);
-    }
-    catch (UnsupportedEncodingException e) {
-      throw new IllegalStateException(e.getMessage());
-    }
+    return getOutput().getString(charset);
   }
 
 }
