@@ -39,22 +39,38 @@ public class InvalidExitValueException extends RuntimeException {
    * @param result result of execution (contains also the exit value)
    */
   public InvalidExitValueException(ProcessResult result, Collection<Integer> allowedExitValues) {
-    super("Unexpected exit value: " + result.exitValue() + ", allowed exit values: " + allowedExitValues);
+    super("Unexpected exit value: " + result.getExitValue() + ", allowed exit values: " + allowedExitValues);
     this.result = result;
   }
 
   /**
    * @return actual process result.
    */
-  public ProcessResult result() {
+  public ProcessResult getResult() {
     return result;
   }
 
   /**
    * @return the exit value of the finished process.
    */
+  public int getExitValue() {
+    return result.getExitValue();
+  }
+
+  /**
+   * @return actual process result.
+   * @deprecated use {@link #getResult()}
+   */
+  public ProcessResult result() {
+    return getResult();
+  }
+
+  /**
+   * @return the exit value of the finished process.
+   * @deprecated use {@link #getExitValue()}
+   */
   public int exitValue() {
-    return result.exitValue();
+    return getExitValue();
   }
 
 }

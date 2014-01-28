@@ -43,19 +43,19 @@ public class ProcessExecutorMainTest {
 
   @Test
   public void testJavaVersion() throws Exception {
-    int exit = new ProcessExecutor().command("java", "-version").execute().exitValue();
+    int exit = new ProcessExecutor().command("java", "-version").execute().getExitValue();
     Assert.assertEquals(0, exit);
   }
 
   @Test
   public void testJavaVersionCommandSplit() throws Exception {
-    int exit = new ProcessExecutor().commandSplit("java -version").execute().exitValue();
+    int exit = new ProcessExecutor().commandSplit("java -version").execute().getExitValue();
     Assert.assertEquals(0, exit);
   }
 
   @Test
   public void testJavaVersionFuture() throws Exception {
-    int exit = new ProcessExecutor().command("java", "-version").start().future().get().exitValue();
+    int exit = new ProcessExecutor().command("java", "-version").start().future().get().getExitValue();
     Assert.assertEquals(0, exit);
   }
 

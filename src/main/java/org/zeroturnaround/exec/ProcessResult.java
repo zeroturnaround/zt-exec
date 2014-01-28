@@ -43,8 +43,16 @@ public class ProcessResult {
   /**
    * @return the exit value of the finished process.
    */
-  public int exitValue() {
+  public int getExitValue() {
     return exitValue;
+  }
+
+  /**
+   * @return the exit value of the finished process.
+   * @deprecated use {@link #getExitValue()}
+   */
+  public int exitValue() {
+    return getExitValue();
   }
 
   /**
