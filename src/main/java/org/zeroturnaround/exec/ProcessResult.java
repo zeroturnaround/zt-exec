@@ -56,6 +56,13 @@ public class ProcessResult {
   }
 
   /**
+   * @return <code>true</code> if the process output was read.
+   */
+  public boolean hasOutput() {
+    return output != null;
+  }
+
+  /**
    * @return output of the finished process.
    * You have to invoke {@link ProcessExecutor#readOutput(boolean)} to set the process output to be read.
    *

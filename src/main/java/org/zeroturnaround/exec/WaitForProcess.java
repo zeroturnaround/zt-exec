@@ -37,6 +37,11 @@ class WaitForProcess implements Callable<ProcessResult> {
 
   private static final Logger log = LoggerFactory.getLogger(WaitForProcess.class);
 
+  /**
+   * In case {@link InvalidExitValueException} is thrown and we have read the process output we include the output up to this length in the error message.
+   */
+  private static final int MAX_OUTPUT_SIZE_IN_ERROR_MESSAGE = 5000;
+
   private final Process process;
 
   /**
@@ -110,6 +115,11 @@ class WaitForProcess implements Callable<ProcessResult> {
   private void checkExit(ProcessResult result) {
     if (allowedExitValues != null && !allowedExitValues.contains(result.getExitValue())) {
       String message = "Unexpected exit value: " + result.getExitValue() + ", allowed exit values: " + allowedExitValues;
+      if (result.hasOutput()) {
+        String out = result.getOutput().getString();
+        if (out.length() <= MAX_OUTPUT_SIZE_IN_ERROR_MESSAGE)
+          message += ", output was:\n" + out.trim();
+      }
       throw new InvalidExitValueException(message, result);
     }
   }
