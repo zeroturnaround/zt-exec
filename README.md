@@ -61,7 +61,7 @@ new ProcessExecutor().command("java", "-version").execute();
 
 ```java
 int exit = new ProcessExecutor().command("java", "-version")
-                  .exitValueAny().execute().exitValue();
+                  .exitValueAny().execute().getExitValue();
 ```
 
 <hr/>
@@ -180,7 +180,7 @@ try {
         .exitValues(3).execute();
 }
 catch (InvalidExitValueException e) {
-  System.out.println("Process exited with " + e.exitValue());
+  System.out.println("Process exited with " + e.getExitValue());
 }
 ```
 
@@ -199,7 +199,7 @@ try {
   success = true;
 }
 catch (InvalidExitValueException e) {
-  System.out.println("Process exited with " + e.exitValue());
+  System.out.println("Process exited with " + e.getExitValue());
   output = e.result().outputUTF8();
 }
 ```
