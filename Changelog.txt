@@ -1,0 +1,11 @@
+********************************************
+  ZT Exec Changelog
+********************************************
+
+1.6
+* Improved Slf4j logging support
+* Added ProcessExecutor.redirectInput()
+* Improved adding/removing destroyers and listeners
+* InvalidExitValueException now includes process output if it was read. 
+* Added get-prefixes to some methods (old ones are deprecated)
+
