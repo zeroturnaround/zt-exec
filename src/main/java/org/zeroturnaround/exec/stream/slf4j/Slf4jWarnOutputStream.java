@@ -18,19 +18,16 @@
 package org.zeroturnaround.exec.stream.slf4j;
 
 import org.slf4j.Logger;
-import org.zeroturnaround.exec.stream.LogOutputStream;
 
 /**
  * Output stream that writes <code>warn</code> level messages to a given {@link Logger}.
  *
  * @author Rein Raudjärv
  */
-public class Slf4jWarnOutputStream extends LogOutputStream {
-
-  private final Logger log;
+public class Slf4jWarnOutputStream extends Slf4jOutputStream {
 
   public Slf4jWarnOutputStream(Logger logger) {
-    this.log = logger;
+    super(logger);
   }
 
   @Override

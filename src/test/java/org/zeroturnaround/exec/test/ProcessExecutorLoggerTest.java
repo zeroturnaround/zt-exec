@@ -24,6 +24,7 @@ import org.junit.Test;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.stream.PumpStreamHandler;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jInfoOutputStream;
+import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 
 public class ProcessExecutorLoggerTest {
@@ -32,7 +33,7 @@ public class ProcessExecutorLoggerTest {
   public void testFullName() throws Exception {
     String fullName = "my.full.Logger";
     ProcessExecutor executor = new ProcessExecutor();
-    executor.redirectOutputAsInfo(fullName);
+    executor.redirectOutput(Slf4jStream.of(fullName).asInfo());
     PumpStreamHandler pumps = executor.pumps();
     OutputStream out = pumps.getOut();
     Assert.assertTrue("Slf4jInfoOutputStream expected", out instanceof Slf4jInfoOutputStream);
@@ -44,7 +45,7 @@ public class ProcessExecutorLoggerTest {
     String shortName = "MyLogger";
     String fullName = getClass().getName() + "." + shortName;
     ProcessExecutor executor = new ProcessExecutor();
-    executor.redirectOutputAsInfo(shortName);
+    executor.redirectOutput(Slf4jStream.of(shortName).asInfo());
     PumpStreamHandler pumps = executor.pumps();
     OutputStream out = pumps.getOut();
     Assert.assertTrue("Slf4jInfoOutputStream expected", out instanceof Slf4jInfoOutputStream);
@@ -55,7 +56,7 @@ public class ProcessExecutorLoggerTest {
   public void testMyClassName() throws Exception {
     String fullName = getClass().getName();
     ProcessExecutor executor = new ProcessExecutor();
-    executor.redirectOutputAsInfo();
+    executor.redirectOutput(Slf4jStream.ofCaller().asInfo());
     PumpStreamHandler pumps = executor.pumps();
     OutputStream out = pumps.getOut();
     Assert.assertTrue("Slf4jInfoOutputStream expected", out instanceof Slf4jInfoOutputStream);
