@@ -26,6 +26,14 @@ public class Slf4jStream {
   }
 
   /**
+   * @param klass class which is used to get the logger's name.
+   * @return Slf4jStream with a logger named after the given class.
+   */
+  public static Slf4jStream of(Class<?> klass) {
+    return of(LoggerFactory.getLogger(klass));
+  }
+
+  /**
    * @param name logger's name (full or short).
    *    In case of short name (no dots) the given name is prefixed by caller's class name and a dot.
    * @return Slf4jStream with the given logger.

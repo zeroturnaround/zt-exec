@@ -80,7 +80,7 @@ String output = new ProcessExecutor().command("java", "-version")
 
 ```java
 new ProcessExecutor().command("java", "-version")
-      .redirectOutputAsInfo(LoggerFactory.getLogger(getClass().getName() + ".MyProcess")).execute();
+      .redirectOutput(Slf4jStream.of(LoggerFactory.getLogger(getClass().getName() + ".MyProcess")).asInfo()).execute();
 ```
 
 <hr/>
@@ -89,7 +89,7 @@ new ProcessExecutor().command("java", "-version")
 
 ```java
 new ProcessExecutor().command("java", "-version")
-      .redirectOutputAsInfo("MyProcess").execute();
+      .redirectOutput(Slf4jStream.of("MyProcess").asInfo()).execute();
 ```
 
 <hr/>
@@ -98,7 +98,7 @@ new ProcessExecutor().command("java", "-version")
 
 ```java
 new ProcessExecutor().command("java", "-version")
-      .redirectOutputAsInfo().execute();
+      .redirectOutput(Slf4jStream.ofCaller().asInfo()).execute();
 ```
 
 <hr/>
@@ -108,7 +108,7 @@ new ProcessExecutor().command("java", "-version")
 
 ```java
 String output = new ProcessExecutor().command("java", "-version")
-        .redirectOutputAsInfo(LoggerFactory.getLogger(getClass()))
+        .redirectOutput(Slf4jStream.of(getClass()).asInfo()).execute();
         .readOutput(true).execute().outputUTF8();
 ```
 
@@ -119,7 +119,7 @@ String output = new ProcessExecutor().command("java", "-version")
 
 ```java
 String output = new ProcessExecutor().command("java", "-version")
-      .redirectErrorAsInfo(LoggerFactory.getLogger(getClass()))
+      .redirectError(Slf4jStream.of(getClass()).asInfo()).execute();
       .readOutput(true).execute()
       .outputUTF8();
 ```
