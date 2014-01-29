@@ -17,8 +17,6 @@
  */
 package org.zeroturnaround.exec;
 
-import java.util.Collection;
-
 /**
  * Process finished with a forbidden exit value.
  *
@@ -38,8 +36,8 @@ public class InvalidExitValueException extends RuntimeException {
   /**
    * @param result result of execution (contains also the exit value)
    */
-  public InvalidExitValueException(ProcessResult result, Collection<Integer> allowedExitValues) {
-    super("Unexpected exit value: " + result.getExitValue() + ", allowed exit values: " + allowedExitValues);
+  public InvalidExitValueException(String message, ProcessResult result) {
+    super(message);
     this.result = result;
   }
 

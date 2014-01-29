@@ -109,7 +109,8 @@ class WaitForProcess implements Callable<ProcessResult> {
    */
   private void checkExit(ProcessResult result) {
     if (allowedExitValues != null && !allowedExitValues.contains(result.getExitValue())) {
-      throw new InvalidExitValueException(result, allowedExitValues);
+      String message = "Unexpected exit value: " + result.getExitValue() + ", allowed exit values: " + allowedExitValues;
+      throw new InvalidExitValueException(message, result);
     }
   }
 
