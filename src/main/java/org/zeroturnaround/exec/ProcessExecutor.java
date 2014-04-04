@@ -219,7 +219,7 @@ public class ProcessExecutor {
    *
    * @param env environment variables added to the process being executed.
    * @return This process executor.
-   * 
+   *
    * @since 1.7
    */
   public ProcessExecutor environment(String name, String value) {
@@ -749,6 +749,19 @@ public class ProcessExecutor {
    */
   public ProcessResult execute() throws IOException, InterruptedException, TimeoutException, InvalidExitValueException {
     return waitFor(startInternal());
+  }
+
+  /**
+   * Executes the sub process. This method waits until the process exits.
+   * Value passed to {@link #timeout(long, TimeUnit)} is ignored (use {@link #execute()} for timeout).
+   *
+   * @return exit code of the finished process.
+   * @throws IOException an error occurred when process was started or stopped.
+   * @throws InterruptedException this thread was interrupted.
+   * @throws InvalidExitValueException if invalid exit value was returned (@see {@link #exitValues(Integer...)}).
+   */
+  public ProcessResult executeNoTimeout() throws IOException, InterruptedException, InvalidExitValueException {
+    return startInternal().call();
   }
 
   /**
