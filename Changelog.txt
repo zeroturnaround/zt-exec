@@ -2,6 +2,9 @@
   ZT Exec Changelog
 ********************************************
 
+1.7 (?)
+* Added ProcessExecutor.setMessageLogger()
+
 1.6 (30th January 2014)
 * Improved Slf4j logging support
 * Added ProcessExecutor.redirectInput()

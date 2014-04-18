@@ -120,6 +120,11 @@ public class ProcessExecutor {
    */
   private final CompositeProcessListener listeners = new CompositeProcessListener();
 
+  /**
+   * Helper for logging messages about starting and waiting for the processes.
+   */
+  private MessageLogger messageLogger = MessageLoggers.DEBUG;
+
   {
     // Run in case of any constructor
     exitValues(DEFAULT_EXIT_VALUES);
@@ -738,6 +743,20 @@ public class ProcessExecutor {
   }
 
   /**
+   * Changes how most common messages about starting and waiting for processes are actually logged.
+   * By default {@link MessageLoggers#DEBUG} is used.
+   * However if someone is executing a process every second {@link MessageLoggers#TRACE} may be used e.g.
+   *
+   * @param messageLogger message logger for certain level.
+   *
+   * @return This process executor.
+   */
+  public ProcessExecutor setMessageLogger(MessageLogger messageLogger) {
+    this.messageLogger = messageLogger;
+    return this;
+  }
+
+  /**
    * Executes the sub process. This method waits until the process exits, a timeout occurs or the caller thread gets interrupted.
    * In the latter cases the process gets destroyed as well.
    *
@@ -796,7 +815,7 @@ public class ProcessExecutor {
       throw new IllegalStateException("Command has not been set.");
     validateStreams(streams, readOutput);
 
-    log.debug("Executing {}...", builder.command());
+    messageLogger.message(log, "Executing {}...", builder.command());
     Process process;
     try {
       process = builder.start();
@@ -805,7 +824,7 @@ public class ProcessExecutor {
       log.error("Could not start process:", e);
       throw e;
     }
-    log.debug("Started {}", process);
+    messageLogger.message(log, "Started {}", process);
 
     if (readOutput) {
       PumpStreamHandler pumps = (PumpStreamHandler) streams;
@@ -832,7 +851,7 @@ public class ProcessExecutor {
       streams.start();
     }
     Set<Integer> exitValues = allowedExitValues == null ? null : new HashSet<Integer>(allowedExitValues);
-    WaitForProcess result = new WaitForProcess(process, exitValues, streams, out, listeners.clone());
+    WaitForProcess result = new WaitForProcess(process, exitValues, streams, out, listeners.clone(), messageLogger);
     // Invoke listeners - changing this executor does not affect the started process any more
     listeners.afterStart(process, this);
     return result;
@@ -874,7 +893,7 @@ public class ProcessExecutor {
         throw new IllegalStateException("Error occured while waiting for process to finish:", c);
       }
       catch (TimeoutException e) {
-        log.debug("{} is running too long", task);
+        messageLogger.message(log, "{} is running too long", task);
         throw e;
       }
       finally {

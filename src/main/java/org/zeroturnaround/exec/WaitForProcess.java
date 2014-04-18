@@ -64,12 +64,18 @@ class WaitForProcess implements Callable<ProcessResult> {
    */
   private final ProcessListener listener;
 
-  public WaitForProcess(Process process, Set<Integer> allowedExitValues, ExecuteStreamHandler streams, ByteArrayOutputStream out, ProcessListener listener) {
+  /**
+   * Helper for logging messages about starting and waiting for the processes.
+   */
+  private final MessageLogger messageLogger;
+
+  public WaitForProcess(Process process, Set<Integer> allowedExitValues, ExecuteStreamHandler streams, ByteArrayOutputStream out, ProcessListener listener, MessageLogger messageLogger) {
     this.process = process;
     this.allowedExitValues = allowedExitValues;
     this.streams = streams;
     this.out = out;
     this.listener = listener;
+    this.messageLogger = messageLogger;
   }
 
   /**
@@ -86,11 +92,11 @@ class WaitForProcess implements Callable<ProcessResult> {
       try {
         exit = process.waitFor();
         finished = true;
-        log.debug("{} stopped with exit code {}", this, exit);
+        messageLogger.message(log, "{} stopped with exit code {}", this, exit);
       }
       finally {
         if (!finished) {
-          log.debug("Stopping {}...", this);
+          messageLogger.message(log, "Stopping {}...", this);
           process.destroy();
         }
 
