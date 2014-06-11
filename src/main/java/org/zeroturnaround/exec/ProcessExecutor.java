@@ -222,7 +222,8 @@ public class ProcessExecutor {
   /**
    * Adds a single additional environment variable for the process being executed.
    *
-   * @param env environment variables added to the process being executed.
+   * @param name name of the environment variable added to the process being executed.
+   * @param value value of the environment variable added to the process being executed.
    * @return This process executor.
    *
    * @since 1.7
