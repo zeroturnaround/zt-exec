@@ -189,7 +189,7 @@ public class ProcessExecutor {
    * @return  This process executor.
    */
   public ProcessExecutor commandSplit(String commandWithArgs) {
-    builder.command(commandWithArgs.split(" "));
+    builder.command(commandWithArgs.split("\\s+"));
     return this;
   }
 
