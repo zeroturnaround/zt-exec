@@ -24,8 +24,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
@@ -93,6 +95,11 @@ public class ProcessExecutor {
    * Process builder used by this executor.
    */
   private final ProcessBuilder builder = new ProcessBuilder();
+
+  /**
+   * Environment variables which are added (removed in case of <code>null</code> values) to the process being started.
+   */
+  private final Map<String, String> environment = new LinkedHashMap<String, String>();
 
   /**
    * Set of accepted exit codes or <code>null</code> if all exit codes are allowed.
@@ -215,7 +222,7 @@ public class ProcessExecutor {
    * @return This process executor.
    */
   public ProcessExecutor environment(Map<String,String> env) {
-    builder.environment().putAll(env);
+    environment.putAll(env);;
     return this;
   }
 
@@ -229,7 +236,7 @@ public class ProcessExecutor {
    * @since 1.7
    */
   public ProcessExecutor environment(String name, String value) {
-    builder.environment().put(name, value);
+    environment.put(name, value);
     return this;
   }
 
@@ -816,7 +823,8 @@ public class ProcessExecutor {
       throw new IllegalStateException("Command has not been set.");
     validateStreams(streams, readOutput);
 
-    messageLogger.message(log, "Executing {}...", builder.command());
+    applyEnvironment();
+    messageLogger.message(log, getExecutingLogMessage());
     Process process;
     try {
       process = builder.start();
@@ -835,6 +843,18 @@ public class ProcessExecutor {
     else {
       return startInternal(process, streams, null);
     }
+  }
+
+  private String getExecutingLogMessage() {
+    String result = "Executing " + builder.command();
+    if (builder.directory() != null) {
+      result += " in " + builder.directory();
+    }
+    if (!environment.isEmpty()) {
+      result += " with environment " + environment;
+    }
+    result += "...";
+    return result;
   }
 
   private WaitForProcess startInternal(Process process, ExecuteStreamHandler streams, ByteArrayOutputStream out) throws IOException {
@@ -903,6 +923,23 @@ public class ProcessExecutor {
       }
     }
     return result;
+  }
+
+  private void applyEnvironment() {
+    if (environment.isEmpty()) {
+      return; // skip
+    }
+    Map<String, String> env = builder.environment();
+    for (Entry<String, String> e : environment.entrySet()) {
+      String key = e.getKey();
+      String value = e.getValue();
+      if (value == null) {
+        env.remove(key);
+      }
+      else {
+        env.put(key, value);
+      }
+    }
   }
 
 }
