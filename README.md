@@ -21,7 +21,7 @@ To include it in your maven project then you have to specify the dependency.
 <dependency>
     <groupId>org.zeroturnaround</groupId>
     <artifactId>zt-exec</artifactId>
-    <version>1.5</version>
+    <version>1.6</version>
 </dependency>
 ...
 ```
@@ -56,7 +56,6 @@ new ProcessExecutor().command("java", "-version").execute();
 <hr/>
 
 * Returning the exit code
-* Does not complain about any exit value
 * Output is pumped to NullOutputStream
 
 ```java
