@@ -60,7 +60,7 @@ new ProcessExecutor().command("java", "-version").execute();
 
 ```java
 int exit = new ProcessExecutor().command("java", "-version")
-                  .exitValueAny().execute().getExitValue();
+                  .execute().getExitValue();
 ```
 
 <hr/>
