@@ -3,7 +3,12 @@
 ********************************************
 
 1.7 (?)
-* Added ProcessExecutor.setMessageLogger()
+* Fixed ProcessExecutor.commandSplit()
+* Added ProcessExecutor.setMessageLogger() to customize log message level
+* Added ProcessExecutor.sexecuteNoTimeout() to avoid catching TimeoutException
+* Added ProcessExecutor.environment(String, String) for convenience
+* Improved logging and error handling
+* Added get-prefixes to StartedProcess methods (old ones are deprecated)
 
 1.6 (30th January 2014)
 * Improved Slf4j logging support
