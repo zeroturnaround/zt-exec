@@ -45,9 +45,9 @@ class WaitForProcess implements Callable<ProcessResult> {
   private final Process process;
 
   /**
-   * Set of accepted exit codes or <code>null</code> if all exit codes are allowed.
+   * Set of main attributes used to start the process.
    */
-  private final Set<Integer> allowedExitValues;
+  private final ProcessAttributes attributes;
 
   /**
    * Invoke {@link ExecuteStreamHandler#stop()} when the process has stopped (skipped if <code>null</code>).
@@ -69,9 +69,9 @@ class WaitForProcess implements Callable<ProcessResult> {
    */
   private final MessageLogger messageLogger;
 
-  public WaitForProcess(Process process, Set<Integer> allowedExitValues, ExecuteStreamHandler streams, ByteArrayOutputStream out, ProcessListener listener, MessageLogger messageLogger) {
+  public WaitForProcess(Process process, ProcessAttributes attributes, ExecuteStreamHandler streams, ByteArrayOutputStream out, ProcessListener listener, MessageLogger messageLogger) {
     this.process = process;
-    this.allowedExitValues = allowedExitValues;
+    this.attributes = attributes;
     this.streams = streams;
     this.out = out;
     this.listener = listener;
@@ -119,14 +119,25 @@ class WaitForProcess implements Callable<ProcessResult> {
    * Check the process exit value.
    */
   private void checkExit(ProcessResult result) {
+    Set<Integer> allowedExitValues = attributes.getAllowedExitValues();
     if (allowedExitValues != null && !allowedExitValues.contains(result.getExitValue())) {
-      String message = "Unexpected exit value: " + result.getExitValue() + ", allowed exit values: " + allowedExitValues;
+      StringBuilder sb = new StringBuilder();
+      sb.append("Unexpected exit value: ").append(result.getExitValue());
+      sb.append(", allowed exit values: ").append(allowedExitValues);
+      sb.append(", executed command ").append(attributes.getCommand());
+      if (attributes.getDirectory() != null) {
+        sb.append(" in directory ").append(attributes.getDirectory());
+      }
+      if (!attributes.getEnvironment().isEmpty()) {
+        sb.append(" with environment ").append(attributes.getEnvironment());
+      }
       if (result.hasOutput()) {
         String out = result.getOutput().getString();
-        if (out.length() <= MAX_OUTPUT_SIZE_IN_ERROR_MESSAGE)
-          message += ", output was:\n" + out.trim();
+        if (out.length() <= MAX_OUTPUT_SIZE_IN_ERROR_MESSAGE) {
+          sb.append(", output was:\n").append(out.trim());
+        }
       }
-      throw new InvalidExitValueException(message, result);
+      throw new InvalidExitValueException(sb.toString(), result);
     }
   }
 

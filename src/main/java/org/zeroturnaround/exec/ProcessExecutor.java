@@ -22,6 +22,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.LinkedHashMap;
@@ -835,13 +836,19 @@ public class ProcessExecutor {
     }
     messageLogger.message(log, "Started {}", process);
 
+    ProcessAttributes attributes = new ProcessAttributes(
+        new ArrayList<String>(builder.command()),
+        builder.directory(),
+        new LinkedHashMap<String, String>(environment),
+        allowedExitValues == null ? null : new HashSet<Integer>(allowedExitValues));
+
     if (readOutput) {
       PumpStreamHandler pumps = (PumpStreamHandler) streams;
       ByteArrayOutputStream out = new ByteArrayOutputStream();
-      return startInternal(process, redirectOutputAlsoTo(pumps, out), out);
+      return startInternal(process, attributes, redirectOutputAlsoTo(pumps, out), out);
     }
     else {
-      return startInternal(process, streams, null);
+      return startInternal(process, attributes, streams, null);
     }
   }
 
@@ -853,11 +860,11 @@ public class ProcessExecutor {
     if (!environment.isEmpty()) {
       result += " with environment " + environment;
     }
-    result += "...";
+    result += ".";
     return result;
   }
 
-  private WaitForProcess startInternal(Process process, ExecuteStreamHandler streams, ByteArrayOutputStream out) throws IOException {
+  private WaitForProcess startInternal(Process process, ProcessAttributes attributes, ExecuteStreamHandler streams, ByteArrayOutputStream out) throws IOException {
     if (streams != null) {
       try {
         streams.setProcessInputStream(process.getOutputStream());
@@ -871,8 +878,8 @@ public class ProcessExecutor {
       }
       streams.start();
     }
-    Set<Integer> exitValues = allowedExitValues == null ? null : new HashSet<Integer>(allowedExitValues);
-    WaitForProcess result = new WaitForProcess(process, exitValues, streams, out, listeners.clone(), messageLogger);
+
+    WaitForProcess result = new WaitForProcess(process, attributes, streams, out, listeners.clone(), messageLogger);
     // Invoke listeners - changing this executor does not affect the started process any more
     listeners.afterStart(process, this);
     return result;
