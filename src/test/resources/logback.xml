@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
-    <File>test.log</File>
+    <File>target/test.log</File>
+    <prudent>true</prudent>
     <encoder>
       <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] %-5level [%logger{0}] %msg%n</pattern>
     </encoder>
