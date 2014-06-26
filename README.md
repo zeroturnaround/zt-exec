@@ -107,7 +107,7 @@ new ProcessExecutor().command("java", "-version")
 
 ```java
 String output = new ProcessExecutor().command("java", "-version")
-        .redirectOutput(Slf4jStream.of(getClass()).asInfo()).execute();
+        .redirectOutput(Slf4jStream.of(getClass()).asInfo())
         .readOutput(true).execute().outputUTF8();
 ```
 
@@ -118,9 +118,9 @@ String output = new ProcessExecutor().command("java", "-version")
 
 ```java
 String output = new ProcessExecutor().command("java", "-version")
-      .redirectError(Slf4jStream.of(getClass()).asInfo()).execute();
-      .readOutput(true).execute()
-      .outputUTF8();
+        .redirectError(Slf4jStream.of(getClass()).asInfo())
+        .readOutput(true).execute()
+        .outputUTF8();
 ```
 
 <hr/>
@@ -159,13 +159,23 @@ new ProcessExecutor().command("java", "-version").destroyOnExit().execute();
 
 <hr/>
 
-* Run process with a specific environment
+* Run process with a specific environment variable
 * Output pumped to NullOutputStream
 
 ```java
 new ProcessExecutor().command("java", "-version")
-    .environment(new HashMap<String, String>() { { put("foo", "bar"); } })
-    .execute();
+    .environment("foo", "bar").execute();
+```
+
+<hr/>
+
+* Run process with a specific environment
+* Output pumped to NullOutputStream
+
+```java
+Map<String, String> env = ...
+new ProcessExecutor().command("java", "-version")
+    .environment(env).execute();
 ```
 
 <hr/>
@@ -199,7 +209,7 @@ try {
 }
 catch (InvalidExitValueException e) {
   System.out.println("Process exited with " + e.getExitValue());
-  output = e.result().outputUTF8();
+  output = e.getResult().outputUTF8();
 }
 ```
 
@@ -211,7 +221,7 @@ catch (InvalidExitValueException e) {
 ```java
 Future<ProcessResult> future = new ProcessExecutor()
                                     .command("java", "-version")
-                                    .start();
+                                    .start().getFuture();
 // do some stuff
 future.get(60, TimeUnit.SECONDS);
 ```
@@ -225,7 +235,7 @@ future.get(60, TimeUnit.SECONDS);
 Future<ProcessResult> future = new ProcessExecutor()
                                     .command("java", "-version")
                                     .readOutput(true)
-                                    .start();
+                                    .start().getFuture();
 // do some stuff
 String output = future.get(60, TimeUnit.SECONDS).outputUTF8();
 ```
