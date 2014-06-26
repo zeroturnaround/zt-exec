@@ -55,7 +55,7 @@ public class ProcessExecutorMainTest {
 
   @Test
   public void testJavaVersionFuture() throws Exception {
-    int exit = new ProcessExecutor().command("java", "-version").start().future().get().getExitValue();
+    int exit = new ProcessExecutor().command("java", "-version").start().getFuture().get().getExitValue();
     Assert.assertEquals(0, exit);
   }
 
@@ -77,7 +77,7 @@ public class ProcessExecutorMainTest {
 
   @Test
   public void testJavaVersionOutputFuture() throws Exception {
-    ProcessResult result = new ProcessExecutor().command("java", "-version").readOutput(true).start().future().get();
+    ProcessResult result = new ProcessExecutor().command("java", "-version").readOutput(true).start().getFuture().get();
     String str = result.outputUTF8();
     Assert.assertFalse(StringUtils.isEmpty(str));
   }
@@ -99,7 +99,7 @@ public class ProcessExecutorMainTest {
   @Test
   public void testJavaVersionLogInfoAndOutputFuture() throws Exception {
     // Just expect no errors - don't check the log file itself
-    ProcessResult result = new ProcessExecutor().command("java", "-version").redirectOutputAsInfo("testJavaVersionLogInfoAndOutputFuture").readOutput(true).start().future().get();
+    ProcessResult result = new ProcessExecutor().command("java", "-version").redirectOutputAsInfo("testJavaVersionLogInfoAndOutputFuture").readOutput(true).start().getFuture().get();
     String str = result.outputUTF8();
     Assert.assertFalse(StringUtils.isEmpty(str));
   }

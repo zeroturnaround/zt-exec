@@ -44,15 +44,31 @@ public class StartedProcess {
   /**
    * @return the started process.
    */
-  public Process process() {
+  public Process getProcess() {
     return process;
   }
 
   /**
    * @return asynchronous result of the started process.
    */
-  public Future<ProcessResult> future() {
+  public Future<ProcessResult> getFuture() {
     return future;
+  }
+
+  /**
+   * @return the started process.
+   * @deprecated use {@link #getProcess()} instead.
+   */
+  public Process process() {
+    return getProcess();
+  }
+
+  /**
+   * @return asynchronous result of the started process.
+   * @deprecated use {@link #getFuture()} instead.
+   */
+  public Future<ProcessResult> future() {
+    return getFuture();
   }
 
 }
