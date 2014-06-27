@@ -4,6 +4,7 @@
 
 1.7 (?)
 * Fixed ProcessExecutor.commandSplit()
+* Added ProcessExecutor.stopper(ProcessStopper) to customize stopping in case of timeout or cancellation
 * Added ProcessExecutor.setMessageLogger() to customize log message level
 * Added ProcessExecutor.sexecuteNoTimeout() to avoid catching TimeoutException
 * Added ProcessExecutor.environment(String, String) for convenience

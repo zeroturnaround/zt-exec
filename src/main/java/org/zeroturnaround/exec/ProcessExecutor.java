@@ -47,6 +47,9 @@ import org.zeroturnaround.exec.listener.DestroyerListenerAdapter;
 import org.zeroturnaround.exec.listener.ProcessDestroyer;
 import org.zeroturnaround.exec.listener.ProcessListener;
 import org.zeroturnaround.exec.listener.ShutdownHookProcessDestroyer;
+import org.zeroturnaround.exec.stop.DestroyProcessStopper;
+import org.zeroturnaround.exec.stop.NopProcessStopper;
+import org.zeroturnaround.exec.stop.ProcessStopper;
 import org.zeroturnaround.exec.stream.CallerLoggerUtil;
 import org.zeroturnaround.exec.stream.ExecuteStreamHandler;
 import org.zeroturnaround.exec.stream.PumpStreamHandler;
@@ -64,7 +67,7 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
  *   <li>Handling process streams (copied from Commons Exec library).</li>
  *   <li>Destroying process on VM exit (copied from Commons Exec library).</li>
  *   <li>Checking process exit code.</li>
- *   <li>Setting a timeout for running the process.</li>
+ *   <li>Setting a timeout for running the process and automatically stopping it in case of timeout.</li>
  *   <li>Either waiting for the process to finish ({@link #execute()}) or returning a {@link Future} ({@link #start()}.</li>
  *   <li>Reading the process output stream into a buffer ({@link #readOutput(boolean)}, {@link ProcessResult}).</li>
  * </ul>
@@ -75,7 +78,8 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
  *   <li>Error stream is redirected to its output stream. Use {@link #redirectErrorStream(boolean)} to override it.</li>
  *   <li>Output stream is pumped to a {@link NullOutputStream}, Use {@link #streams(ExecuteStreamHandler)}, {@link #redirectOutput(OutputStream)},
  *   or any of the <code>redirectOutputAs*</code> methods.to override it.</li>
- *   <li>Any exit code is allowed. Use {@link #exitValues(Integer...)} to override it.
+ *   <li>Any exit code is allowed. Use {@link #exitValues(Integer...)} to override it.</li>
+ *   <li>In case of timeout or cancellation {@link Process#destroy()} is invoked.</li>
  * </li>
  * </p>
  *
@@ -114,6 +118,11 @@ public class ProcessExecutor {
   private TimeUnit timeoutUnit;
 
   /**
+   * Helper for stopping the process in case of timeout or cancellation.
+   */
+  private ProcessStopper stopper;
+
+  /**
    * Process stream Handler (copied from Commons Exec library). If <code>null</code> streams are not handled.
    */
   private ExecuteStreamHandler streams;
@@ -136,6 +145,7 @@ public class ProcessExecutor {
   {
     // Run in case of any constructor
     exitValues(DEFAULT_EXIT_VALUES);
+    stopper(DestroyProcessStopper.INSTANCE);
     redirectOutput(null);
     redirectError(null);
     destroyer(null);
@@ -321,6 +331,22 @@ public class ProcessExecutor {
   public ProcessExecutor timeout(long timeout, TimeUnit unit) {
     this.timeout = timeout;
     this.timeoutUnit = unit;
+    return this;
+  }
+
+  /**
+   * Sets the helper for stopping the process in case of timeout or cancellation.
+   * <p>
+   * By default {@link DestroyProcessStopper} is used which just invokes {@link Process#destroy()}.
+   *
+   * @param stopper helper for stopping the process (<code>null</code> means {@link NopProcessStopper} - process is not stopped).
+   * @return This process executor.
+   */
+  public ProcessExecutor stopper(ProcessStopper stopper) {
+    if (stopper == null) {
+      stopper = NopProcessStopper.INSTANCE;
+    }
+    this.stopper = stopper;
     return this;
   }
 
@@ -879,7 +905,7 @@ public class ProcessExecutor {
       streams.start();
     }
 
-    WaitForProcess result = new WaitForProcess(process, attributes, streams, out, listeners.clone(), messageLogger);
+    WaitForProcess result = new WaitForProcess(process, attributes, stopper, streams, out, listeners.clone(), messageLogger);
     // Invoke listeners - changing this executor does not affect the started process any more
     listeners.afterStart(process, this);
     return result;

@@ -25,6 +25,7 @@ import java.util.concurrent.Callable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.zeroturnaround.exec.listener.ProcessListener;
+import org.zeroturnaround.exec.stop.ProcessStopper;
 import org.zeroturnaround.exec.stream.ExecuteStreamHandler;
 
 
@@ -50,6 +51,11 @@ class WaitForProcess implements Callable<ProcessResult> {
   private final ProcessAttributes attributes;
 
   /**
+   * Helper for stopping the process in case of interruption.
+   */
+  private final ProcessStopper stopper;
+
+  /**
    * Invoke {@link ExecuteStreamHandler#stop()} when the process has stopped (skipped if <code>null</code>).
    */
   private final ExecuteStreamHandler streams;
@@ -69,9 +75,10 @@ class WaitForProcess implements Callable<ProcessResult> {
    */
   private final MessageLogger messageLogger;
 
-  public WaitForProcess(Process process, ProcessAttributes attributes, ExecuteStreamHandler streams, ByteArrayOutputStream out, ProcessListener listener, MessageLogger messageLogger) {
+  public WaitForProcess(Process process, ProcessAttributes attributes, ProcessStopper stopper, ExecuteStreamHandler streams, ByteArrayOutputStream out, ProcessListener listener, MessageLogger messageLogger) {
     this.process = process;
     this.attributes = attributes;
+    this.stopper = stopper;
     this.streams = streams;
     this.out = out;
     this.listener = listener;
@@ -97,7 +104,7 @@ class WaitForProcess implements Callable<ProcessResult> {
       finally {
         if (!finished) {
           messageLogger.message(log, "Stopping {}...", this);
-          process.destroy();
+          stopper.stop(process);
         }
 
         if (streams != null)
