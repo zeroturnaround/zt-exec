@@ -11,6 +11,7 @@ It's designed to be powerful but still simple to use. By using a single class **
 the user gets the functionality from both **java.lang.ProcessBuilder** and [Apache Commons Exec](http://commons.apache.org/proper/commons-exec/).
 
 ### Installation
+[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.zeroturnaround/zt-exec/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.zeroturnaround/zt-exec)
 
 The project artifacts are available in [Maven Central Repository](http://search.maven.org/#browse%7C1982316413).
 
