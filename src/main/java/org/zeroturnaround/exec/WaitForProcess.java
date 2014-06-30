@@ -107,9 +107,10 @@ class WaitForProcess implements Callable<ProcessResult> {
           stopper.stop(process);
         }
 
-        if (streams != null)
-          streams.stop();
         closeStreams(process);
+        if (streams != null) {
+          streams.stop();
+        }
       }
       ProcessOutput output = out == null ? null : new ProcessOutput(out.toByteArray());
       ProcessResult result = new ProcessResult(exit, output);
