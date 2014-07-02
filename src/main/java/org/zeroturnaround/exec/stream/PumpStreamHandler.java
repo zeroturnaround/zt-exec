@@ -14,12 +14,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * NOTICE: This file originates from the Apache Commons Exec package.
  * It has been modified to fit our needs.
- * 
- * The following is the original header of the file in Apache Commons Exec:  
- * 
+ *
+ * The following is the original header of the file in Apache Commons Exec:
+ *
  *   Licensed to the Apache Software Foundation (ASF) under one or more
  *   contributor license agreements.  See the NOTICE file distributed with
  *   this work for additional information regarding copyright ownership.
@@ -40,6 +40,7 @@ package org.zeroturnaround.exec.stream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.concurrent.TimeUnit;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,8 @@ import org.slf4j.LoggerFactory;
 public class PumpStreamHandler implements ExecuteStreamHandler {
 
   private static final Logger log = LoggerFactory.getLogger(PumpStreamHandler.class);
+
+  protected static final long JOIN_TIMEOUT_IN_SECONDS = 10;
 
   private Thread outputThread;
 
@@ -98,7 +101,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
 
   /**
    * Construct a new <CODE>PumpStreamHandler</CODE>.
-   * 
+   *
    * @param out
    *            the output <CODE>OutputStream</CODE>.
    * @param err
@@ -117,7 +120,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
   /**
    * Set the <CODE>InputStream</CODE> from which to read the standard output
    * of the process.
-   * 
+   *
    * @param is
    *            the <CODE>InputStream</CODE>.
    */
@@ -130,7 +133,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
   /**
    * Set the <CODE>InputStream</CODE> from which to read the standard error
    * of the process.
-   * 
+   *
    * @param is
    *            the <CODE>InputStream</CODE>.
    */
@@ -143,7 +146,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
   /**
    * Set the <CODE>OutputStream</CODE> by means of which input can be sent
    * to the process.
-   * 
+   *
    * @param os
    *            the <CODE>OutputStream</CODE>.
    */
@@ -153,7 +156,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
         inputThread = createSystemInPump(input, os);
       } else {
         inputThread = createPump(input, os, true);
-      }        } 
+      }        }
     else {
       try {
         os.close();
@@ -182,15 +185,29 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    * Stop pumping the streams.
    */
   public void stop() {
+    stopInput();
 
+    join(JOIN_TIMEOUT_IN_SECONDS, TimeUnit.SECONDS);
+
+    flush();
+  }
+
+  protected void stopInput() {
     if (inputStreamPumper != null) {
       inputStreamPumper.stopProcessing();
     }
+  }
+
+  protected void join(long timeout, TimeUnit unit) {
+    long finish = System.currentTimeMillis() + unit.toMillis(timeout);
 
     if (outputThread != null) {
       log.trace("Joining output thread {}...", outputThread);
       try {
-        outputThread.join();
+        long millis = finish - System.currentTimeMillis();
+        if (millis > 0) {
+          outputThread.join(millis);
+        }
         outputThread = null;
       } catch (InterruptedException e) {
         // ignore
@@ -200,7 +217,10 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
     if (errorThread != null) {
       log.trace("Joining error thread {}...", errorThread);
       try {
-        errorThread.join();
+        long millis = finish - System.currentTimeMillis();
+        if (millis > 0) {
+          errorThread.join(millis);
+        }
         errorThread = null;
       } catch (InterruptedException e) {
         // ignore
@@ -210,13 +230,18 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
     if (inputThread != null) {
       log.trace("Joining input thread {}...", inputThread);
       try {
-        inputThread.join();
+        long millis = finish - System.currentTimeMillis();
+        if (millis > 0) {
+          inputThread.join(millis);
+        }
         inputThread = null;
       } catch (InterruptedException e) {
         // ignore
       }
     }
+  }
 
+  protected void flush() {
     if (err != null && err != out) {
       log.trace("Flushing error stream {}...", err);
       try {
@@ -265,7 +290,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
 
   /**
    * Create the pump to handle process output.
-   * 
+   *
    * @param is
    *            the <CODE>InputStream</CODE>.
    * @param os
@@ -278,7 +303,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
 
   /**
    * Create the pump to handle error output.
-   * 
+   *
    * @param is
    *            the <CODE>InputStream</CODE>.
    * @param os
