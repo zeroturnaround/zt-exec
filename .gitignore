@@ -12,3 +12,5 @@ test.log
 *.iml
 *.ipr
 *.iws
+
+writeLoop.data

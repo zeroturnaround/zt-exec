@@ -933,8 +933,11 @@ public class ProcessExecutor {
           return t;
         }
       });
+      // Copy values to not conflict with further executions
+      long _timeout = timeout;
+      TimeUnit unit = timeoutUnit;
       try {
-        result = service.submit(task).get(timeout, timeoutUnit);
+        result = service.submit(task).get(_timeout, unit);
       }
       catch (ExecutionException e) {
         Throwable c = e.getCause();
@@ -948,7 +951,7 @@ public class ProcessExecutor {
       }
       catch (TimeoutException e) {
         messageLogger.message(log, "{} is running too long", task);
-        throw e;
+        throw newTimeoutException(_timeout, unit, task);
       }
       finally {
         // Interrupt the task if it's still running and release the ExecutorService's resources
@@ -956,6 +959,13 @@ public class ProcessExecutor {
       }
     }
     return result;
+  }
+
+  private TimeoutException newTimeoutException(long timeout, TimeUnit unit, WaitForProcess task) {
+    StringBuilder sb = new StringBuilder();
+    sb.append("Timeout: ").append(timeout).append(" ").append(unit.toString().toLowerCase());
+    task.addExceptionMessageSuffix(sb);
+    return new TimeoutException(sb.toString());
   }
 
   private void applyEnvironment() {

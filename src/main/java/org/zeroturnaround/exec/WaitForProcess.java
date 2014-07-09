@@ -112,7 +112,7 @@ class WaitForProcess implements Callable<ProcessResult> {
         }
         closeStreams(process);
       }
-      ProcessOutput output = out == null ? null : new ProcessOutput(out.toByteArray());
+      ProcessOutput output = getCurrentOutput();
       ProcessResult result = new ProcessResult(exit, output);
       checkExit(result);
       return result;
@@ -121,6 +121,10 @@ class WaitForProcess implements Callable<ProcessResult> {
       // Invoke listeners - regardless process finished or got cancelled
       listener.afterStop(process);
     }
+  }
+
+  private ProcessOutput getCurrentOutput() {
+    return out == null ? null : new ProcessOutput(out.toByteArray());
   }
 
   /**
@@ -132,20 +136,38 @@ class WaitForProcess implements Callable<ProcessResult> {
       StringBuilder sb = new StringBuilder();
       sb.append("Unexpected exit value: ").append(result.getExitValue());
       sb.append(", allowed exit values: ").append(allowedExitValues);
-      sb.append(", executed command ").append(attributes.getCommand());
-      if (attributes.getDirectory() != null) {
-        sb.append(" in directory ").append(attributes.getDirectory());
-      }
-      if (!attributes.getEnvironment().isEmpty()) {
-        sb.append(" with environment ").append(attributes.getEnvironment());
-      }
-      if (result.hasOutput()) {
-        String out = result.getOutput().getString();
-        if (out.length() <= MAX_OUTPUT_SIZE_IN_ERROR_MESSAGE) {
-          sb.append(", output was:\n").append(out.trim());
-        }
-      }
+      addExceptionMessageSuffix(sb, result.hasOutput() ? result.getOutput() : null);
       throw new InvalidExitValueException(sb.toString(), result);
+    }
+  }
+
+  /**
+   * Adds a suffix for an error message including:
+   * <ul>
+   *   <li>executed command</li>
+   *   <li>working directory (unless it's inherited from parent)</li>
+   *   <li>environment (unless it's the same with the parent)</li>
+   *   <li>output read so far (unless it's not read)</li>
+   * </ul>
+   * @param sb where the suffix is appended to.
+   */
+  public void addExceptionMessageSuffix(StringBuilder sb) {
+    addExceptionMessageSuffix(sb, getCurrentOutput());
+  }
+
+  private void addExceptionMessageSuffix(StringBuilder sb, ProcessOutput output) {
+    sb.append(", executed command ").append(attributes.getCommand());
+    if (attributes.getDirectory() != null) {
+      sb.append(" in directory ").append(attributes.getDirectory());
+    }
+    if (!attributes.getEnvironment().isEmpty()) {
+      sb.append(" with environment ").append(attributes.getEnvironment());
+    }
+    if (output != null) {
+      String out = output.getString();
+      if (out.length() <= MAX_OUTPUT_SIZE_IN_ERROR_MESSAGE) {
+        sb.append(", output was:\n").append(out.trim());
+      }
     }
   }
 
