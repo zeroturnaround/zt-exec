@@ -963,7 +963,16 @@ public class ProcessExecutor {
 
   private TimeoutException newTimeoutException(long timeout, TimeUnit unit, WaitForProcess task) {
     StringBuilder sb = new StringBuilder();
-    sb.append("Timeout: ").append(timeout).append(" ").append(getUnitsAsString(timeout, unit));
+    Process process = task.getProcess();
+    Integer exitValue = getExitCodeOrNull(process);
+    if (exitValue == null) {
+      sb.append("Timed out waiting for ").append(process).append(" to finish");
+    }
+    else {
+      sb.append("Timed out finishing ").append(process);
+      sb.append(", exit value: ").append(exitValue);
+    }
+    sb.append(", timeout: ").append(timeout).append(" ").append(getUnitsAsString(timeout, unit));
     task.addExceptionMessageSuffix(sb);
     return new TimeoutException(sb.toString());
   }
@@ -974,6 +983,15 @@ public class ProcessExecutor {
       result = result.substring(0, result.length() - 1);
     }
     return result;
+  }
+
+  private static Integer getExitCodeOrNull(Process process) {
+    try {
+      return process.exitValue();
+    }
+    catch (IllegalThreadStateException e) {
+      return null;
+    }
   }
 
   private void applyEnvironment() {
