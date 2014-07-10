@@ -21,6 +21,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.util.Set;
 import java.util.concurrent.Callable;
+import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,7 +40,8 @@ class WaitForProcess implements Callable<ProcessResult> {
   private static final Logger log = LoggerFactory.getLogger(WaitForProcess.class);
 
   /**
-   * In case {@link InvalidExitValueException} is thrown and we have read the process output we include the output up to this length in the error message.
+   * In case {@link InvalidExitValueException} or {@link TimeoutException} is thrown and we have read the process output
+   * we include the output up to this length in the error message. If the output is longer we truncate it.
    */
   private static final int MAX_OUTPUT_SIZE_IN_ERROR_MESSAGE = 5000;
 
@@ -164,9 +166,15 @@ class WaitForProcess implements Callable<ProcessResult> {
       sb.append(" with environment ").append(attributes.getEnvironment());
     }
     if (output != null) {
+      int length = output.getBytes().length;
       String out = output.getString();
       if (out.length() <= MAX_OUTPUT_SIZE_IN_ERROR_MESSAGE) {
-        sb.append(", output was:\n").append(out.trim());
+        sb.append(", output was ").append(length).append(" bytes:\n").append(out.trim());
+      }
+      else {
+        sb.append(", output was ").append(length).append(" bytes (truncated):\n");
+        int halfLimit = MAX_OUTPUT_SIZE_IN_ERROR_MESSAGE / 2;
+        sb.append(out.substring(0, halfLimit)).append("\n...\n").append(out.substring(out.length() - halfLimit).trim());
       }
     }
   }
