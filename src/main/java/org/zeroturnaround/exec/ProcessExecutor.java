@@ -963,9 +963,17 @@ public class ProcessExecutor {
 
   private TimeoutException newTimeoutException(long timeout, TimeUnit unit, WaitForProcess task) {
     StringBuilder sb = new StringBuilder();
-    sb.append("Timeout: ").append(timeout).append(" ").append(unit.toString().toLowerCase());
+    sb.append("Timeout: ").append(timeout).append(" ").append(getUnitsAsString(timeout, unit));
     task.addExceptionMessageSuffix(sb);
     return new TimeoutException(sb.toString());
+  }
+
+  private static String getUnitsAsString(long d, TimeUnit unit) {
+    String result = unit.toString().toLowerCase();
+    if (d == 1) {
+      result = result.substring(0, result.length() - 1);
+    }
+    return result;
   }
 
   private void applyEnvironment() {
