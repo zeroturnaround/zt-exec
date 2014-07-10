@@ -40,7 +40,7 @@ public class ProcessExecutorTimeoutTest {
       Assert.fail("TimeoutException expected.");
     }
     catch (TimeoutException e) {
-      Assert.assertThat(e.getMessage(), CoreMatchers.containsString("1 seconds"));
+      Assert.assertThat(e.getMessage(), CoreMatchers.containsString("1 second"));
       Assert.assertThat(e.getMessage(), CoreMatchers.containsString(WriterLoop.class.getName()));
     }
   }
