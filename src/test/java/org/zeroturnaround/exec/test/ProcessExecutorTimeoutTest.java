@@ -26,7 +26,6 @@ import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.zeroturnaround.exec.ProcessExecutor;
-import org.zeroturnaround.exec.test.shutdown.WriterLoop;
 
 
 public class ProcessExecutorTimeoutTest {
@@ -41,7 +40,7 @@ public class ProcessExecutorTimeoutTest {
     }
     catch (TimeoutException e) {
       Assert.assertThat(e.getMessage(), CoreMatchers.containsString("1 second"));
-      Assert.assertThat(e.getMessage(), CoreMatchers.containsString(WriterLoop.class.getName()));
+      Assert.assertThat(e.getMessage(), CoreMatchers.containsString(Loop.class.getName()));
     }
   }
 
@@ -64,7 +63,7 @@ public class ProcessExecutorTimeoutTest {
         add("java");
         add("-cp");
         add("target/test-classes");
-        add(WriterLoop.class.getName());
+        add(Loop.class.getName());
       }
     };
     return args;

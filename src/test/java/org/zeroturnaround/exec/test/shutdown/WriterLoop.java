@@ -25,7 +25,7 @@ import java.io.PrintWriter;
  * Program which regularly writes into a file.
  * By checking whether the file gets updates we know whether this program is still running or it's finished.
  */
-public class WriterLoop {
+class WriterLoop {
 
   private static final File FILE = new File("writeLoop.data");
 
