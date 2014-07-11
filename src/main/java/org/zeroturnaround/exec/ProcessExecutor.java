@@ -852,14 +852,7 @@ public class ProcessExecutor {
 
     applyEnvironment();
     messageLogger.message(log, getExecutingLogMessage());
-    Process process;
-    try {
-      process = builder.start();
-    }
-    catch (IOException e) {
-      log.error("Could not start process:", e);
-      throw e;
-    }
+    Process process = invokeStart();
     messageLogger.message(log, "Started {}", process);
 
     ProcessAttributes attributes = new ProcessAttributes(
@@ -878,8 +871,36 @@ public class ProcessExecutor {
     }
   }
 
+  private Process invokeStart() throws IOException {
+    try {
+      return builder.start();
+    }
+    catch (IOException e) {
+      log.error("Could not start process:", e);
+      if (e.getClass().equals(IOException.class)) {
+        throw new IOException(getExecutingErrorMessage(), e);
+      }
+      throw e;
+    }
+    catch (RuntimeException e) {
+      log.error("Could not start process:", e);
+      if (e.getClass().equals(IllegalArgumentException.class)) {
+        throw new IllegalArgumentException(getExecutingErrorMessage(), e);
+      }
+      throw e;
+    }
+  }
+
   private String getExecutingLogMessage() {
-    String result = "Executing " + builder.command();
+    return "Executing " + getExecutingMessageParams();
+  }
+
+  private String getExecutingErrorMessage() {
+    return "Could not execute " + getExecutingMessageParams();
+  }
+
+  private String getExecutingMessageParams() {
+    String result = "" + builder.command();
     if (builder.directory() != null) {
       result += " in " + builder.directory();
     }
