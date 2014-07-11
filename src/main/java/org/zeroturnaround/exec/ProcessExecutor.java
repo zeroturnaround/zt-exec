@@ -962,12 +962,16 @@ public class ProcessExecutor {
       }
       catch (ExecutionException e) {
         Throwable c = e.getCause();
-        if (c instanceof IOException)
+        if (c instanceof IOException) {
           throw (IOException) c;
-        if (c instanceof InterruptedException)
+        }
+        if (c instanceof InterruptedException) {
           throw (InterruptedException) c;
-        if (c instanceof InvalidExitValueException)
-          throw (InvalidExitValueException) c;
+        }
+        if (c instanceof InvalidExitValueException) {
+          InvalidExitValueException i = (InvalidExitValueException) c;
+          throw new InvalidExitValueException(i.getMessage(), i.getResult());
+        }
         throw new IllegalStateException("Error occured while waiting for process to finish:", c);
       }
       catch (TimeoutException e) {
