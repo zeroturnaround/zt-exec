@@ -77,6 +77,11 @@ class WaitForProcess implements Callable<ProcessResult> {
    */
   private final MessageLogger messageLogger;
 
+  /**
+   * Thread which executes this operation.
+   */
+  private volatile Thread workerThread;
+
   public WaitForProcess(Process process, ProcessAttributes attributes, ProcessStopper stopper, ExecuteStreamHandler streams, ByteArrayOutputStream out, ProcessListener listener, MessageLogger messageLogger) {
     this.process = process;
     this.attributes = attributes;
@@ -96,6 +101,7 @@ class WaitForProcess implements Callable<ProcessResult> {
 
   public ProcessResult call() throws IOException, InterruptedException {
     try {
+      workerThread = Thread.currentThread();
       int exit;
       boolean finished = false;
       try {
@@ -122,6 +128,7 @@ class WaitForProcess implements Callable<ProcessResult> {
     finally {
       // Invoke listeners - regardless process finished or got cancelled
       listener.afterStop(process);
+      workerThread = null;
     }
   }
 
@@ -177,6 +184,14 @@ class WaitForProcess implements Callable<ProcessResult> {
         sb.append(out.substring(0, halfLimit)).append("\n...\n").append(out.substring(out.length() - halfLimit).trim());
       }
     }
+  }
+
+  /**
+   * @return current stacktrace of the worker thread, <code>null</code> if this operation is currently not running.
+   */
+  public StackTraceElement[] getStackTrace() {
+    Thread t = workerThread;
+    return t == null ? null : t.getStackTrace();
   }
 
   /**

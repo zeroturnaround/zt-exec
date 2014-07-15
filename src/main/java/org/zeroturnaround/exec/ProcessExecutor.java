@@ -999,7 +999,16 @@ public class ProcessExecutor {
     }
     sb.append(", timeout: ").append(timeout).append(" ").append(getUnitsAsString(timeout, unit));
     task.addExceptionMessageSuffix(sb);
-    return new TimeoutException(sb.toString());
+    TimeoutException result = new TimeoutException(sb.toString());
+    if (exitValue != null) {
+      StackTraceElement[] stackTrace = task.getStackTrace();
+      if (stackTrace != null) {
+        Exception cause = new Exception("Stack dump of worker thread.");
+        cause.setStackTrace(stackTrace);
+        result.initCause(cause);
+      }
+    }
+    return result;
   }
 
   private static String getUnitsAsString(long d, TimeUnit unit) {
