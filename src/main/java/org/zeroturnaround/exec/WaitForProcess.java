@@ -201,18 +201,18 @@ class WaitForProcess implements Callable<ProcessResult> {
     IOException caught = null;
 
     try {
-      process.getInputStream().close();
-    }
-    catch (IOException e) {
-      log.error("Failed to close process input stream:", e);
-      caught = e;
-    }
-
-    try {
       process.getOutputStream().close();
     }
     catch (IOException e) {
       log.error("Failed to close process output stream:", e);
+      caught = e;
+    }
+
+    try {
+      process.getInputStream().close();
+    }
+    catch (IOException e) {
+      log.error("Failed to close process input stream:", e);
       caught = e;
     }
 
