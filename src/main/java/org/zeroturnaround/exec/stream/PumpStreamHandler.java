@@ -14,12 +14,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * NOTICE: This file originates from the Apache Commons Exec package.
  * It has been modified to fit our needs.
- * 
- * The following is the original header of the file in Apache Commons Exec:  
- * 
+ *
+ * The following is the original header of the file in Apache Commons Exec:
+ *
  *   Licensed to the Apache Software Foundation (ASF) under one or more
  *   contributor license agreements.  See the NOTICE file distributed with
  *   this work for additional information regarding copyright ownership.
@@ -98,7 +98,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
 
   /**
    * Construct a new <CODE>PumpStreamHandler</CODE>.
-   * 
+   *
    * @param out
    *            the output <CODE>OutputStream</CODE>.
    * @param err
@@ -117,7 +117,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
   /**
    * Set the <CODE>InputStream</CODE> from which to read the standard output
    * of the process.
-   * 
+   *
    * @param is
    *            the <CODE>InputStream</CODE>.
    */
@@ -130,7 +130,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
   /**
    * Set the <CODE>InputStream</CODE> from which to read the standard error
    * of the process.
-   * 
+   *
    * @param is
    *            the <CODE>InputStream</CODE>.
    */
@@ -143,7 +143,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
   /**
    * Set the <CODE>OutputStream</CODE> by means of which input can be sent
    * to the process.
-   * 
+   *
    * @param os
    *            the <CODE>OutputStream</CODE>.
    */
@@ -153,7 +153,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
         inputThread = createSystemInPump(input, os);
       } else {
         inputThread = createPump(input, os, true);
-      }        } 
+      }        }
     else {
       try {
         os.close();
@@ -187,6 +187,16 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
       inputStreamPumper.stopProcessing();
     }
 
+    if (inputThread != null) {
+      log.trace("Joining input thread {}...", inputThread);
+      try {
+        inputThread.join();
+        inputThread = null;
+      } catch (InterruptedException e) {
+        // ignore
+      }
+    }
+
     if (outputThread != null) {
       log.trace("Joining output thread {}...", outputThread);
       try {
@@ -202,16 +212,6 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
       try {
         errorThread.join();
         errorThread = null;
-      } catch (InterruptedException e) {
-        // ignore
-      }
-    }
-
-    if (inputThread != null) {
-      log.trace("Joining input thread {}...", inputThread);
-      try {
-        inputThread.join();
-        inputThread = null;
       } catch (InterruptedException e) {
         // ignore
       }
@@ -265,7 +265,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
 
   /**
    * Create the pump to handle process output.
-   * 
+   *
    * @param is
    *            the <CODE>InputStream</CODE>.
    * @param os
@@ -278,7 +278,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
 
   /**
    * Create the pump to handle error output.
-   * 
+   *
    * @param is
    *            the <CODE>InputStream</CODE>.
    * @param os
