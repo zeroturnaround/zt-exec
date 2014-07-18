@@ -25,9 +25,9 @@ import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zeroturnaround.exec.close.ProcessCloser;
 import org.zeroturnaround.exec.listener.ProcessListener;
 import org.zeroturnaround.exec.stop.ProcessStopper;
-import org.zeroturnaround.exec.stream.ExecuteStreamHandler;
 
 
 /**
@@ -58,9 +58,9 @@ class WaitForProcess implements Callable<ProcessResult> {
   private final ProcessStopper stopper;
 
   /**
-   * Invoke {@link ExecuteStreamHandler#stop()} when the process has stopped (skipped if <code>null</code>).
+   * Helper for closing the process' standard streams.
    */
-  private final ExecuteStreamHandler streams;
+  private final ProcessCloser closer;
 
   /**
    * Buffer where the process output is redirected to or <code>null</code> if it's not used.
@@ -82,11 +82,11 @@ class WaitForProcess implements Callable<ProcessResult> {
    */
   private volatile Thread workerThread;
 
-  public WaitForProcess(Process process, ProcessAttributes attributes, ProcessStopper stopper, ExecuteStreamHandler streams, ByteArrayOutputStream out, ProcessListener listener, MessageLogger messageLogger) {
+  public WaitForProcess(Process process, ProcessAttributes attributes, ProcessStopper stopper, ProcessCloser closer, ByteArrayOutputStream out, ProcessListener listener, MessageLogger messageLogger) {
     this.process = process;
     this.attributes = attributes;
     this.stopper = stopper;
-    this.streams = streams;
+    this.closer = closer;
     this.out = out;
     this.listener = listener;
     this.messageLogger = messageLogger;
@@ -115,10 +115,7 @@ class WaitForProcess implements Callable<ProcessResult> {
           stopper.stop(process);
         }
 
-        if (streams != null) {
-          streams.stop();
-        }
-        closeStreams(process);
+        closer.close(process);
       }
       ProcessOutput output = getCurrentOutput();
       ProcessResult result = new ProcessResult(exit, output);
@@ -192,41 +189,6 @@ class WaitForProcess implements Callable<ProcessResult> {
   public StackTraceElement[] getStackTrace() {
     Thread t = workerThread;
     return t == null ? null : t.getStackTrace();
-  }
-
-  /**
-   * Close the streams belonging to the given Process.
-   */
-  private void closeStreams(final Process process) throws IOException {
-    IOException caught = null;
-
-    try {
-      process.getOutputStream().close();
-    }
-    catch (IOException e) {
-      log.error("Failed to close process output stream:", e);
-      caught = e;
-    }
-
-    try {
-      process.getInputStream().close();
-    }
-    catch (IOException e) {
-      log.error("Failed to close process input stream:", e);
-      caught = e;
-    }
-
-    try {
-      process.getErrorStream().close();
-    }
-    catch (IOException e) {
-      log.error("Failed to close process error stream:", e);
-      caught = e;
-    }
-
-    if (caught != null) {
-      throw caught;
-    }
   }
 
   @Override

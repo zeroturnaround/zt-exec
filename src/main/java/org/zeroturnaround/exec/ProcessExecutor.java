@@ -42,6 +42,9 @@ import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.zeroturnaround.exec.close.ProcessCloser;
+import org.zeroturnaround.exec.close.StandardProcessCloser;
+import org.zeroturnaround.exec.close.TimeoutProcessCloser;
 import org.zeroturnaround.exec.listener.CompositeProcessListener;
 import org.zeroturnaround.exec.listener.DestroyerListenerAdapter;
 import org.zeroturnaround.exec.listener.ProcessDestroyer;
@@ -126,6 +129,12 @@ public class ProcessExecutor {
    * Process stream Handler (copied from Commons Exec library). If <code>null</code> streams are not handled.
    */
   private ExecuteStreamHandler streams;
+
+  /**
+   * Timeout for closing process' standard streams. In case this timeout is reached we just log a warning but don't throw an error.
+   */
+  private Long closeTimeout;
+  private TimeUnit closeTimeoutUnit;
 
   /**
    * <code>true</code> if the process output should be read to a buffer and returned by {@link ProcessResult#output()}.
@@ -365,6 +374,26 @@ public class ProcessExecutor {
   public ProcessExecutor streams(ExecuteStreamHandler streams) {
     validateStreams(streams, readOutput);
     this.streams = streams;
+    return this;
+  }
+
+  /**
+   * Sets a timeout for closing standard streams of the process being executed.
+   * When this timeout is reached we log a warning but consider that the process has finished.
+   * We also flush the streams so that all output read so far is available.
+   * <p>
+   * This can be used on Windows in case a process exits quickly but closing the streams blocks forever.
+   * </p>
+   * <p>
+   * Closing timeout must fit into the general execution timeout (see {@link #timeout(long, TimeUnit)}).
+   * By default there's no closing timeout.
+   *
+   * @param timeout timeout for closing streams of a process.
+   * @return This process executor.
+   */
+  public ProcessExecutor closeTimeout(long timeout, TimeUnit unit) {
+    this.closeTimeout = timeout;
+    this.closeTimeoutUnit = unit;
     return this;
   }
 
@@ -926,10 +955,19 @@ public class ProcessExecutor {
       streams.start();
     }
 
-    WaitForProcess result = new WaitForProcess(process, attributes, stopper, streams, out, listeners.clone(), messageLogger);
+    ProcessCloser closer = newProcessCloser(streams);
+
+    WaitForProcess result = new WaitForProcess(process, attributes, stopper, closer, out, listeners.clone(), messageLogger);
     // Invoke listeners - changing this executor does not affect the started process any more
     listeners.afterStart(process, this);
     return result;
+  }
+
+  private ProcessCloser newProcessCloser(ExecuteStreamHandler streams) {
+    if (closeTimeout == null) {
+      return new StandardProcessCloser(streams);
+    }
+    return new TimeoutProcessCloser(streams, closeTimeout, closeTimeoutUnit);
   }
 
   /**

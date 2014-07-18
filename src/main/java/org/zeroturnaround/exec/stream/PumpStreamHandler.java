@@ -217,21 +217,25 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
       }
     }
 
-    if (err != null && err != out) {
-      log.trace("Flushing error stream {}...", err);
-      try {
-        err.flush();
-      } catch (IOException e) {
-        log.error("Got exception while flushing the error stream", e);
-      }
-    }
+    flush();
+  }
 
+  public void flush() {
     if (out != null) {
       log.trace("Flushing output stream {}...", out);
       try {
         out.flush();
       } catch (IOException e) {
         log.error("Got exception while flushing the output stream", e);
+      }
+    }
+
+    if (err != null && err != out) {
+      log.trace("Flushing error stream {}...", err);
+      try {
+        err.flush();
+      } catch (IOException e) {
+        log.error("Got exception while flushing the error stream", e);
       }
     }
   }
