@@ -76,7 +76,7 @@ public class TimeoutProcessCloser extends StandardProcessCloser {
       throw new IllegalStateException("Could not close streams of " + process, e.getCause());
     }
     catch (TimeoutException e) {
-      log.warn("Could not close streams of {} in {} {}", process, timeout, unit);
+      log.warn("Could not close streams of {} in {} {}", process, timeout, getUnitsAsString(timeout, unit));
     }
     finally {
       // Ensure that any data received so far is flushed from buffers
@@ -88,6 +88,14 @@ public class TimeoutProcessCloser extends StandardProcessCloser {
 
   protected void doClose(final Process process) throws IOException, InterruptedException {
     super.close(process);
+  }
+
+  private static String getUnitsAsString(long d, TimeUnit unit) {
+    String result = unit.toString().toLowerCase();
+    if (d == 1) {
+      result = result.substring(0, result.length() - 1);
+    }
+    return result;
   }
 
 }
