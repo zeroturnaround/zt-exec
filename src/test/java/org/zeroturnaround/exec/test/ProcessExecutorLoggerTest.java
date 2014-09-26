@@ -32,31 +32,25 @@ public class ProcessExecutorLoggerTest {
   @Test
   public void testFullName() throws Exception {
     String fullName = "my.full.Logger";
-    ProcessExecutor executor = new ProcessExecutor();
-    executor.redirectOutput(Slf4jStream.of(fullName).asInfo());
-    PumpStreamHandler pumps = executor.pumps();
-    OutputStream out = pumps.getOut();
-    Assert.assertTrue("Slf4jInfoOutputStream expected", out instanceof Slf4jInfoOutputStream);
-    Assert.assertEquals(fullName, ((Slf4jInfoOutputStream) out).getLogger().getName());
+    testSlf4jLoggerName(fullName, Slf4jStream.of(fullName));
   }
 
   @Test
   public void testShortName() throws Exception {
     String shortName = "MyLogger";
     String fullName = getClass().getName() + "." + shortName;
-    ProcessExecutor executor = new ProcessExecutor();
-    executor.redirectOutput(Slf4jStream.of(shortName).asInfo());
-    PumpStreamHandler pumps = executor.pumps();
-    OutputStream out = pumps.getOut();
-    Assert.assertTrue("Slf4jInfoOutputStream expected", out instanceof Slf4jInfoOutputStream);
-    Assert.assertEquals(fullName, ((Slf4jInfoOutputStream) out).getLogger().getName());
+    testSlf4jLoggerName(fullName, Slf4jStream.of(shortName));
   }
 
   @Test
   public void testMyClassName() throws Exception {
     String fullName = getClass().getName();
+    testSlf4jLoggerName(fullName, Slf4jStream.ofCaller());
+  }
+
+  private void testSlf4jLoggerName(String fullName, Slf4jStream stream) {
     ProcessExecutor executor = new ProcessExecutor();
-    executor.redirectOutput(Slf4jStream.ofCaller().asInfo());
+    executor.redirectOutput(stream.asInfo());
     PumpStreamHandler pumps = executor.pumps();
     OutputStream out = pumps.getOut();
     Assert.assertTrue("Slf4jInfoOutputStream expected", out instanceof Slf4jInfoOutputStream);
