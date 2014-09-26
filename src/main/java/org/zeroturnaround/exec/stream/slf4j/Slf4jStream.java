@@ -58,6 +58,8 @@ public class Slf4jStream {
    * @param klass class which is used to get the logger's name.
    * @param name logger's name, appended to the class name.
    * @return Slf4jStream with a logger named after the given class.
+   * 
+   * @since 1.8
    */
   public static Slf4jStream of(Class<?> klass, String name) {
     if (name == null) {
