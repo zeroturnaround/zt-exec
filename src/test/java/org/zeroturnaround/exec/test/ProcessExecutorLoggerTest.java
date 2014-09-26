@@ -43,6 +43,13 @@ public class ProcessExecutorLoggerTest {
   }
 
   @Test
+  public void testClassNameWithShortName() throws Exception {
+    String shortName = "MyLogger";
+    String fullName = getClass().getName() + "." + shortName;
+    testSlf4jLoggerName(fullName, Slf4jStream.of(getClass(), shortName));
+  }
+
+  @Test
   public void testMyClassName() throws Exception {
     String fullName = getClass().getName();
     testSlf4jLoggerName(fullName, Slf4jStream.ofCaller());
