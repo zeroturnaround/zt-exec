@@ -18,6 +18,9 @@
 package org.zeroturnaround.exec;
 
 import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.StringTokenizer;
 
 /**
  * Standard output of a finished process.
@@ -69,6 +72,39 @@ public class ProcessOutput {
     catch (UnsupportedEncodingException e) {
       throw new IllegalStateException(e.getMessage());
     }
+  }
+
+  /**
+   * @return output lines of the finished process converted using platform's default encoding.
+   */
+  public List<String> getLines() {
+    return getLinesFrom(getString());
+  }
+
+  /**
+   * @return output lines of the finished process converted using UTF-8.
+   */
+  public List<String> getLinesAsUTF8() {
+    return getLinesFrom(getUTF8());
+  }
+
+  /**
+   * @return output lines of the finished process converted using a given char set.
+   *
+   * @param charset The name of a supported char set.
+   */
+  public List<String> getLines(String charset) {
+    return getLinesFrom(getString(charset));
+  }
+
+  private static List<String> getLinesFrom(String output) {
+    // Split using both Windows and UNIX line separators
+    List<String> result = new ArrayList<String>();
+    StringTokenizer st = new StringTokenizer(output, "\n\r");
+    while (st.hasMoreTokens()) {
+      result.add(st.nextToken());
+    }
+    return result;
   }
 
 }
