@@ -858,7 +858,7 @@ public class ProcessExecutor {
    */
   public StartedProcess start() throws IOException {
     WaitForProcess task = startInternal();
-    ExecutorService service = Executors.newSingleThreadScheduledExecutor();
+    ExecutorService service = newExecutor(task);
     Future<ProcessResult> future = service.submit(task);
     // Previously submitted tasks are executed but no new tasks will be accepted.
     service.shutdown();
@@ -982,16 +982,7 @@ public class ProcessExecutor {
     }
     else {
       // Fork another thread to invoke Process.waitFor()
-      // Use daemon thread as we don't want to postpone the shutdown
-      // If #destroyOnExit() is used we wait for the process to be destroyed anyway
-      final String name = "WaitForProcess-" + task.getProcess().toString();
-      ExecutorService service = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-        public Thread newThread(Runnable r) {
-          Thread t = new Thread(r, name);
-          t.setDaemon(true);
-          return t;
-        }
-      });
+      ExecutorService service = newExecutor(task);
       // Copy values to not conflict with further executions
       long _timeout = timeout;
       TimeUnit unit = timeoutUnit;
@@ -1022,6 +1013,20 @@ public class ProcessExecutor {
       }
     }
     return result;
+  }
+
+  private ExecutorService newExecutor(WaitForProcess task) {
+    // Use daemon thread as we don't want to postpone the shutdown
+    // If #destroyOnExit() is used we wait for the process to be destroyed anyway
+    final String name = "WaitForProcess-" + task.getProcess().toString();
+    ExecutorService service = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+      public Thread newThread(Runnable r) {
+        Thread t = new Thread(r, name);
+        t.setDaemon(true);
+        return t;
+      }
+    });
+    return service;
   }
 
   private TimeoutException newTimeoutException(long timeout, TimeUnit unit, WaitForProcess task) {
