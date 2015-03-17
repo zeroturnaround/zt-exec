@@ -54,11 +54,11 @@ public class Slf4jStream {
    * Constructs a logger from a class name and an additional name,
    * appended to the end. So the final logger name will be:
    * <blockquote><code>klass.getName() + "." + name</code></blockquote>
-   * 
+   *
    * @param klass class which is used to get the logger's name.
    * @param name logger's name, appended to the class name.
    * @return Slf4jStream with a logger named after the given class.
-   * 
+   *
    * @since 1.8
    */
   public static Slf4jStream of(Class<?> klass, String name) {
@@ -83,6 +83,20 @@ public class Slf4jStream {
    */
   public static Slf4jStream ofCaller() {
     return of(LoggerFactory.getLogger(CallerLoggerUtil.getName(null, 1)));
+  }
+
+  /**
+   * @return output stream that writes with a given level.
+   */
+  public Slf4jOutputStream as(Level level) {
+    switch (level) {
+    case TRACE: return asTrace();
+    case DEBUG: return asDebug();
+    case INFO: return asInfo();
+    case WARN: return asWarn();
+    case ERROR: return asError();
+    }
+    throw new IllegalArgumentException("Invalid level " + level);
   }
 
   /**

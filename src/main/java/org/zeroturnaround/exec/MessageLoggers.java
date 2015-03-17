@@ -18,6 +18,7 @@
 package org.zeroturnaround.exec;
 
 import org.slf4j.Logger;
+import org.zeroturnaround.exec.stream.slf4j.Level;
 
 /**
  * Contains {@link MessageLogger} instances for various log levels.
@@ -47,6 +48,16 @@ public class MessageLoggers {
       log.info(format, arguments);
     }
   };
+
+  public static final MessageLogger get(Level level) {
+    switch (level) {
+    case TRACE: return TRACE;
+    case DEBUG: return DEBUG;
+    case INFO: return INFO;
+    default:
+      throw new IllegalArgumentException("Invalid level " + level);
+    }
+  }
 
   private MessageLoggers() {
     // hide
