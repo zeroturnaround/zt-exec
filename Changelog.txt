@@ -3,7 +3,11 @@
 ********************************************
 
 1.8 (?)
-* Improved TimeoutException message.
+* Fixed blocking JVM shutdown
+* Improved TimeoutException message
+* Improved Slf4jStream
+* Added ProcessExecutor.closeTimeout()
+* Added ProcessOutput.getLines()
 
 1.7 (30th June 2014)
 * Fixed ProcessExecutor.commandSplit()
