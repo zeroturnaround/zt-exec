@@ -26,7 +26,7 @@ import org.zeroturnaround.exec.listener.ProcessListener;
  * @see ProcessListener#afterFinish(Process, ProcessResult)
  * @since 1.8
  */
-public class InvalidOutputException extends ProcessFinishException {
+public class InvalidOutputException extends InvalidResultException {
 
   private static final long serialVersionUID = 1L;
 

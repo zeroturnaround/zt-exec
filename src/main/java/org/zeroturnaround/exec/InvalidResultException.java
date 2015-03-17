@@ -18,12 +18,12 @@
 package org.zeroturnaround.exec;
 
 /**
- * Process finished with a failure.
+ * Process finished with an unexpected result.
  *
  * @author Rein Raudjärv
  * @since 1.8
  */
-public class ProcessFinishException extends RuntimeException {
+public class InvalidResultException extends RuntimeException {
 
   private static final long serialVersionUID = 1L;
 
@@ -35,7 +35,7 @@ public class ProcessFinishException extends RuntimeException {
   /**
    * @param result result of execution (contains also the exit value)
    */
-  public ProcessFinishException(String message, ProcessResult result) {
+  public InvalidResultException(String message, ProcessResult result) {
     super(message);
     this.result = result;
   }

@@ -24,7 +24,7 @@ package org.zeroturnaround.exec;
  *
  * @see ProcessExecutor#exitValues(Integer...)
  */
-public class InvalidExitValueException extends ProcessFinishException {
+public class InvalidExitValueException extends InvalidResultException {
 
   private static final long serialVersionUID = 1L;
 
