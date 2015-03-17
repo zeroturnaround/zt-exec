@@ -2,7 +2,7 @@
   ZT Exec Changelog
 ********************************************
 
-1.8 (?)
+1.8 (17th March 2015)
 * Fixed blocking JVM shutdown
 * Improved TimeoutException message
 * Improved Slf4jStream
@@ -25,10 +25,10 @@
 * Improved Slf4j logging support
 * Added ProcessExecutor.redirectInput()
 * Improved adding/removing destroyers and listeners
-* InvalidExitValueException now includes process output if it was read. 
+* InvalidExitValueException now includes process output if it was read
 * Added get-prefixes to some methods (old ones are deprecated)
 
 1.5 (14th October 2013)
-* By default any exit code is now allowed (use exitValueNormal() to only allow zero). 
-* Fixed an issue with starting processes on JVM shutdown.
+* By default any exit code is now allowed (use exitValueNormal() to only allow zero)
+* Fixed an issue with starting processes on JVM shutdown
 * Fixed an issue with supporting Java 1.5
