@@ -8,6 +8,9 @@
 * Improved Slf4jStream
 * Added ProcessExecutor.closeTimeout()
 * Added ProcessOutput.getLines()
+* Added ProcessOutput.command(Iterable)
+* Added ProcessListener.afterFinish() and InvalidOutputException support
+* Added Level class
 
 1.7 (30th June 2014)
 * Fixed ProcessExecutor.commandSplit()
