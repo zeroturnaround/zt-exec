@@ -25,6 +25,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -184,6 +185,15 @@ public class ProcessExecutor {
   }
 
   /**
+   * Creates new {@link ProcessExecutor} instance for the given program and its arguments.
+   * @param command The iterable containing the program and its arguments.
+   * @since 1.8
+   */
+  public ProcessExecutor(Iterable<String> command) {
+    command(command);
+  }
+
+  /**
    * Sets the program and its arguments which are being executed.
    *
    * @param   command  The list containing the program and its arguments.
@@ -203,6 +213,22 @@ public class ProcessExecutor {
   public ProcessExecutor command(String... command) {
     builder.command(command);
     return this;
+  }
+
+  /**
+   * Sets the program and its arguments which are being executed.
+   *
+   * @param   command  The iterable containing the program and its arguments.
+   * @return  This process executor.
+   * @since 1.8
+   */
+  public ProcessExecutor command(Iterable<String> command) {
+    List<String> list = new ArrayList<String>();
+    Iterator<String> it = command.iterator();
+    while (it.hasNext()) {
+      list.add(it.next());
+    }
+    return command(list);
   }
 
   /**

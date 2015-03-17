@@ -20,6 +20,7 @@ package org.zeroturnaround.exec.test;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -52,6 +53,13 @@ public class ProcessExecutorMainTest {
   @Test
   public void testJavaVersionCommandSplit() throws Exception {
     int exit = new ProcessExecutor().commandSplit("java -version").execute().getExitValue();
+    Assert.assertEquals(0, exit);
+  }
+
+  @Test
+  public void testJavaVersionIterable() throws Exception {
+    Iterable<String> iterable = Arrays.asList("java", "-version");
+    int exit = new ProcessExecutor().command(iterable).execute().getExitValue();
     Assert.assertEquals(0, exit);
   }
 
