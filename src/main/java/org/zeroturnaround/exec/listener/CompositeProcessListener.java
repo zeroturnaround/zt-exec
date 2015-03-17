@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.ProcessResult;
 
 
 /**
@@ -93,6 +94,13 @@ public class CompositeProcessListener extends ProcessListener implements Cloneab
   public void afterStart(Process process, ProcessExecutor executor) {
     for (ProcessListener child : children) {
       child.afterStart(process, executor);
+    }
+  }
+
+  @Override
+  public void afterFinish(Process process, ProcessResult result) {
+    for (ProcessListener child : children) {
+      child.afterFinish(process, result);
     }
   }
 

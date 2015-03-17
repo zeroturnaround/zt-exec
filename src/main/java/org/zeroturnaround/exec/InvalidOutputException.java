@@ -17,21 +17,23 @@
  */
 package org.zeroturnaround.exec;
 
+import org.zeroturnaround.exec.listener.ProcessListener;
+
 /**
- * Process finished with a forbidden exit value.
+ * Process finished with an unexpected output.
  *
  * @author Rein Raudjärv
- *
- * @see ProcessExecutor#exitValues(Integer...)
+ * @see ProcessListener#afterFinish(Process, ProcessResult)
+ * @since 1.8
  */
-public class InvalidExitValueException extends ProcessFinishException {
+public class InvalidOutputException extends ProcessFinishException {
 
   private static final long serialVersionUID = 1L;
 
   /**
    * @param result result of execution (contains also the exit value)
    */
-  public InvalidExitValueException(String message, ProcessResult result) {
+  public InvalidOutputException(String message, ProcessResult result) {
     super(message, result);
   }
 

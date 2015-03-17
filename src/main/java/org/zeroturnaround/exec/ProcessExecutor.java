@@ -1027,6 +1027,14 @@ public class ProcessExecutor {
           InvalidExitValueException i = (InvalidExitValueException) c;
           throw new InvalidExitValueException(i.getMessage(), i.getResult());
         }
+        if (c instanceof InvalidOutputException) {
+          InvalidOutputException i = (InvalidOutputException) c;
+          throw new InvalidOutputException(i.getMessage(), i.getResult());
+        }
+        if (c.getClass().equals(ProcessFinishException.class)) {
+          ProcessFinishException p = (ProcessFinishException) c;
+          throw new ProcessFinishException(p.getMessage(), p.getResult());
+        }
         throw new IllegalStateException("Error occured while waiting for process to finish:", c);
       }
       catch (TimeoutException e) {

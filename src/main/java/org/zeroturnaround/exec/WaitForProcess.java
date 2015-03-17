@@ -120,6 +120,7 @@ class WaitForProcess implements Callable<ProcessResult> {
       ProcessOutput output = getCurrentOutput();
       ProcessResult result = new ProcessResult(exit, output);
       checkExit(result);
+      listener.afterFinish(process, result);
       return result;
     }
     finally {

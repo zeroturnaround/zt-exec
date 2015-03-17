@@ -18,6 +18,7 @@
 package org.zeroturnaround.exec.listener;
 
 import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.ProcessResult;
 
 /**
  * Event handler for process events.
@@ -25,6 +26,7 @@ import org.zeroturnaround.exec.ProcessExecutor;
  * This is a class instead of interface in order to add new methods without updating all implementations.
  *
  * @author Rein Raudjärv
+ * @see ProcessExecutor#addListener(ProcessListener)
  */
 public abstract class ProcessListener {
 
@@ -48,6 +50,17 @@ public abstract class ProcessListener {
    *    not the one just started.
    */
   public void afterStart(Process process, ProcessExecutor executor) {
+    // do nothing
+  }
+
+  /**
+   * Invoked after a process has finished successfully.
+   *
+   * @param process process just finished.
+   * @param result result of the finished process.
+   * @since 1.8
+   */
+  public void afterFinish(Process process, ProcessResult result) {
     // do nothing
   }
 
