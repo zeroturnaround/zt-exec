@@ -19,6 +19,7 @@ package org.zeroturnaround.exec;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.StringTokenizer;
 
@@ -98,13 +99,10 @@ public class ProcessOutput {
   }
 
   private static List<String> getLinesFrom(String output) {
-    // Split using both Windows and UNIX line separators
-    List<String> result = new ArrayList<String>();
-    StringTokenizer st = new StringTokenizer(output, "\n\r");
-    while (st.hasMoreTokens()) {
-      result.add(st.nextToken());
-    }
-    return result;
+    // Split using both Windows (\r\n) 
+    // and UNIX (\n) line separators
+    return new ArrayList(
+      Arrays.asList(output.split("\r?\n")));
   }
 
 }
