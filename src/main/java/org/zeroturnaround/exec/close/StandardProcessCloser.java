@@ -18,6 +18,7 @@
 package org.zeroturnaround.exec.close;
 
 import java.io.IOException;
+import java.lang.reflect.Method;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -28,59 +29,64 @@ import org.zeroturnaround.exec.stream.ExecuteStreamHandler;
  */
 public class StandardProcessCloser implements ProcessCloser {
 
-  private static final Logger log = LoggerFactory.getLogger(StandardProcessCloser.class);
+    private static final Logger log = LoggerFactory.getLogger(StandardProcessCloser.class);
 
-  protected final ExecuteStreamHandler streams;
+    protected final ExecuteStreamHandler streams;
 
-  public StandardProcessCloser(ExecuteStreamHandler streams) {
-    this.streams = streams;
-  }
-
-  public void close(Process process) throws IOException, InterruptedException {
-    if (streams != null) {
-      streams.stop();
-    }
-    closeStreams(process);
-  }
-
-  /**
-   * Close the streams belonging to the given Process.
-   */
-  private void closeStreams(final Process process) throws IOException {
-    IOException caught = null;
-
-    try {
-      process.getOutputStream().close();
-    }
-    catch (IOException e) {
-      log.error("Failed to close process output stream:", e);
-      caught = e;
+    public StandardProcessCloser(ExecuteStreamHandler streams) {
+        this.streams = streams;
     }
 
-    try {
-      process.getInputStream().close();
-    }
-    catch (IOException e) {
-      log.error("Failed to close process input stream:", e);
-      if(caught!=null){
-        e.addSuppressed(caught);
-      }
-      caught = e;
+    public void close(Process process) throws IOException, InterruptedException {
+        if (streams != null) {
+            streams.stop();
+        }
+        closeStreams(process);
     }
 
-    try {
-      process.getErrorStream().close();
-    }
-    catch (IOException e) {
-      log.error("Failed to close process error stream:", e);
-      if(caught!=null){
-        e.addSuppressed(caught);
-      }
-      caught = e;
+    /**
+     * Close the streams belonging to the given Process.
+     */
+    private void closeStreams(final Process process) throws IOException {
+        IOException caught = null;
+
+        try {
+            process.getOutputStream().close();
+        } catch (IOException e) {
+            log.error("Failed to close process output stream:", e);
+            caught = e;
+        }
+
+        try {
+            process.getInputStream().close();
+        } catch (IOException e) {
+            log.error("Failed to close process input stream:", e);
+            caught = addSuppressed(caught, e);
+        }
+
+        try {
+            process.getErrorStream().close();
+        } catch (IOException e) {
+            log.error("Failed to close process error stream:", e);
+            caught = addSuppressed(caught, e);
+        }
+
+        if (caught != null) {
+            throw caught;
+        }
     }
 
-    if (caught != null) {
-      throw caught;
+    private static <E extends Throwable, P extends Throwable> P addSuppressed(E suppressed, P primary) {
+        if (suppressed == null) {
+            return primary;
+        } else {
+            try {
+                Method addSuppressed = primary.getClass().getMethod("addSuppressed", Throwable.class);
+                addSuppressed.invoke(primary, suppressed);
+                return primary;
+            } catch (Exception ex) {
+                return primary;
+            }
+        }
     }
-  }
 }
