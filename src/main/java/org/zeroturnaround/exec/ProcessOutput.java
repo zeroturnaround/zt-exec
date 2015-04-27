@@ -97,7 +97,7 @@ public class ProcessOutput {
     return getLinesFrom(getString(charset));
   }
 
-  private static List<String> getLinesFrom(String output) {
+  static List<String> getLinesFrom(String output) {
     // Split using both Windows and UNIX line separators
     List<String> result = new ArrayList<String>();
     StringTokenizer st = new StringTokenizer(output, "\n\r");
