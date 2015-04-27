@@ -54,7 +54,7 @@ public class StandardProcessCloser implements ProcessCloser {
     }
     catch (IOException e) {
       log.error("Failed to close process output stream:", e);
-      caught = e;
+      caught = add(caught, e);
     }
 
     try {
@@ -62,7 +62,7 @@ public class StandardProcessCloser implements ProcessCloser {
     }
     catch (IOException e) {
       log.error("Failed to close process input stream:", e);
-      caught = e;
+      caught = add(caught, e);
     }
 
     try {
@@ -70,11 +70,20 @@ public class StandardProcessCloser implements ProcessCloser {
     }
     catch (IOException e) {
       log.error("Failed to close process error stream:", e);
-      caught = e;
+      caught = add(caught, e);
     }
 
     if (caught != null) {
       throw caught;
     }
   }
+
+  private static IOException add(IOException exception, IOException newException) {
+    if (exception == null) {
+      return newException;
+    }
+    ExceptionUtil.addSuppressed(exception, newException);
+    return exception;
+  }
+
 }
