@@ -10,6 +10,8 @@ The project was created to merge similar functionality of projects at [ZeroTurna
 It's designed to be powerful but still simple to use. By using a single class **ProcessExecutor**
 the user gets the functionality from both **java.lang.ProcessBuilder** and [Apache Commons Exec](http://commons.apache.org/proper/commons-exec/).
 
+The [ch.vorburger.exec](https://github.com/vorburger/MariaDB4j/tree/master/mariaDB4j-core/src/main/java/ch/vorburger/exec) is a similar utility which you may also find interesting if you are looking at this.
+
 ### Installation
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.zeroturnaround/zt-exec/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.zeroturnaround/zt-exec)
 
