@@ -7,6 +7,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import org.slf4j.LoggerFactory;
+import org.zeroturnaround.exec.stream.LogOutputStream;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
 /**
@@ -74,6 +75,17 @@ class ReadmeExamples {
   void pumpOutputToStream(OutputStream out) throws Exception {
     new ProcessExecutor().command("java", "-version")
           .redirectOutput(out).execute();
+  }
+
+  void pumpOutputToLogStream(OutputStream out) throws Exception {
+    new ProcessExecutor().command("java", "-version")
+        .redirectOutput(new LogOutputStream() {
+          @Override
+          protected void processLine(String line) {
+            // ...
+          }
+        })
+        .execute();
   }
 
   void destroyProcessOnJvmExit() throws Exception {

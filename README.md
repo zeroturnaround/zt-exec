@@ -151,6 +151,21 @@ new ProcessExecutor().command("java", "-version")
 
 <hr/>
 
+* Handling output line-by-line while process is running
+
+```java
+new ProcessExecutor().command("java", "-version")
+    .redirectOutput(new LogOutputStream() {
+      @Override
+      protected void processLine(String line) {
+        ...
+      }
+    })
+    .execute();
+```
+
+<hr/>
+
 * Destroy the running process when VM exits
 * Output pumped to NullOutputStream
 
