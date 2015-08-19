@@ -933,7 +933,12 @@ public class ProcessExecutor {
     catch (IOException e) {
       log.error("Could not start process:", e);
       if (e.getClass().equals(IOException.class)) {
-        throw new IOException(getExecutingErrorMessage(), e);
+        String message = getExecutingErrorMessage();
+        ProcessInitException p = ProcessInitException.newInstance(message, e);
+        if (p != null) {
+          throw p;
+        }
+        throw new IOException(message, e);
       }
       throw e;
     }
