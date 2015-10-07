@@ -17,7 +17,6 @@
  */
 package org.zeroturnaround.exec.test;
 
-import org.apache.commons.lang.SystemUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -36,8 +35,7 @@ public class EmptyArgTest {
 
   @Test
   public void testReadOutputAndError() throws Exception {
-    String empty = SystemUtils.IS_OS_WINDOWS ? "\"\"" : "";
-    String output = argumentsAsList("arg1", empty, "arg3", empty).readOutput(true).execute().outputUTF8();
+    String output = argumentsAsList("arg1", "", "arg3", "").readOutput(true).execute().outputUTF8();
     Assert.assertEquals("[arg1, , arg3, ]", output);
   }
 

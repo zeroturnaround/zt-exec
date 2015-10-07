@@ -22,15 +22,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -93,6 +86,8 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 public class ProcessExecutor {
 
   private static final Logger log = LoggerFactory.getLogger(ProcessExecutor.class);
+
+  private static final boolean IS_OS_WINDOWS = System.getProperty("os.name").startsWith("Windows");
 
   public static final Integer[] DEFAULT_EXIT_VALUES = null;
 
@@ -200,7 +195,7 @@ public class ProcessExecutor {
    * @return  This process executor.
    */
   public ProcessExecutor command(List<String> command) {
-    builder.command(command);
+    builder.command(fixArguments(command));
     return this;
   }
 
@@ -211,7 +206,7 @@ public class ProcessExecutor {
    * @return  This process executor.
    */
   public ProcessExecutor command(String... command) {
-    builder.command(command);
+    builder.command(fixArguments(Arrays.asList(command)));
     return this;
   }
 
@@ -1125,6 +1120,25 @@ public class ProcessExecutor {
         env.put(key, value);
       }
     }
+  }
+
+  /**
+   * Fixes the command line arguments on Windows by replacing empty arguments with <code>""</code>. Otherwise these arguments would be just skipped.
+   *
+   * @see http://bugs.java.com/view_bug.do?bug_id=7028124
+   * @see https://bugs.openjdk.java.net/browse/JDK-6518827
+   */
+  private static List<String> fixArguments(List<String> command) {
+    if (!IS_OS_WINDOWS) {
+      return command;
+    }
+    List<String> result = new ArrayList<String>(command);
+    for (ListIterator it = result.listIterator(); it.hasNext(); ) {
+      if ("".equals(it.next())) {
+        it.set("\"\"");
+      }
+    }
+    return result;
   }
 
 }
