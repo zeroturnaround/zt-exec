@@ -53,8 +53,24 @@ public class StandardProcessCloser implements ProcessCloser {
       process.getOutputStream().close();
     }
     catch (IOException e) {
-      log.error("Failed to close process output stream:", e);
-      caught = add(caught, e);
+      if (e.getMessage().equals("Stream closed")) {
+        /**
+         * OutputStream's contract for the close() method: If the stream is already closed then invoking this method has no effect.
+         *
+         * When a UNIXProcess exits ProcessPipeOutputStream automatically closes its target FileOutputStream and replaces it with NullOutputStream.
+         * However the ProcessPipeOutputStream doesn't close itself at that moment.
+         * As ProcessPipeOutputStream extends BufferedOutputStream extends FilterOutputStream closing it flushes the buffer first.
+         * In Java 7 closing FilterOutputStream ignores any exception thrown by the target OutputStream. Since Java 8 these exceptions are now thrown.
+         *
+         * So since Java 8 after UNIXProcess detects the exit and there's something in the output buffer closing this stream throws IOException
+         * with message "Stream closed" from NullOutputStream.
+         */
+        log.trace("Failed to close process output stream:", e);
+      }
+      else {
+        log.error("Failed to close process output stream:", e);
+        caught = add(caught, e);
+      }
     }
 
     try {
