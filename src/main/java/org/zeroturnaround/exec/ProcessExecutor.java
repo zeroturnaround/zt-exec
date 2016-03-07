@@ -189,6 +189,16 @@ public class ProcessExecutor {
   }
 
   /**
+   * Returns this process executor's operating system program and arguments.
+   * The returned list is a copy.
+   *
+   * @return this process executor's program and its arguments (not <code>null</code>).
+   */
+  public List<String> getCommand() {
+    return new ArrayList<String>(builder.command());
+  }
+
+  /**
    * Sets the program and its arguments which are being executed.
    *
    * @param   command  The list containing the program and its arguments.
@@ -242,6 +252,21 @@ public class ProcessExecutor {
   }
 
   /**
+   * Returns this process executor's working directory.
+   *
+   * Subprocesses subsequently started by this object will use this as their working directory.
+   * The returned value may be {@code null} -- this means to use
+   * the working directory of the current Java process, usually the
+   * directory named by the system property {@code user.dir},
+   * as the working directory of the child process.
+   *
+   * @return this process executor's working directory
+   */
+  public File getDirectory() {
+    return builder.directory();
+  }
+
+  /**
    * Sets this working directory for the process being executed.
    * The argument may be <code>null</code> -- this means to use the
    * working directory of the current Java process, usually the
@@ -257,13 +282,23 @@ public class ProcessExecutor {
   }
 
   /**
+   * Returns this process executor's additional environment variables.
+   * The returned value is not a copy.
+   *
+   * @return this process executor's environment variables (not <code>null</code>).
+   */
+  public Map<String, String> getEnvironment() {
+    return environment;
+  }
+
+  /**
    * Adds additional environment variables for the process being executed.
    *
    * @param env environment variables added to the process being executed.
    * @return This process executor.
    */
   public ProcessExecutor environment(Map<String,String> env) {
-    environment.putAll(env);;
+    environment.putAll(env);
     return this;
   }
 
