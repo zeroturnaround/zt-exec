@@ -904,6 +904,16 @@ public class ProcessExecutor {
   }
 
   /**
+   * Check the exit value of given process result. This can be used by unit tests.
+   *
+   * @param result process result which maybe constructed by a unit test.
+   * @throws InvalidExitValueException if the given exit value was rejected.
+   */
+  public void checkExitValue(ProcessResult result) throws InvalidExitValueException {
+    InvalidExitUtil.checkExit(getAttributes(), result);
+  }
+
+  /**
    * Start the sub process. This method does not wait until the process exits.
    * Value passed to {@link #timeout(long, TimeUnit)} is ignored.
    * Use {@link Future#get()} to wait for the process to finish.
@@ -939,12 +949,7 @@ public class ProcessExecutor {
     messageLogger.message(log, getExecutingLogMessage());
     Process process = invokeStart();
     messageLogger.message(log, "Started {}", process);
-
-    ProcessAttributes attributes = new ProcessAttributes(
-        new ArrayList<String>(builder.command()),
-        builder.directory(),
-        new LinkedHashMap<String, String>(environment),
-        allowedExitValues == null ? null : new HashSet<Integer>(allowedExitValues));
+    ProcessAttributes attributes = getAttributes();
 
     if (readOutput) {
       PumpStreamHandler pumps = (PumpStreamHandler) streams;
@@ -954,6 +959,17 @@ public class ProcessExecutor {
     else {
       return startInternal(process, attributes, streams, null);
     }
+  }
+
+  /**
+   * Capture a snapshot of this process executor's main state.
+   */
+  private ProcessAttributes getAttributes() {
+    return new ProcessAttributes(
+          getCommand(),
+          getDirectory(),
+          new LinkedHashMap<String, String>(environment),
+          allowedExitValues == null ? null : new HashSet<Integer>(allowedExitValues));
   }
 
   private Process invokeStart() throws IOException {

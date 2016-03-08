@@ -19,9 +19,7 @@ package org.zeroturnaround.exec;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
-import java.util.Set;
 import java.util.concurrent.Callable;
-import java.util.concurrent.TimeoutException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,12 +36,6 @@ import org.zeroturnaround.exec.stop.ProcessStopper;
 class WaitForProcess implements Callable<ProcessResult> {
 
   private static final Logger log = LoggerFactory.getLogger(WaitForProcess.class);
-
-  /**
-   * In case {@link InvalidExitValueException} or {@link TimeoutException} is thrown and we have read the process output
-   * we include the output up to this length in the error message. If the output is longer we truncate it.
-   */
-  private static final int MAX_OUTPUT_SIZE_IN_ERROR_MESSAGE = 5000;
 
   private final Process process;
 
@@ -119,7 +111,7 @@ class WaitForProcess implements Callable<ProcessResult> {
       }
       ProcessOutput output = getCurrentOutput();
       ProcessResult result = new ProcessResult(exit, output);
-      checkExit(result);
+      InvalidExitUtil.checkExit(attributes, result);
       listener.afterFinish(process, result);
       return result;
     }
@@ -135,20 +127,6 @@ class WaitForProcess implements Callable<ProcessResult> {
   }
 
   /**
-   * Check the process exit value.
-   */
-  private void checkExit(ProcessResult result) {
-    Set<Integer> allowedExitValues = attributes.getAllowedExitValues();
-    if (allowedExitValues != null && !allowedExitValues.contains(result.getExitValue())) {
-      StringBuilder sb = new StringBuilder();
-      sb.append("Unexpected exit value: ").append(result.getExitValue());
-      sb.append(", allowed exit values: ").append(allowedExitValues);
-      addExceptionMessageSuffix(sb, result.hasOutput() ? result.getOutput() : null);
-      throw new InvalidExitValueException(sb.toString(), result);
-    }
-  }
-
-  /**
    * Adds a suffix for an error message including:
    * <ul>
    *   <li>executed command</li>
@@ -159,29 +137,7 @@ class WaitForProcess implements Callable<ProcessResult> {
    * @param sb where the suffix is appended to.
    */
   public void addExceptionMessageSuffix(StringBuilder sb) {
-    addExceptionMessageSuffix(sb, getCurrentOutput());
-  }
-
-  private void addExceptionMessageSuffix(StringBuilder sb, ProcessOutput output) {
-    sb.append(", executed command ").append(attributes.getCommand());
-    if (attributes.getDirectory() != null) {
-      sb.append(" in directory ").append(attributes.getDirectory());
-    }
-    if (!attributes.getEnvironment().isEmpty()) {
-      sb.append(" with environment ").append(attributes.getEnvironment());
-    }
-    if (output != null) {
-      int length = output.getBytes().length;
-      String out = output.getString();
-      if (out.length() <= MAX_OUTPUT_SIZE_IN_ERROR_MESSAGE) {
-        sb.append(", output was ").append(length).append(" bytes:\n").append(out.trim());
-      }
-      else {
-        sb.append(", output was ").append(length).append(" bytes (truncated):\n");
-        int halfLimit = MAX_OUTPUT_SIZE_IN_ERROR_MESSAGE / 2;
-        sb.append(out.substring(0, halfLimit)).append("\n...\n").append(out.substring(out.length() - halfLimit).trim());
-      }
-    }
+    InvalidExitUtil.addExceptionMessageSuffix(attributes, sb, getCurrentOutput());
   }
 
   /**
