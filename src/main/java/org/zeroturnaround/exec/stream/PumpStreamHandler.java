@@ -53,19 +53,17 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
 
   private static final Logger log = LoggerFactory.getLogger(PumpStreamHandler.class);
 
-  private Thread outputThread;
+  protected StreamPumperThread outputThread;
 
-  private Thread errorThread;
+  protected StreamPumperThread errorThread;
 
-  private Thread inputThread;
+  protected StreamPumperThread inputThread;
 
-  private final OutputStream out;
+  protected final OutputStream out;
 
-  private final OutputStream err;
+  protected final OutputStream err;
 
-  private final InputStream input;
-
-  private InputStreamPumper inputStreamPumper;
+  protected final InputStream input;
 
   /**
    * Construct a new <CODE>PumpStreamHandler</CODE>.
@@ -153,7 +151,8 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
         inputThread = createSystemInPump(input, os);
       } else {
         inputThread = createPump(input, os, true);
-      }        }
+      }
+    }
     else {
       try {
         os.close();
@@ -183,11 +182,8 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    */
   public void stop() {
 
-    if (inputStreamPumper != null) {
-      inputStreamPumper.stopProcessing();
-    }
-
     if (inputThread != null) {
+      inputThread.stopProcessing();
       log.trace("Joining input thread {}...", inputThread);
       try {
         inputThread.join();
@@ -301,7 +297,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    * @param os the output stream to copy into
    * @return the stream pumper thread
    */
-  protected Thread createPump(final InputStream is, final OutputStream os) {
+  protected StreamPumperThread createPump(final InputStream is, final OutputStream os) {
     return createPump(is, os, false);
   }
 
@@ -314,12 +310,10 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    * @param closeWhenExhausted close the output stream when the input stream is exhausted
    * @return the stream pumper thread
    */
-  protected Thread createPump(final InputStream is, final OutputStream os,
+  protected StreamPumperThread createPump(final InputStream is, final OutputStream os,
       final boolean closeWhenExhausted) {
-    final Thread result = new Thread(new StreamPumper(is, os,
-        closeWhenExhausted));
-    result.setDaemon(true);
-    return result;
+    return new StreamPumperThread(
+        new DefaultStreamPumper(is, os, closeWhenExhausted));
   }
 
 
@@ -331,11 +325,9 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    * @param os the output stream to copy into
    * @return the stream pumper thread
    */
-  private Thread createSystemInPump(InputStream is, OutputStream os) {
-    inputStreamPumper = new InputStreamPumper(is, os);
-    final Thread result = new Thread(inputStreamPumper);
-    result.setDaemon(true);
-    return result;
+  private StreamPumperThread createSystemInPump(InputStream is, OutputStream os) {
+    return new StreamPumperThread(
+        new InputStreamPumper(is, os));
   }
 
 }

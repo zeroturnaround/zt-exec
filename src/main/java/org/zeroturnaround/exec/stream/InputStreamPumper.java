@@ -48,7 +48,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author mkleint
  */
-public class InputStreamPumper implements Runnable {
+public class InputStreamPumper implements StreamPumper {
 
   private static final Logger log = LoggerFactory.getLogger(InputStreamPumper.class);
 
@@ -94,6 +94,7 @@ public class InputStreamPumper implements Runnable {
     }
   }
 
+  @Override
   public void stopProcessing() {
     stop = true;
   }
