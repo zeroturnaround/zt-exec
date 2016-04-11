@@ -182,12 +182,12 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    * Stop pumping the streams.
    */
   public void stop() {
-
-    if (inputStreamPumper != null) {
-      inputStreamPumper.stopProcessing();
-    }
-
     if (inputThread != null) {
+      if (inputStreamPumper != null) {
+        inputStreamPumper.stopProcessing();
+      }
+      // #33 Interrupt reading from a PipedInputStream to unblock the pumping thread
+      inputThread.interrupt();
       log.trace("Joining input thread {}...", inputThread);
       try {
         inputThread.join();
