@@ -50,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * from that stream will be lost.
  */
 public class PumpStreamHandler implements ExecuteStreamHandler {
-
+ 
   private static final Logger log = LoggerFactory.getLogger(PumpStreamHandler.class);
 
   protected Thread outputThread;
