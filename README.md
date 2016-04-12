@@ -46,6 +46,10 @@ Some of the reasons for this crazy endeavour
 * Improved logging with [SLF4J API](http://www.slf4j.org/)
 * Support for multiple processes
 
+**Can zt-exec also kill processes?**
+
+No. There is [zt-process-killer](https://github.com/zeroturnaround/zt-process-killer) for that.
+
 ## Examples
 
 * Output is pumped to NullOutputStream
