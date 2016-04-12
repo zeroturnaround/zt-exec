@@ -2,6 +2,14 @@
   ZT Exec Changelog
 ********************************************
 
+1.9 (12th April 2016)
+* Fixed using empty arguments on Windows
+* Fixed closing stdin on Java 8
+* Fixed redirecting PipedInputStream.
+* Added ProcessInitException to expose error code
+* Added ProcessExecutor.checkExitValue() for unit testing
+* Added getters to ProcessExecutor
+
 1.8 (17th March 2015)
 * Fixed blocking JVM shutdown
 * Improved TimeoutException message
