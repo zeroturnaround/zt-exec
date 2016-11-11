@@ -151,7 +151,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
         inputThread = createSystemInPump(input, os);
       }
       else {
-        inputThread = createPump(input, os, true);
+        inputThread = createPump(input, os, true, true);
       }
     }
     else {
@@ -306,7 +306,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    * @return the stream pumper thread
    */
   protected Thread createPump(InputStream is, OutputStream os) {
-    return createPump(is, os, false);
+    return createPump(is, os, false, false);
   }
 
   /**
@@ -319,7 +319,21 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    * @return the stream pumper thread
    */
   protected Thread createPump(InputStream is, OutputStream os, boolean closeWhenExhausted) {
-    Thread result = new Thread(new StreamPumper(is, os, closeWhenExhausted));
+    return createPump(is, os, closeWhenExhausted, false);
+  }
+
+  /**
+   * Creates a stream pumper to copy the given input stream to the given
+   * output stream.
+   *
+   * @param is the input stream to copy from
+   * @param os the output stream to copy into
+   * @param closeWhenExhausted close the output stream when the input stream is exhausted
+   * @param flushImmediately flush the output stream whenever data was written to it
+   * @return the stream pumper thread
+   */
+  protected Thread createPump(InputStream is, OutputStream os, boolean closeWhenExhausted, boolean flushImmediately) {
+    Thread result = new Thread(new StreamPumper(is, os, closeWhenExhausted, flushImmediately));
     result.setDaemon(true);
     return result;
   }

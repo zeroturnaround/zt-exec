@@ -69,6 +69,44 @@ public class StreamPumper implements Runnable {
   /** close the output stream when exhausted */
   private final boolean closeWhenExhausted;
 
+  /** flush the output stream after each write */
+  private final boolean flushImmediately;
+
+  /**
+   * Create a new stream pumper.
+   *
+   * @param is input stream to read data from
+   * @param os output stream to write data to.
+   * @param closeWhenExhausted if true, the output stream will be closed when the input is exhausted.
+   * @param flushImmediately flush the output stream whenever data was written to it
+   */
+  public StreamPumper(final InputStream is, final OutputStream os,
+      final boolean closeWhenExhausted, boolean flushImmediately) {
+    this.is = is;
+    this.os = os;
+    this.size = DEFAULT_SIZE;
+    this.closeWhenExhausted = closeWhenExhausted;
+    this.flushImmediately = flushImmediately;
+  }
+
+  /**
+   * Create a new stream pumper.
+   *
+   * @param is input stream to read data from
+   * @param os output stream to write data to.
+   * @param closeWhenExhausted if true, the output stream will be closed when the input is exhausted.
+   * @param size the size of the internal buffer for copying the streams
+   * @param flushImmediately flush the output stream whenever data was written to it
+   */
+  public StreamPumper(final InputStream is, final OutputStream os,
+      final boolean closeWhenExhausted, final int size, boolean flushImmediately) {
+    this.is = is;
+    this.os = os;
+    this.size = (size > 0 ? size : DEFAULT_SIZE);
+    this.closeWhenExhausted = closeWhenExhausted;
+    this.flushImmediately = flushImmediately;
+  }
+
   /**
    * Create a new stream pumper.
    * 
@@ -82,6 +120,7 @@ public class StreamPumper implements Runnable {
     this.os = os;
     this.size = DEFAULT_SIZE;
     this.closeWhenExhausted = closeWhenExhausted;
+    this.flushImmediately = false;
   }
 
   /**
@@ -98,6 +137,7 @@ public class StreamPumper implements Runnable {
     this.os = os;
     this.size = (size > 0 ? size : DEFAULT_SIZE);
     this.closeWhenExhausted = closeWhenExhausted;
+    this.flushImmediately = false;
   }
 
   /**
@@ -127,6 +167,9 @@ public class StreamPumper implements Runnable {
     try {
       while ((length = is.read(buf)) > 0) {
         os.write(buf, 0, length);
+        if(flushImmediately) {
+        	os.flush();
+        }
       }
     } catch (Exception e) {
       // nothing to do - happens quite often with watchdog
