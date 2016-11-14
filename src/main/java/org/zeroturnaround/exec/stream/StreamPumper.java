@@ -39,7 +39,14 @@ package org.zeroturnaround.exec.stream;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InterruptedIOException;
 import java.io.OutputStream;
+import java.util.concurrent.Callable;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.ThreadFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -164,8 +171,9 @@ public class StreamPumper implements Runnable {
     final byte[] buf = new byte[this.size];
 
     int length;
+    final ExecutorService asyncReads = newAsyncReadExecutor();
     try {
-      while ((length = is.read(buf)) > 0) {
+      while ((length = interruptableRead(is, buf, asyncReads)) > 0) {
         os.write(buf, 0, length);
         if(flushImmediately) {
         	os.flush();
@@ -182,11 +190,42 @@ public class StreamPumper implements Runnable {
           log.error("Got exception while closing exhausted output stream", e);
         }
       }
+      asyncReads.shutdownNow();
       synchronized (this) {
         finished = true;
         notifyAll();
       }
     }
+  }
+
+  private ExecutorService newAsyncReadExecutor() {
+    return Executors.newSingleThreadExecutor(new ThreadFactory() {
+		public Thread newThread(Runnable r) {
+			Thread t = new Thread(r);
+			t.setName(r + " [AsyncRead]");
+			t.setDaemon(true);
+			return t;
+		}
+	});
+  }
+
+  private int interruptableRead(final InputStream is, final byte[] buf, ExecutorService executor) throws IOException {
+	Future<Integer> result = executor.submit(new Callable<Integer>() {
+		public Integer call() throws Exception {
+			return is.read(buf);
+		}
+	});
+	try {
+		return result.get().intValue();
+	} catch (InterruptedException e) {
+		throw new InterruptedIOException();
+	} catch (ExecutionException e) {
+		if(e.getCause() instanceof IOException)
+			throw (IOException) e.getCause();
+		else if(e.getCause() instanceof RuntimeException)
+			throw (RuntimeException) e.getCause();
+		throw new IOException(e);
+	}
   }
 
   /**
