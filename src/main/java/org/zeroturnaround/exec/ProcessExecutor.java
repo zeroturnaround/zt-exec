@@ -37,6 +37,7 @@ import org.apache.commons.io.output.NullOutputStream;
 import org.apache.commons.io.output.TeeOutputStream;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import org.zeroturnaround.exec.close.ProcessCloser;
 import org.zeroturnaround.exec.close.StandardProcessCloser;
 import org.zeroturnaround.exec.close.TimeoutProcessCloser;
@@ -1127,7 +1128,19 @@ public class ProcessExecutor {
    * Override this to customize how the waiting task is started in the background.
    */
   protected <T> Future<T> invokeSubmit(ExecutorService executor, Callable<T> task) {
-    return executor.submit(task);
+    return executor.submit(wrapTask(task));
+  }
+
+  /**
+   * Override this to customize how the background task is created.
+   */
+  protected <T> Callable<T> wrapTask(Callable<T> task) {
+    // Preserve the MDC context of the caller thread.
+    Map contextMap = MDC.getCopyOfContextMap();
+    if (contextMap != null) {
+      return new MDCAdapter(task, contextMap);
+    }
+    return task;
   }
 
   private TimeoutException newTimeoutException(long timeout, TimeUnit unit, WaitForProcess task) {
