@@ -24,6 +24,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.*;
 import java.util.Map.Entry;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -925,9 +926,12 @@ public class ProcessExecutor {
   public StartedProcess start() throws IOException {
     WaitForProcess task = startInternal();
     ExecutorService service = newExecutor(task);
-    Future<ProcessResult> future = service.submit(task);
+    Future<ProcessResult> future = invokeSubmit(service, task);
     // Previously submitted tasks are executed but no new tasks will be accepted.
-    service.shutdown();
+    // However sub classes could return null as the ExecutorService
+    if (service != null) {
+      service.shutdown();
+    }
     return new StartedProcess(task.getProcess(), future);
   }
 
@@ -937,12 +941,13 @@ public class ProcessExecutor {
    * @return process the started process.
    * @throws IOException the process or its stream handlers couldn't start (in the latter case we also destroy the process).
    */
-  private WaitForProcess startInternal() throws IOException {
+  protected final WaitForProcess startInternal() throws IOException {
     // Invoke listeners - they can modify this executor
     listeners.beforeStart(this);
 
-    if (builder.command().isEmpty())
+    if (builder.command().isEmpty()) {
       throw new IllegalStateException("Command has not been set.");
+    }
     validateStreams(streams, readOutput);
 
     applyEnvironment();
@@ -951,14 +956,14 @@ public class ProcessExecutor {
     messageLogger.message(log, "Started {}", process);
     ProcessAttributes attributes = getAttributes();
 
+    ExecuteStreamHandler newStreams = streams;
+    ByteArrayOutputStream out = null;
     if (readOutput) {
       PumpStreamHandler pumps = (PumpStreamHandler) streams;
-      ByteArrayOutputStream out = new ByteArrayOutputStream();
-      return startInternal(process, attributes, redirectOutputAlsoTo(pumps, out), out);
+      out = new ByteArrayOutputStream();
+      newStreams = redirectOutputAlsoTo(pumps, out);
     }
-    else {
-      return startInternal(process, attributes, streams, null);
-    }
+    return startInternal(process, attributes, newStreams, out);
   }
 
   /**
@@ -1064,7 +1069,7 @@ public class ProcessExecutor {
       long _timeout = timeout;
       TimeUnit unit = timeoutUnit;
       try {
-        result = service.submit(task).get(_timeout, unit);
+        result = invokeSubmit(service, task).get(_timeout, unit);
       }
       catch (ExecutionException e) {
         Throwable c = e.getCause();
@@ -1101,9 +1106,13 @@ public class ProcessExecutor {
   }
 
   private ExecutorService newExecutor(WaitForProcess task) {
+    return newExecutor(task.getProcess().toString());
+  }
+
+  protected ExecutorService newExecutor(String processName) {
     // Use daemon thread as we don't want to postpone the shutdown
     // If #destroyOnExit() is used we wait for the process to be destroyed anyway
-    final String name = "WaitForProcess-" + task.getProcess().toString();
+    final String name = "WaitForProcess-" + processName;
     ExecutorService service = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
       public Thread newThread(Runnable r) {
         Thread t = new Thread(r, name);
@@ -1112,6 +1121,13 @@ public class ProcessExecutor {
       }
     });
     return service;
+  }
+
+  /**
+   * Override this to customize how the waiting task is started in the background.
+   */
+  protected <T> Future<T> invokeSubmit(ExecutorService executor, Callable<T> task) {
+    return executor.submit(task);
   }
 
   private TimeoutException newTimeoutException(long timeout, TimeUnit unit, WaitForProcess task) {
