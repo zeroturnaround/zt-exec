@@ -1138,7 +1138,7 @@ public class ProcessExecutor {
     // Preserve the MDC context of the caller thread.
     Map contextMap = MDC.getCopyOfContextMap();
     if (contextMap != null) {
-      return new MDCAdapter(task, contextMap);
+      return new MDCCallableAdapter(task, contextMap);
     }
     return task;
   }

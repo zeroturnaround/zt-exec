@@ -40,9 +40,12 @@ package org.zeroturnaround.exec.stream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
+import org.zeroturnaround.exec.MDCRunnableAdapter;
 
 /**
  * Copies standard output and error of subprocesses to standard output and error
@@ -333,9 +336,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    * @return the stream pumper thread
    */
   protected Thread createPump(InputStream is, OutputStream os, boolean closeWhenExhausted, boolean flushImmediately) {
-    Thread result = new Thread(new StreamPumper(is, os, closeWhenExhausted, flushImmediately));
-    result.setDaemon(true);
-    return result;
+    return newThread(new StreamPumper(is, os, closeWhenExhausted, flushImmediately));
   }
 
   /**
@@ -348,9 +349,28 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    */
   protected Thread createSystemInPump(InputStream is, OutputStream os) {
     inputStreamPumper = new InputStreamPumper(is, os);
-    final Thread result = new Thread(inputStreamPumper);
+    return newThread(inputStreamPumper);
+  }
+
+  /**
+   * Override this to customize how the background task is created.
+   */
+  protected Thread newThread(Runnable task) {
+    Thread result = new Thread(wrapTask(task));
     result.setDaemon(true);
     return result;
+  }
+
+  /**
+   * Override this to customize how the background task is created.
+   */
+  protected Runnable wrapTask(Runnable task) {
+    // Preserve the MDC context of the caller thread.
+    Map contextMap = MDC.getCopyOfContextMap();
+    if (contextMap != null) {
+      return new MDCRunnableAdapter(task, contextMap);
+    }
+    return task;
   }
 
 }

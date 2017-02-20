@@ -1,28 +1,27 @@
 package org.zeroturnaround.exec;
 
 import java.util.Map;
-import java.util.concurrent.Callable;
 
 import org.slf4j.MDC;
 
 /**
  * Restores the MDC context map for the target action.
  */
-public class MDCAdapter<T> implements Callable<T> {
+public class MDCRunnableAdapter implements Runnable {
 
-  private final Callable<T> target;
+  private final Runnable target;
 
   private final Map contextMap;
 
-  public MDCAdapter(Callable<T> target, Map contextMap) {
+  public MDCRunnableAdapter(Runnable target, Map contextMap) {
     this.target = target;
     this.contextMap = contextMap;
   }
 
-  public T call() throws Exception {
+  public void run() {
     MDC.setContextMap(contextMap);
     try {
-      return target.call();
+      target.run();
     }
     finally {
       MDC.clear();
