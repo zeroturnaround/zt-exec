@@ -42,7 +42,7 @@ public abstract class LogOutputStream extends OutputStream {
   private final ByteArrayOutputStream buffer = new ByteArrayOutputStream(
       INTIAL_SIZE);
 
-  private boolean skip = false;
+  byte lastReceivedByte;
 
   /**
    * Write the data to the buffer and flush the buffer, if a line separator is
@@ -54,13 +54,16 @@ public abstract class LogOutputStream extends OutputStream {
   public void write(final int cc) throws IOException {
     final byte c = (byte) cc;
     if ((c == '\n') || (c == '\r')) {
-      if (!skip) {
+      // new line is started in case of
+      // - CR (regardless of previous character)
+      // - LF if previous character was not CR and not LF
+      if (c == '\r' || (c == '\n' && (lastReceivedByte != '\r' && lastReceivedByte != '\n'))) {
         processBuffer();
       }
     } else {
       buffer.write(cc);
     }
-    skip = (c == '\r');
+    lastReceivedByte = c;
   }
 
   /**
@@ -110,6 +113,7 @@ public abstract class LogOutputStream extends OutputStream {
       int blockLength = offset - blockStartOffset;
       if (blockLength > 0) {
         buffer.write(b, blockStartOffset, blockLength);
+        lastReceivedByte = 0;
       }
       while (remaining > 0 && (b[offset] == LF || b[offset] == CR)) {
         write(b[offset]);
