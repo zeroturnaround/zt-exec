@@ -53,7 +53,7 @@ import org.zeroturnaround.exec.MDCRunnableAdapter;
  * from that stream will be lost.
  */
 public class PumpStreamHandler implements ExecuteStreamHandler {
- 
+
   private static final Logger log = LoggerFactory.getLogger(PumpStreamHandler.class);
 
   protected Thread outputThread;
@@ -354,6 +354,9 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
 
   /**
    * Override this to customize how the background task is created.
+   *
+   * @param task the task to be run in the background
+   * @return the thread of the task
    */
   protected Thread newThread(Runnable task) {
     Thread result = new Thread(wrapTask(task));
@@ -363,6 +366,9 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
 
   /**
    * Override this to customize how the background task is created.
+   *
+   * @param task the task to be run in the background
+   * @return the runnable of the wrapped task
    */
   protected Runnable wrapTask(Runnable task) {
     // Preserve the MDC context of the caller thread.

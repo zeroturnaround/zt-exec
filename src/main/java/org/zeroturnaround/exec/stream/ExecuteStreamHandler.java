@@ -14,12 +14,12 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- * 
+ *
  * NOTICE: This file originates from the Apache Commons Exec package.
  * It has been modified to fit our needs.
- * 
- * The following is the original header of the file in Apache Commons Exec:  
- * 
+ *
+ * The following is the original header of the file in Apache Commons Exec:
+ *
  *   Licensed to the Apache Software Foundation (ASF) under one or more
  *   contributor license agreements.  See the NOTICE file distributed with
  *   this work for additional information regarding copyright ownership.
@@ -49,31 +49,36 @@ public interface ExecuteStreamHandler {
 
   /**
    * Install a handler for the input stream of the subprocess.
-   * 
+   *
    * @param os
    *            output stream to write to the standard input stream of the
    *            subprocess
+   * @throws IOException throws a IO exception in case of IO issues of the underlying stream
    */
   void setProcessInputStream(OutputStream os) throws IOException;
 
   /**
    * Install a handler for the error stream of the subprocess.
-   * 
+   *
    * @param is
    *            input stream to read from the error stream from the subprocess
+   * @throws IOException throws a IO exception in case of IO issues of the underlying stream
    */
   void setProcessErrorStream(InputStream is) throws IOException;
 
   /**
    * Install a handler for the output stream of the subprocess.
-   * 
+   *
    * @param is
    *            input stream to read from the error stream from the subprocess
+   * @throws IOException throws a IO exception in case of IO issues of the underlying stream
    */
   void setProcessOutputStream(InputStream is) throws IOException;
 
   /**
    * Start handling of the streams.
+   *
+   * @throws IOException throws a IO exception in case of IO issues of the underlying stream
    */
   void start() throws IOException;
 

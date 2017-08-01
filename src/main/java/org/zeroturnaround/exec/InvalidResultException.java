@@ -33,6 +33,7 @@ public class InvalidResultException extends RuntimeException {
   private final ProcessResult result;
 
   /**
+   * @param message the detail message of the exception
    * @param result result of execution (contains also the exit value)
    */
   public InvalidResultException(String message, ProcessResult result) {

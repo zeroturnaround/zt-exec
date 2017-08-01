@@ -86,6 +86,7 @@ public class Slf4jStream {
   }
 
   /**
+   * @param level the desired logging level
    * @return output stream that writes with a given level.
    */
   public Slf4jOutputStream as(Level level) {

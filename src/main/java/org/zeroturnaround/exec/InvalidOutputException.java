@@ -31,6 +31,7 @@ public class InvalidOutputException extends InvalidResultException {
   private static final long serialVersionUID = 1L;
 
   /**
+   * @param message the detail message of the exception
    * @param result result of execution (contains also the exit value)
    */
   public InvalidOutputException(String message, ProcessResult result) {

@@ -28,7 +28,6 @@ import java.io.IOException;
  *     <li><code>java.io.IOException: Cannot run program "ls": java.io.IOException: error=12, Cannot allocate memory</code></li>
  *     <li><code>java.io.IOException: Cannot run program "ls": error=316, Unknown error: 316</code></li>
  *   </ul>
- * </p>
  */
 public class ProcessInitException extends IOException {
 

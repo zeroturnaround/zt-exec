@@ -62,6 +62,7 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
  * Helper for executing sub processes.
  * <p>
  * It's implemented as a wrapper of {@link ProcessBuilder} complementing it with additional features such as:
+ * </p>
  * <ul>
  *   <li>Handling process streams (copied from Commons Exec library).</li>
  *   <li>Destroying process on VM exit (copied from Commons Exec library).</li>
@@ -70,8 +71,10 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
  *   <li>Either waiting for the process to finish ({@link #execute()}) or returning a {@link Future} ({@link #start()}.</li>
  *   <li>Reading the process output stream into a buffer ({@link #readOutput(boolean)}, {@link ProcessResult}).</li>
  * </ul>
+ *
  * <p>
  * The default configuration for executing a process is following:
+ * </p>
  * <ul>
  *   <li>Process is not automatically destroyed on VM exit.</li>
  *   <li>Error stream is redirected to its output stream. Use {@link #redirectErrorStream(boolean)} to override it.</li>
@@ -79,8 +82,7 @@ import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
  *   or any of the <code>redirectOutputAs*</code> methods.to override it.</li>
  *   <li>Any exit code is allowed. Use {@link #exitValues(Integer...)} to override it.</li>
  *   <li>In case of timeout or cancellation {@link Process#destroy()} is invoked.</li>
- * </li>
- * </p>
+ * </ul>
  *
  * @author Rein Raudjärv
  * @see ProcessResult
@@ -273,7 +275,7 @@ public class ProcessExecutor {
    * The argument may be <code>null</code> -- this means to use the
    * working directory of the current Java process, usually the
    * directory named by the system property <code>user.dir</code>,
-   * as the working directory of the child process.</p>
+   * as the working directory of the child process.
    *
    * @param   directory  The new working directory
    * @return  This process executor.
@@ -393,6 +395,7 @@ public class ProcessExecutor {
    * This only applies to <code>execute</code> methods not <code>start</code> methods.
    *
    * @param timeout timeout for running a process.
+   * @param unit the time unit of the timeout
    * @return This process executor.
    */
   public ProcessExecutor timeout(long timeout, TimeUnit unit) {
@@ -427,6 +430,8 @@ public class ProcessExecutor {
   /**
    * Sets a stream handler for the process being executed.
    * This will overwrite any stream redirection that was previously set to use the provided handler.
+   *
+   * @param streams the stream handler
    * @return This process executor.
    */
   public ProcessExecutor streams(ExecuteStreamHandler streams) {
@@ -447,6 +452,7 @@ public class ProcessExecutor {
    * By default there's no closing timeout.
    *
    * @param timeout timeout for closing streams of a process.
+   * @param unit the time unit of the timeout
    * @return This process executor.
    */
   public ProcessExecutor closeTimeout(long timeout, TimeUnit unit) {
@@ -509,6 +515,7 @@ public class ProcessExecutor {
    * Redirects the process' output stream also to a given output stream.
    * This method can be used to redirect output to multiple streams.
    *
+   * @param output the stream to redirect this output to
    * @return This process executor.
    */
   public ProcessExecutor redirectOutputAlsoTo(OutputStream output) {
@@ -522,6 +529,7 @@ public class ProcessExecutor {
    * Calling this method automatically disables merging the process error stream to its output stream.
    * </p>
    *
+   * @param output the output stream to redirect the error stream to
    * @return This process executor.
    */
   public ProcessExecutor redirectErrorAlsoTo(OutputStream output) {
@@ -600,6 +608,8 @@ public class ProcessExecutor {
 
   /**
    * Logs the process' output to a given {@link Logger} with <code>info</code> level.
+   *
+   * @param log the logger to process the output to
    * @return This process executor.
    * @deprecated use {@link #redirectOutput(OutputStream)} and {@link Slf4jStream}
    */
@@ -609,6 +619,8 @@ public class ProcessExecutor {
 
   /**
    * Logs the process' output to a given {@link Logger} with <code>debug</code> level.
+   *
+   * @param log the logger to process the output to
    * @return This process executor.
    * @deprecated use {@link #redirectOutput(OutputStream)} and {@link Slf4jStream}
    */
@@ -618,6 +630,8 @@ public class ProcessExecutor {
 
   /**
    * Logs the process' output to a {@link Logger} with given name using <code>info</code> level.
+   *
+   * @param name the name of the logger to process the output to
    * @return This process executor.
    * @deprecated use {@link #redirectOutput(OutputStream)} and {@link Slf4jStream}
    */
@@ -627,6 +641,8 @@ public class ProcessExecutor {
 
   /**
    * Logs the process' output to a {@link Logger} with given name using <code>debug</code> level.
+   *
+   * @param name the name of the logger to process the output to
    * @return This process executor.
    * @deprecated use {@link #redirectOutput(OutputStream)} and {@link Slf4jStream}
    */
@@ -636,6 +652,7 @@ public class ProcessExecutor {
 
   /**
    * Logs the process' output to a {@link Logger} of the caller class using <code>info</code> level.
+   *
    * @return This process executor.
    * @deprecated use {@link #redirectOutput(OutputStream)} and {@link Slf4jStream}
    */
@@ -654,6 +671,8 @@ public class ProcessExecutor {
 
   /**
    * Logs the process' output to a given {@link Logger} with <code>info</code> level.
+   *
+   * @param log the logger to output the message to
    * @return This process executor.
    * @deprecated use {@link #redirectOutput(OutputStream)} and {@link Slf4jStream}
    */
@@ -663,6 +682,8 @@ public class ProcessExecutor {
 
   /**
    * Logs the process' output to a given {@link Logger} with <code>debug</code> level.
+   *
+   * @param log the logger to output the message to
    * @return This process executor.
    * @deprecated use {@link #redirectOutput(OutputStream)} and {@link Slf4jStream}
    */
@@ -672,6 +693,8 @@ public class ProcessExecutor {
 
   /**
    * Logs the process' output to a {@link Logger} with given name using <code>info</code> level.
+   *
+   * @param name the name of the logger to log to
    * @return This process executor.
    * @deprecated use {@link #redirectOutput(OutputStream)} and {@link Slf4jStream}
    */
@@ -681,6 +704,8 @@ public class ProcessExecutor {
 
   /**
    * Logs the process' output to a {@link Logger} with given name using <code>debug</code> level.
+   *
+   * @param name the name of the logger to process output to
    * @return This process executor.
    * @deprecated use {@link #redirectOutput(OutputStream)} and {@link Slf4jStream}
    */
@@ -708,6 +733,8 @@ public class ProcessExecutor {
 
   /**
    * Logs the process' error to a given {@link Logger} with <code>info</code> level.
+   *
+   * @param log the logger to process output to
    * @return This process executor.
    * @deprecated use {@link #redirectError(OutputStream)} and {@link Slf4jStream}
    */
@@ -717,6 +744,8 @@ public class ProcessExecutor {
 
   /**
    * Logs the process' error to a given {@link Logger} with <code>debug</code> level.
+   *
+   * @param log the logger to process the error to
    * @return This process executor.
    * @deprecated use {@link #redirectError(OutputStream)} and {@link Slf4jStream}
    */
@@ -726,6 +755,8 @@ public class ProcessExecutor {
 
   /**
    * Logs the process' error to a {@link Logger} with given name using <code>info</code> level.
+   *
+   * @param name the name of the logger to process the error to
    * @return This process executor.
    * @deprecated use {@link #redirectError(OutputStream)} and {@link Slf4jStream}
    */
@@ -735,6 +766,8 @@ public class ProcessExecutor {
 
   /**
    * Logs the process' error to a {@link Logger} with given name using <code>debug</code> level.
+   *
+   * @param name the name of the logger to process the error to
    * @return This process executor.
    * @deprecated use {@link #redirectError(OutputStream)} and {@link Slf4jStream}
    */
@@ -1126,6 +1159,11 @@ public class ProcessExecutor {
 
   /**
    * Override this to customize how the waiting task is started in the background.
+   *
+   * @param <T> the type of the task
+   * @param executor the executor service to submit the task on
+   * @param task the task to be submitted
+   * @return the future of the task
    */
   protected <T> Future<T> invokeSubmit(ExecutorService executor, Callable<T> task) {
     return executor.submit(wrapTask(task));
@@ -1133,6 +1171,10 @@ public class ProcessExecutor {
 
   /**
    * Override this to customize how the background task is created.
+   *
+   * @param <T> the type of the Task
+   * @param task the Task to be wrapped
+   * @return the wrapped task
    */
   protected <T> Callable<T> wrapTask(Callable<T> task) {
     // Preserve the MDC context of the caller thread.
