@@ -2,6 +2,12 @@
   ZT Exec Changelog
 ********************************************
 
+1.10 (1st August 2017)
+* Added support for flushing output after each write
+* Added support for hooks for thread executor creation
+* Added support of preserving MDC context of the caller thread
+* Changed LogOutpuStream to handle line breaks like ProcessOutput
+
 1.9 (12th April 2016)
 * Fixed using empty arguments on Windows
 * Fixed closing stdin on Java 8
