@@ -19,7 +19,7 @@ package org.zeroturnaround.exec.test;
 
 import java.io.ByteArrayInputStream;
 
-import org.apache.commons.lang.SystemUtils;
+import org.apache.commons.lang3.SystemUtils;
 import org.junit.Assume;
 import org.junit.Test;
 import org.slf4j.Logger;
