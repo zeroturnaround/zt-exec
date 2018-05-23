@@ -27,7 +27,6 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.zeroturnaround.exec.ProcessExecutor;
 
-
 public class ProcessExecutorTimeoutTest {
 
   @Test
@@ -67,6 +66,47 @@ public class ProcessExecutorTimeoutTest {
       }
     };
     return args;
+  }
+
+  /*
+   * This is a test copied from https://github.com/zeroturnaround/zt-exec/issues/56
+   */
+  @Test
+  public void testExecuteTimeoutIssue56_1() throws Exception {
+    try {
+      List<String> commands = new ArrayList<String>();
+      commands.add("sleep");
+      commands.add("3");
+      new ProcessExecutor()
+          .command(commands)
+          .timeout(1, TimeUnit.SECONDS)
+          .execute();
+      Assert.fail("TimeoutException expected.");
+    }
+    catch (TimeoutException e) {
+      Assert.assertThat(e.getMessage(), CoreMatchers.containsString("1 second"));
+    }
+  }
+
+  /*
+   * This is a test copied from https://github.com/zeroturnaround/zt-exec/issues/56
+   */
+  @Test
+  public void testStartTimeoutIssue56_2() throws Exception {
+    try {
+      List<String> commands = new ArrayList<String>();
+      commands.add("sleep");
+      commands.add("3");
+      new ProcessExecutor()
+          .command(commands)
+          .start()
+          .getFuture()
+          .get(1, TimeUnit.SECONDS);
+      Assert.fail("TimeoutException expected.");
+    }
+    catch (TimeoutException e) {
+      Assert.assertNull(e.getMessage());
+    }
   }
 
 }
