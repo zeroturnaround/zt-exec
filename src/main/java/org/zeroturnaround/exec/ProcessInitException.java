@@ -67,7 +67,7 @@ public class ProcessInitException extends IOException {
       return null;
     }
     int j = m.indexOf(AFTER_CODE, i);
-    if (i == -1) {
+    if (j == -1) {
       return null;
     }
     int code;
