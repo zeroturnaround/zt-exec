@@ -17,15 +17,16 @@
  */
 package org.zeroturnaround.exec.test;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-
+import org.apache.commons.lang3.SystemUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
 import org.zeroturnaround.exec.ProcessExecutor;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class ProcessExecutorTimeoutTest {
 
@@ -75,8 +76,17 @@ public class ProcessExecutorTimeoutTest {
   public void testExecuteTimeoutIssue56_1() throws Exception {
     try {
       List<String> commands = new ArrayList<String>();
-      commands.add("sleep");
-      commands.add("3");
+      if (SystemUtils.IS_OS_WINDOWS) {
+        // native sleep command is not available on Windows platform
+        // mock using standard ping to localhost instead
+        // (Windows ping does 4 requests which takes about 3 seconds)
+        commands.add("ping");
+        commands.add("127.0.0.1");
+      }
+      else {
+        commands.add("sleep");
+        commands.add("3");
+      }
       new ProcessExecutor()
           .command(commands)
           .timeout(1, TimeUnit.SECONDS)
@@ -95,8 +105,17 @@ public class ProcessExecutorTimeoutTest {
   public void testStartTimeoutIssue56_2() throws Exception {
     try {
       List<String> commands = new ArrayList<String>();
-      commands.add("sleep");
-      commands.add("3");
+      if (SystemUtils.IS_OS_WINDOWS) {
+        // native sleep command is not available on Windows platform
+        // mock using standard ping to localhost instead
+        // (Windows ping does 4 requests which takes about 3 seconds)
+        commands.add("ping");
+        commands.add("127.0.0.1");
+      }
+      else {
+        commands.add("sleep");
+        commands.add("3");
+      }
       new ProcessExecutor()
           .command(commands)
           .start()
