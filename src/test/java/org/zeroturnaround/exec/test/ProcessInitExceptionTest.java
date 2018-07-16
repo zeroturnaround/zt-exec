@@ -44,4 +44,13 @@ public class ProcessInitExceptionTest {
     Assert.assertEquals(12, e.getErrorCode());
   }
 
+  @Test
+  public void testBeforeCode() throws Exception {
+    ProcessInitException e = ProcessInitException.newInstance(
+        "Could not run test.", new IOException("java.io.IOException: Cannot run program \"sleep\": java.io.IOException: CreateProcess error=2, The system cannot find the file specified"));
+    Assert.assertNotNull(e);
+    Assert.assertEquals("Could not run test. Error=2, The system cannot find the file specified", e.getMessage());
+    Assert.assertEquals(2, e.getErrorCode());
+  }
+
 }
