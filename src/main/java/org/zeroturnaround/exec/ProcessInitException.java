@@ -31,7 +31,7 @@ import java.io.IOException;
  */
 public class ProcessInitException extends IOException {
 
-  private static final String BEFORE_CODE = ": error=";
+  private static final String BEFORE_CODE = " error=";
   private static final String AFTER_CODE = ", ";
   private static final String NEW_INFIX = " Error=";
 
@@ -67,7 +67,7 @@ public class ProcessInitException extends IOException {
       return null;
     }
     int j = m.indexOf(AFTER_CODE, i);
-    if (i == -1) {
+    if (j == -1) {
       return null;
     }
     int code;
