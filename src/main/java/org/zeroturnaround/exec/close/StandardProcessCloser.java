@@ -68,7 +68,6 @@ public class StandardProcessCloser implements ProcessCloser {
         log.trace("Failed to close process output stream:", e);
       }
       else {
-        log.error("Failed to close process output stream:", e);
         caught = add(caught, e);
       }
     }
@@ -77,7 +76,6 @@ public class StandardProcessCloser implements ProcessCloser {
       process.getInputStream().close();
     }
     catch (IOException e) {
-      log.error("Failed to close process input stream:", e);
       caught = add(caught, e);
     }
 
@@ -85,7 +83,6 @@ public class StandardProcessCloser implements ProcessCloser {
       process.getErrorStream().close();
     }
     catch (IOException e) {
-      log.error("Failed to close process error stream:", e);
       caught = add(caught, e);
     }
 

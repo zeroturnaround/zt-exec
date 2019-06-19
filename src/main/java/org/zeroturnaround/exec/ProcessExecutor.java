@@ -1016,7 +1016,6 @@ public class ProcessExecutor {
       return builder.start();
     }
     catch (IOException e) {
-      log.error("Could not start process:", e);
       if (e.getClass().equals(IOException.class)) {
         String message = getExecutingErrorMessage();
         ProcessInitException p = ProcessInitException.newInstance(message, e);
@@ -1028,7 +1027,6 @@ public class ProcessExecutor {
       throw e;
     }
     catch (RuntimeException e) {
-      log.error("Could not start process:", e);
       if (e.getClass().equals(IllegalArgumentException.class)) {
         throw new IllegalArgumentException(getExecutingErrorMessage(), e);
       }
