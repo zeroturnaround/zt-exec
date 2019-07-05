@@ -13,7 +13,7 @@
   <artifactId>zt-exec</artifactId>
   <packaging>jar</packaging>
   <name>ZT Process Executor</name>
-  <version>1.11-SNAPSHOT</version>
+  <version>1.11</version>
 
   <scm>
     <connection>scm:git:git@github.com:zeroturnaround/zt-exec.git</connection>
