@@ -13,7 +13,7 @@ the user gets the functionality from both **java.lang.ProcessBuilder** and [Apac
 ### Installation
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.zeroturnaround/zt-exec/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.zeroturnaround/zt-exec)
 
-The project artifacts are available in [Maven Central Repository](http://search.maven.org/#browse%7C1982316413).
+The project artifacts are available in [Maven Central Repository](https://search.maven.org/artifact/org.zeroturnaround/zt-exec/).
 
 To include it in your maven project then you have to specify the dependency.
 
