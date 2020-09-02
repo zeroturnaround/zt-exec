@@ -22,7 +22,7 @@ To include it in your maven project then you have to specify the dependency.
 <dependency>
     <groupId>org.zeroturnaround</groupId>
     <artifactId>zt-exec</artifactId>
-    <version>1.11</version>
+    <version>1.12</version>
 </dependency>
 ...
 ```
