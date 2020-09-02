@@ -2,6 +2,9 @@
   ZT Exec Changelog
 ********************************************
 
+1.12 (2nd of September 2020)
+* Removed rebel.xml from the release archive
+
 1.11 (5th of July 2019)
 * Improved usage - eliminated cases of log and throw
 * Removed dependency on Apache's commons-io library
