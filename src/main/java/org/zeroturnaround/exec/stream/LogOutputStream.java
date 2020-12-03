@@ -20,6 +20,8 @@ package org.zeroturnaround.exec.stream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.Charset;
 
 /**
  * Base class to connect a logging system to the output and/or
@@ -43,6 +45,13 @@ public abstract class LogOutputStream extends OutputStream {
       INTIAL_SIZE);
 
   byte lastReceivedByte;
+
+  private String outputCharset;
+
+  public LogOutputStream setOutputCharset(final String outputCharset) {
+    this.outputCharset = outputCharset;
+    return this;
+  }
 
   /**
    * Write the data to the buffer and flush the buffer, if a line separator is
@@ -128,7 +137,17 @@ public abstract class LogOutputStream extends OutputStream {
    * Converts the buffer to a string and sends it to <code>processLine</code>.
    */
   protected void processBuffer() {
-    processLine(buffer.toString());
+    final String line;
+    if (outputCharset == null) {
+      line = buffer.toString();
+    } else {
+      try {
+        line = buffer.toString(outputCharset);
+      } catch (UnsupportedEncodingException e) {
+        throw new IllegalArgumentException(e);
+      }
+    }
+    processLine(line);
     buffer.reset();
   }
 
