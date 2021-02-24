@@ -26,10 +26,9 @@ public class ProcessListenerThrowTest {
     public void afterFinish(Process process, ProcessResult result) {
       super.afterFinish(process, result);
 
-      if (result.getOutput().getString().contains("java version")) {
+      if (result.getOutput().getString().contains("openjdk version") || result.getOutput().getString().contains("java version")) {
         throw new InvalidOutputException("Test", result);
       }
     }
   }
-
 }
