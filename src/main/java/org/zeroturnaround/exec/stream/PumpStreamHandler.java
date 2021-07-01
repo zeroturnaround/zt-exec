@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.concurrent.ThreadFactory;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,8 @@ import org.zeroturnaround.exec.MDCRunnableAdapter;
 public class PumpStreamHandler implements ExecuteStreamHandler {
 
   private static final Logger log = LoggerFactory.getLogger(PumpStreamHandler.class);
+
+  protected final ThreadFactory threadFactory;
 
   protected Thread outputThread;
 
@@ -73,8 +76,8 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
   /**
    * Construct a new <CODE>PumpStreamHandler</CODE>.
    */
-  public PumpStreamHandler() {
-    this(System.out, System.err);
+  public PumpStreamHandler(ThreadFactory tf) {
+    this(tf, System.out, System.err);
   }
 
   /**
@@ -83,8 +86,8 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    * @param outAndErr
    *            the output/error <CODE>OutputStream</CODE>.
    */
-  public PumpStreamHandler(OutputStream outAndErr) {
-    this(outAndErr, outAndErr);
+  public PumpStreamHandler(ThreadFactory tf, OutputStream outAndErr) {
+    this(tf, outAndErr, outAndErr);
   }
 
   /**
@@ -95,13 +98,15 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    * @param err
    *            the error <CODE>OutputStream</CODE>.
    */
-  public PumpStreamHandler(OutputStream out, OutputStream err) {
-    this(out, err, null);
+  public PumpStreamHandler(ThreadFactory tf, OutputStream out, OutputStream err) {
+    this(tf, out, err, null);
   }
 
   /**
    * Construct a new <CODE>PumpStreamHandler</CODE>.
    *
+   * @param tf
+   * 			the <CODE>ThreadFactory</CODE> to use to create threads.
    * @param out
    *            the output <CODE>OutputStream</CODE>.
    * @param err
@@ -109,7 +114,8 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    * @param input
    *            the input <CODE>InputStream</CODE>.
    */
-  public PumpStreamHandler(OutputStream out, OutputStream err, InputStream input) {
+  public PumpStreamHandler(ThreadFactory tf, OutputStream out, OutputStream err, InputStream input) {
+	this.threadFactory = tf;
     this.out = out;
     this.err = err;
     this.input = input;
@@ -359,7 +365,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    * @return the thread of the task
    */
   protected Thread newThread(Runnable task) {
-    Thread result = new Thread(wrapTask(task));
+	Thread result = threadFactory.newThread(wrapTask(task));
     result.setDaemon(true);
     return result;
   }
@@ -372,7 +378,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    */
   protected Runnable wrapTask(Runnable task) {
     // Preserve the MDC context of the caller thread.
-    Map contextMap = MDC.getCopyOfContextMap();
+    Map<?,?> contextMap = MDC.getCopyOfContextMap();
     if (contextMap != null) {
       return new MDCRunnableAdapter(task, contextMap);
     }

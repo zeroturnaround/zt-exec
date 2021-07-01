@@ -80,6 +80,13 @@ public class ProcessExecutor {
 
   public static final boolean DEFAULT_REDIRECT_ERROR_STREAM = true;
 
+  private static final ThreadFactory DEFAULT_THREAD_FACTORY = new ThreadFactory() {
+	@Override
+	public Thread newThread(Runnable r) {
+		return new Thread(r);
+	}
+  };
+
   /**
    * Process builder used by this executor.
    */
@@ -132,10 +139,13 @@ public class ProcessExecutor {
    */
   private MessageLogger messageLogger = MessageLoggers.DEBUG;
 
+  private ThreadFactory threadFactory = null;
+
   {
     // Run in case of any constructor
     exitValues(DEFAULT_EXIT_VALUES);
     stopper(DestroyProcessStopper.INSTANCE);
+    threadFactory(null);
     redirectOutput(null);
     redirectError(null);
     destroyer(null);
@@ -146,6 +156,15 @@ public class ProcessExecutor {
    * Creates new {@link ProcessExecutor} instance.
    */
   public ProcessExecutor() {
+  }
+
+  private ProcessExecutor threadFactory(ThreadFactory tf) {
+	if (tf == null) {
+	  threadFactory = DEFAULT_THREAD_FACTORY;
+	} else {
+	  threadFactory = tf;
+	}
+	return this;
   }
 
   /**
@@ -452,7 +471,7 @@ public class ProcessExecutor {
   public ProcessExecutor redirectInput(InputStream input) {
     PumpStreamHandler pumps = pumps();
     // Only set the input stream handler, preserve the same output and error stream handler
-    return streams(new PumpStreamHandler(pumps == null ? null : pumps.getOut(), pumps == null ? null : pumps.getErr(), input));
+    return streams(new PumpStreamHandler(threadFactory, pumps == null ? null : pumps.getOut(), pumps == null ? null : pumps.getErr(), input));
   }
 
   /**
@@ -468,7 +487,7 @@ public class ProcessExecutor {
       output = NullOutputStream.NULL_OUTPUT_STREAM;
     PumpStreamHandler pumps = pumps();
     // Only set the output stream handler, preserve the same error stream handler
-    return streams(new PumpStreamHandler(output, pumps == null ? null : pumps.getErr(), pumps == null ? null : pumps.getInput()));
+    return streams(new PumpStreamHandler(threadFactory, output, pumps == null ? null : pumps.getErr(), pumps == null ? null : pumps.getInput()));
   }
 
   /**
@@ -487,7 +506,7 @@ public class ProcessExecutor {
       output = NullOutputStream.NULL_OUTPUT_STREAM;
     PumpStreamHandler pumps = pumps();
     // Only set the error stream handler, preserve the same output stream handler
-    streams(new PumpStreamHandler(pumps == null ? null : pumps.getOut(), output, pumps == null ? null : pumps.getInput()));
+    streams(new PumpStreamHandler(threadFactory, pumps == null ? null : pumps.getOut(), output, pumps == null ? null : pumps.getInput()));
     redirectErrorStream(false);
     return this;
   }
@@ -545,7 +564,7 @@ public class ProcessExecutor {
     if (current != null && !(current instanceof NullOutputStream)) {
       output = new TeeOutputStream(current, output);
     }
-    return new PumpStreamHandler(output, pumps.getErr(), pumps.getInput());
+    return new PumpStreamHandler(DEFAULT_THREAD_FACTORY, output, pumps.getErr(), pumps.getInput());
   }
 
   /**
@@ -560,7 +579,7 @@ public class ProcessExecutor {
     if (current != null && !(current instanceof NullOutputStream)) {
       output = new TeeOutputStream(current, output);
     }
-    return new PumpStreamHandler(pumps.getOut(), output, pumps.getInput());
+    return new PumpStreamHandler(DEFAULT_THREAD_FACTORY, pumps.getOut(), output, pumps.getInput());
   }
 
   /**
@@ -1157,9 +1176,9 @@ public class ProcessExecutor {
    */
   protected <T> Callable<T> wrapTask(Callable<T> task) {
     // Preserve the MDC context of the caller thread.
-    Map contextMap = MDC.getCopyOfContextMap();
+    Map<?,?> contextMap = MDC.getCopyOfContextMap();
     if (contextMap != null) {
-      return new MDCCallableAdapter(task, contextMap);
+      return new MDCCallableAdapter<T>(task, contextMap);
     }
     return task;
   }
@@ -1234,7 +1253,7 @@ public class ProcessExecutor {
       return command;
     }
     List<String> result = new ArrayList<String>(command);
-    for (ListIterator it = result.listIterator(); it.hasNext(); ) {
+    for (ListIterator<String> it = result.listIterator(); it.hasNext(); ) {
       if ("".equals(it.next())) {
         it.set("\"\"");
       }
