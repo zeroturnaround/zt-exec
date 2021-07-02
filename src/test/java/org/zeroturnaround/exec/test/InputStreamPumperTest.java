@@ -20,6 +20,7 @@ package org.zeroturnaround.exec.test;
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 
+import org.apache.commons.lang3.concurrent.BasicThreadFactory;
 import org.junit.Assert;
 import org.junit.Test;
 import org.zeroturnaround.exec.ProcessExecutor;
@@ -35,7 +36,8 @@ public class InputStreamPumperTest {
     String str = "Tere Minu Uus vihik";
     ByteArrayInputStream bais = new ByteArrayInputStream(str.getBytes());
     ByteArrayOutputStream baos = new ByteArrayOutputStream();
-    PumpStreamHandler handler = new PumpStreamHandler(baos, System.err, bais);
+    PumpStreamHandler handler = new PumpStreamHandler(
+    	new BasicThreadFactory.Builder().daemon(true).namingPattern("test").build(), baos, System.err, bais);
 
     ProcessExecutor exec = new ProcessExecutor("java", "-cp", "target/test-classes",
         PrintInputToOutput.class.getName()).readOutput(true);
