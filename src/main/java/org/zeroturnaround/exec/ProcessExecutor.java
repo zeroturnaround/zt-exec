@@ -158,7 +158,7 @@ public class ProcessExecutor {
   public ProcessExecutor() {
   }
 
-  private ProcessExecutor threadFactory(ThreadFactory tf) {
+  public ProcessExecutor threadFactory(ThreadFactory tf) {
 	if (tf == null) {
 	  threadFactory = DEFAULT_THREAD_FACTORY;
 	} else {
