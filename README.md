@@ -3,6 +3,7 @@ ZT Process Executor
 
 ### Continuous Integration
 [![Build Status](https://travis-ci.org/zeroturnaround/zt-exec.png)](https://travis-ci.org/zeroturnaround/zt-exec)
+[![Thundra Foresight](https://thundra-assets-prod.s3.us-west-2.amazonaws.com/images/badges/thundra-foresight-badge-enabled.svg)](https://foresight.thundra.live/testRuns/990aa4fb-0579-11ec-9d1c-06b7c28c2b8c)
 
 ### Quick Overview
 
@@ -29,7 +30,7 @@ To include it in your maven project then you have to specify the dependency.
 
 ## Motivation
 
-There are many approaches to take when running external processes from Java. There are the **JRE** options such as the **Runtime.exec()** and **ProcessBuilder**. Also there is the [Apache Commons Exec](http://commons.apache.org/proper/commons-exec/). Nevertheless we created yet another process library (**YAPL**). 
+There are many approaches to take when running external processes from Java. There are the **JRE** options such as the **Runtime.exec()** and **ProcessBuilder**. Also there is the [Apache Commons Exec](http://commons.apache.org/proper/commons-exec/). Nevertheless we created yet another process library (**YAPL**).
 
 Some of the reasons for this crazy endeavour
 
@@ -42,7 +43,7 @@ Some of the reasons for this crazy endeavour
  * One liners for quite complex usecases
  * One liners to get process output into a String
  * Access to the **Process** object available
- * Support for async processes ( **Future** ) 
+ * Support for async processes ( **Future** )
 * Improved logging with [SLF4J API](http://www.slf4j.org/)
 * Support for multiple processes
 
@@ -75,7 +76,7 @@ int exit = new ProcessExecutor().command("java", "-version")
 ```java
 String output = new ProcessExecutor().command("java", "-version")
                   .readOutput(true).execute()
-                  .outputUTF8();    
+                  .outputUTF8();
 ```
 
 <hr/>
@@ -216,7 +217,7 @@ catch (InvalidExitValueException e) {
 <hr/>
 
 * Throw exception when wrong exit code
-* Return output as UTF8 String 
+* Return output as UTF8 String
 
 ```java
 String output;
@@ -259,4 +260,3 @@ Future<ProcessResult> future = new ProcessExecutor()
 // do some stuff
 String output = future.get(60, TimeUnit.SECONDS).outputUTF8();
 ```
-
