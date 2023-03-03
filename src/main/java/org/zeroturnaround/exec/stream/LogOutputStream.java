@@ -21,7 +21,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 
 /**
  * Base class to connect a logging system to the output and/or
@@ -159,4 +158,27 @@ public abstract class LogOutputStream extends OutputStream {
    */
   protected abstract void processLine(String line);
 
+  /**
+   * This is equivalent to {@code java.util.function.Consumer} while staying compatible with
+   * earlier java version.
+   */
+  public interface LineConsumer {
+    void accept(String line);
+  }
+
+  /**
+   * Creates LogOutputStream passing each line to the specified consumer.
+   * This method is supposed to be used in java 8+, providing consumer as a lambda expression.
+   */
+  public static LogOutputStream create(final LineConsumer consumer) {
+    if (consumer == null) {
+      throw new IllegalArgumentException("Line consumer must be provided.");
+    }
+    return new LogOutputStream() {
+      @Override
+      protected void processLine(String line) {
+        consumer.accept(line);
+      }
+    };
+  }
 }
