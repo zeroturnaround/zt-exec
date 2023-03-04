@@ -167,10 +167,10 @@ public abstract class LogOutputStream extends OutputStream {
   }
 
   /**
-  * Factory method to create a <code>LogOutputStream</code> that passes each line to the specified consumer.
-  * <p>Mostly useful with Java 8+, so the consumer can be passed as a lambda expression.</p>
-  *
-  * @param consumer the consumer to consume the log lines
+   * Factory method to create a <code>LogOutputStream</code> that passes each line to the specified consumer.
+   * <p>Mostly useful with Java 8+, so the consumer can be passed as a lambda expression.</p>
+   *
+   * @param consumer the consumer to consume the log lines
    * @return the created <code>LogOutputStream</code>, passing each line to the specified consumer.
    */
   public static LogOutputStream create(final LineConsumer consumer) {
