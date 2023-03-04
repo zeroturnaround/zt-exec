@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import org.junit.Assert;
@@ -74,4 +75,18 @@ public class LogOutputStreamTest {
 		testLogOutputStream("foo\n", "foo");
 	}
 
+	@Test
+	public void lambda() throws IOException {
+		final List<String> lines = new ArrayList<String>();
+		LogOutputStream out = LogOutputStream.create(new LogOutputStream.LineConsumer() {
+			@Override
+			public void accept(String line) {
+				lines.add(line);
+			}
+		});
+		out.write("foo\nbar".getBytes());
+		Assert.assertEquals(Collections.singletonList("foo"), lines);
+		out.flush();
+		Assert.assertEquals(Arrays.asList("foo", "bar"), lines);
+	}
 }
