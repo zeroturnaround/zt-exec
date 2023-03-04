@@ -160,7 +160,7 @@ public abstract class LogOutputStream extends OutputStream {
 
   /**
    * This is equivalent to {@code java.util.function.Consumer} while staying compatible with
-   * earlier java version.
+   * Java versions earlier than 8.
    */
   public interface LineConsumer {
     void accept(String line);
