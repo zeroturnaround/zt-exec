@@ -39,6 +39,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <project.build.outputTimestamp>${git.commit.author.time}</project.build.outputTimestamp>
   </properties>
 
   <dependencies>
@@ -91,8 +92,14 @@
         <version>3.3.0</version>
         <configuration>
           <archive>
-            <addMavenDescriptor>false</addMavenDescriptor>
             <manifestFile>${project.build.outputDirectory}/META-INF/MANIFEST.MF</manifestFile>
+            <manifestEntries>
+              <Build-Timestamp>${git.commit.author.time}</Build-Timestamp>
+              <Build-Revision>${git.commit.id}</Build-Revision>
+            </manifestEntries>
+            <manifest>
+              <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+            </manifest>
           </archive>
         </configuration>
       </plugin>
@@ -175,6 +182,27 @@ Export-Package:\
               <jdepsExtraArgs>
                 <arg>--multi-release=9</arg>
               </jdepsExtraArgs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>io.github.git-commit-id</groupId>
+        <artifactId>git-commit-id-maven-plugin</artifactId>
+        <version>5.0.0</version>
+        <executions>
+          <execution>
+            <id>resolve-git-properties</id>
+            <goals>
+              <goal>revision</goal>
+            </goals>
+            <phase>validate</phase>
+            <configuration>
+              <verbose>false</verbose>
+              <failOnNoGitDirectory>false</failOnNoGitDirectory>
+              <generateGitPropertiesFile>true</generateGitPropertiesFile>
+              <generateGitPropertiesFilename>${project.build.directory}/git.properties</generateGitPropertiesFilename>
+              <dateFormat>yyyy-MM-dd'T'HH:mm:ssXXX</dateFormat>
             </configuration>
           </execution>
         </executions>
