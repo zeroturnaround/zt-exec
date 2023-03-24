@@ -1,0 +1,29 @@
+name: Build
+
+on: [push, pull_request]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        job:
+          - { java: 8,  mvn_args: '-Dmoditect.skip=true' }
+          - { java: 11, mvn_args: '' }
+          - { java: 17, mvn_args: '' }
+    name: Build with ${{ matrix.job.java }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Java
+        uses: actions/setup-java@v3
+        with:
+          distribution: zulu
+          java-version: ${{ matrix.job.java }}
+          cache: maven
+
+      - name: Test
+        run: |
+          chmod +x mvnw
+          ./mvnw -B test ${{ matrix.job.mvn_args }}
