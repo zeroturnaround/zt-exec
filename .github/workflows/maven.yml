@@ -8,11 +8,8 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        job:
-          - { java: 8,  mvn_args: '-Dmoditect.skip=true' }
-          - { java: 11, mvn_args: '' }
-          - { java: 17, mvn_args: '' }
-    name: Build with ${{ matrix.job.java }}
+        java: [ 11, 17 ]
+    name: Build with ${{ matrix.java }}
     steps:
       - name: Checkout
         uses: actions/checkout@v3
@@ -21,10 +18,10 @@ jobs:
         uses: actions/setup-java@v3
         with:
           distribution: zulu
-          java-version: ${{ matrix.job.java }}
+          java-version: ${{ matrix.java }}
           cache: maven
 
       - name: Test
         run: |
           chmod +x mvnw
-          ./mvnw -B test ${{ matrix.job.mvn_args }}
+          ./mvnw -ntp -B test
