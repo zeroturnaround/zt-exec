@@ -6,6 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         job:
           - { java: 8,  mvn_args: '-Dmoditect.skip=true' }
