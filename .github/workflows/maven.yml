@@ -51,7 +51,14 @@ jobs:
           distribution: temurin
           cache: maven
 
-      - name: Build and test
+      - name: Build and test on Java 6
+        if: ${{ matrix.java == '6'}}
         run: |
           chmod +x mvnw
-          ./mvnw -ntp -B -P java${{ matrix.java }} test
+          ./mvnw -ntp -B -P java6 test
+
+      - name: Build and test for Java ${{ matrix.java }}
+        if: ${{ matrix.java != '6'}}
+        run: |
+          chmod +x mvnw
+          ./mvnw -ntp -B -Djavac.release.target=${{ matrix.java }} test
