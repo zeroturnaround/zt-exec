@@ -6,6 +6,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         java: [ 6, 8, 11, 17 ]
     name: Build with Java ${{ matrix.java }}
@@ -15,11 +16,14 @@ jobs:
 
       - name: Set up JDK 6
         if: ${{ matrix.java == '6'}}
+        # We use v1 as newer versions do not seem to support Java 6
+        # Inspired by https://github.com/junit-team/junit4/blob/main/.github/workflows/main.yml
         uses: actions/setup-java@v1
         with:
           java-version: ${{ matrix.java }}
           mvn-toolchain-id: ${{ matrix.java }}
       - name: Set up toolchains.xml for Java 6
+        # We need to manually set up toolchains.xml as setup-java@v1 does not seem to support toolchains.xml
         if: ${{ matrix.java == '6'}}
         run: |
           echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> $HOME/.m2/toolchains.xml
@@ -44,6 +48,7 @@ jobs:
           distribution: temurin
           cache: maven
       - name: Set up JDK 17
+        # Set up JDK 17 as the last step before building so it becomes default and Maven would use it
         uses: actions/setup-java@v3
         with:
           java-version: 17
@@ -52,12 +57,14 @@ jobs:
           cache: maven
 
       - name: Build and test on Java 6
+        # Java 6 is special case, we need to activate a profile on it
         if: ${{ matrix.java == '6'}}
         run: |
           chmod +x mvnw
           ./mvnw -ntp -B -P java6 test
 
       - name: Build and test for Java ${{ matrix.java }}
+        # More modern JDKs support specifying a target JDK release for the compiler
         if: ${{ matrix.java != '6'}}
         run: |
           chmod +x mvnw
