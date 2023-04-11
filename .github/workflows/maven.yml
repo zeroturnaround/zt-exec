@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        java: [ 6, 7, 8, 11, 17 ]
+        java: [ 6, 8, 11, 17 ]
     name: Build with Java ${{ matrix.java }}
     steps:
       - name: Checkout
@@ -19,6 +19,22 @@ jobs:
         with:
           java-version: ${{ matrix.java }}
           mvn-toolchain-id: ${{ matrix.java }}
+      - name: Set up toolchains.xml for Java 6
+        if: ${{ matrix.java == '6'}}
+        run: |
+          echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>" >> $HOME/.m2/toolchains.xml
+          echo "<toolchains>" >> $HOME/.m2/toolchains.xml
+          echo "  <toolchain>" >> $HOME/.m2/toolchains.xml
+          echo "    <type>jdk</type>" >> $HOME/.m2/toolchains.xml
+          echo "    <provides>" >> $HOME/.m2/toolchains.xml
+          echo "      <version>6</version>" >> $HOME/.m2/toolchains.xml
+          echo "    </provides>" >> $HOME/.m2/toolchains.xml
+          echo "    <configuration>" >> $HOME/.m2/toolchains.xml
+          echo "      <jdkHome>${JAVA_HOME_6_0_119_X64}</jdkHome>" >> $HOME/.m2/toolchains.xml
+          echo "    </configuration>" >> $HOME/.m2/toolchains.xml
+          echo "  </toolchain>" >> $HOME/.m2/toolchains.xml
+          echo "</toolchains>" >> $HOME/.m2/toolchains.xml
+          cat $HOME/.m2/toolchains.xml
       - name: Set up JDK
         if: ${{ matrix.java != '6'}}
         uses: actions/setup-java@v3
