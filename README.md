@@ -2,7 +2,7 @@ ZT Process Executor
 ================
 
 ### Continuous Integration
-[![Build Status](https://travis-ci.org/zeroturnaround/zt-exec.png)](https://travis-ci.org/zeroturnaround/zt-exec)
+![Build Status](https://github.com/zeroturnaround/zt-exec/actions/workflows/maven.yml/badge.svg)
 
 ### Quick Overview
 
