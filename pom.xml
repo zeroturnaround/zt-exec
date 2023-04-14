@@ -39,7 +39,7 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <javac.release.target>17</javac.release.target>
+    <javac.release.target>8</javac.release.target>
   </properties>
 
   <dependencies>
