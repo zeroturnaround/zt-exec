@@ -61,7 +61,7 @@ jobs:
         if: ${{ matrix.java == '6'}}
         run: |
           chmod +x mvnw
-          ./mvnw -ntp -B -P java6 -Djavac.testJdk=17 test
+          ./mvnw -ntp -B -P java6 -DtestJdk=17 test
 
       - name: Build and test for Java ${{ matrix.java }}
         # More modern JDKs support specifying a target JDK release for the compiler

@@ -40,7 +40,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <javac.release.target>8</javac.release.target>
-    <javac.testJdk>8</javac.testJdk>
+    <testJdk>8</testJdk>
   </properties>
 
   <dependencies>
@@ -252,9 +252,22 @@ Export-Package:\
               <execution>
                 <id>default-testCompile</id>
                 <configuration>
-                  <testRelease>${javac.testJdk}</testRelease>
+                  <testRelease>${testJdk}</testRelease>
                   <jdkToolchain>
-                    <version>${javac.testJdk}</version>
+                    <version>${testJdk}</version>
+                  </jdkToolchain>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>default-test</id>
+                <configuration>
+                  <jdkToolchain>
+                    <version>${testJdk}</version>
                   </jdkToolchain>
                 </configuration>
               </execution>
