@@ -40,6 +40,7 @@
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
     <javac.release.target>8</javac.release.target>
+    <javac.testJdk>8</javac.testJdk>
   </properties>
 
   <dependencies>
@@ -247,6 +248,17 @@ Export-Package:\
               <source>1.6</source>
               <target>1.6</target>
             </configuration>
+            <executions>
+              <execution>
+                <id>default-testCompile</id>
+                <configuration>
+                  <testRelease>${javac.testJdk}</testRelease>
+                  <jdkToolchain>
+                    <version>${javac.testJdk}</version>
+                  </jdkToolchain>
+                </configuration>
+              </execution>
+            </executions>
           </plugin>
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
