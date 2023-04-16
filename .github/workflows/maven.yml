@@ -68,7 +68,7 @@ jobs:
         if: ${{ matrix.java != '6'}}
         run: |
           chmod +x mvnw
-          ./mvnw -ntp -B -Djavac.release.target=${{ matrix.java }} verify package
+          ./mvnw -ntp -B -DmainJdk=${{ matrix.java }} verify package
           mkdir upload && cp target/*.jar upload
 
       - uses: actions/upload-artifact@v3

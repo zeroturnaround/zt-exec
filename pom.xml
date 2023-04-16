@@ -39,8 +39,8 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <javac.release.target>8</javac.release.target>
-    <testJdk>8</testJdk>
+    <mainJdk>9</mainJdk>
+    <testJdk>9</testJdk>
   </properties>
 
   <dependencies>
@@ -106,7 +106,7 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>3.10.1</version>
         <configuration>
-          <release>${javac.release.target}</release>
+          <release>${mainJdk}</release>
         </configuration>
       </plugin>
       <plugin>
@@ -176,7 +176,7 @@ Export-Package:\
       <plugin>
         <groupId>org.moditect</groupId>
         <artifactId>moditect-maven-plugin</artifactId>
-        <version>1.0.0.RC2</version>
+        <version>1.0.0.RC3</version>
         <executions>
           <execution>
             <id>add-module-infos</id>
@@ -185,7 +185,7 @@ Export-Package:\
               <goal>add-module-info</goal>
             </goals>
             <configuration>
-              <jvmVersion>9</jvmVersion>
+              <jvmVersion>${mainJdk}</jvmVersion>
               <overwriteExistingFiles>true</overwriteExistingFiles>
               <module>
                 <moduleInfo>
