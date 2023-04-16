@@ -299,6 +299,24 @@ Export-Package:\
         </plugins>
       </build>
     </profile>
+    <profile>
+      <id>java8</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.moditect</groupId>
+            <artifactId>moditect-maven-plugin</artifactId>
+            <version>1.0.0.RC3</version>
+            <executions>
+              <execution>
+                <id>add-module-infos</id>
+                <phase>none</phase>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
   </profiles>
 
   <organization>

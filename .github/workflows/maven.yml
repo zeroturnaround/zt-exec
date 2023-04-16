@@ -8,7 +8,7 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        java: [ 6, 9, 11, 17 ]
+        java: [ 6, 8, 11, 17 ]
     name: Build with Java ${{ matrix.java }}
     steps:
       - name: Checkout
@@ -63,9 +63,16 @@ jobs:
           chmod +x mvnw
           ./mvnw -ntp -B -P java6 -DtestJdk=17 test
 
+      - name: Build on Java 8, run tests with Java 17
+        # Java 8 is also a special case, we need to activate a profile on it
+        if: ${{ matrix.java == '8'}}
+        run: |
+          chmod +x mvnw
+          ./mvnw -ntp -B -P java8 -DtestJdk=17 test
+
       - name: Build and test on Java ${{ matrix.java }}
         # More modern JDKs support specifying a target JDK release for the compiler
-        if: ${{ matrix.java != '6'}}
+        if: ${{ matrix.java != '6' && matrix.java != '8' }}
         run: |
           chmod +x mvnw
           ./mvnw -ntp -B -DmainJdk=${{ matrix.java }} verify package
