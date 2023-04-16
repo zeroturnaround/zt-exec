@@ -70,8 +70,8 @@ jobs:
           chmod +x mvnw
           ./mvnw -ntp -B -Djavac.release.target=${{ matrix.java }} test
           mkdir upload && cp target/*.jar upload
-      - name: Upload artifacts
+
       - uses: actions/upload-artifact@v3
         with:
-          name: Package
+          name: Upload artifacts
           path: upload
