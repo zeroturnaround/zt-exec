@@ -136,8 +136,8 @@ public class ProcessExecutor {
     // Run in case of any constructor
     exitValues(DEFAULT_EXIT_VALUES);
     stopper(DestroyProcessStopper.INSTANCE);
-    redirectOutput(null);
-    redirectError(null);
+    redirectOutput(NullOutputStream.NULL_OUTPUT_STREAM);
+    redirectError(NullOutputStream.NULL_OUTPUT_STREAM);
     destroyer(null);
     redirectErrorStream(DEFAULT_REDIRECT_ERROR_STREAM);
   }
