@@ -159,14 +159,6 @@ public abstract class LogOutputStream extends OutputStream {
   protected abstract void processLine(String line);
 
   /**
-   * This is equivalent to {@code java.util.function.Consumer} while staying compatible with
-   * Java versions earlier than 8.
-   */
-  public interface LineConsumer {
-    void accept(String line);
-  }
-
-  /**
    * Factory method to create a <code>LogOutputStream</code> that passes each line to the specified consumer.
    * <p>Mostly useful with Java 8+, so the consumer can be passed as a lambda expression.</p>
    *

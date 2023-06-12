@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.junit.Assert;
 import org.junit.Test;
+import org.zeroturnaround.exec.stream.LineConsumer;
 import org.zeroturnaround.exec.stream.LogOutputStream;
 
 public class LogOutputStreamTest {
@@ -77,7 +78,7 @@ public class LogOutputStreamTest {
 	@Test
 	public void lambda() throws IOException {
 		final List<String> lines = new ArrayList<String>();
-		LogOutputStream out = LogOutputStream.create(new LogOutputStream.LineConsumer() {
+		LogOutputStream out = LogOutputStream.create(new LineConsumer() {
 			@Override
 			public void accept(String line) {
 				lines.add(line);
