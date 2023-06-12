@@ -164,7 +164,7 @@ new ProcessExecutor().command("java", "-version")
 
 ```java
 new ProcessExecutor().command("java", "-version")
-    .redirectOutput(LogOutputStream.create(line -> ...))
+    .redirectOutput(line -> ...)
     .execute();
 ```
 
