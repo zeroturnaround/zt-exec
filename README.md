@@ -2,13 +2,18 @@ ZT Process Executor
 ================
 
 ### Continuous Integration
-[![Build Status](https://travis-ci.org/zeroturnaround/zt-exec.png)](https://travis-ci.org/zeroturnaround/zt-exec)
+![Build Status](https://github.com/zeroturnaround/zt-exec/actions/workflows/maven.yml/badge.svg)
 
 ### Quick Overview
 
 The project was created to merge similar functionality of projects at [ZeroTurnaround](http://zeroturnaround.com/) into a single codebase.
 It's designed to be powerful but still simple to use. By using a single class **ProcessExecutor**
 the user gets the functionality from both **java.lang.ProcessBuilder** and [Apache Commons Exec](http://commons.apache.org/proper/commons-exec/).
+
+### Dependencies
+
+* Minimal required Java version is 6 (tested also with 8, 11 and 17).
+* The only 3rd-party dependency is [SLF4J](https://www.slf4j.org/).
 
 ### Installation
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.zeroturnaround/zt-exec/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.zeroturnaround/zt-exec)

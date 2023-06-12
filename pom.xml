@@ -39,37 +39,39 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+    <mainJdk>9</mainJdk>
+    <testJdk>9</testJdk>
   </properties>
 
   <dependencies>
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.7.2</version>
+      <version>1.7.32</version>
     </dependency>
 
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>4.11</version>
+      <version>4.13.2</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>ch.qos.logback</groupId>
       <artifactId>logback-classic</artifactId>
-      <version>1.1.2</version>
+      <version>1.2.12</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.apache.commons</groupId>
       <artifactId>commons-lang3</artifactId>
-      <version>3.5</version>
+      <version>3.12.0</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>2.5</version>
+      <version>2.11.0</version>
       <scope>test</scope>
     </dependency>
   </dependencies>
@@ -77,12 +79,34 @@
   <build>
     <plugins>
       <plugin>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.0.0</version>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-toolchains-plugin</artifactId>
+        <version>3.1.0</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>toolchain</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <toolchains>
+            <jdk>
+              <version>17</version>
+            </jdk>
+          </toolchains>
+        </configuration>
+      </plugin>
+      <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>3.8.1</version>
+        <version>3.10.1</version>
         <configuration>
-          <source>1.6</source>
-          <target>1.6</target>
+          <release>${mainJdk}</release>
         </configuration>
       </plugin>
       <plugin>
@@ -99,7 +123,7 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-javadoc-plugin</artifactId>
-        <version>3.2.0</version>
+        <version>3.5.0</version>
         <configuration>
           <source>8</source>
         </configuration>
@@ -149,6 +173,36 @@ Export-Package:\
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.moditect</groupId>
+        <artifactId>moditect-maven-plugin</artifactId>
+        <version>1.0.0.RC3</version>
+        <executions>
+          <execution>
+            <id>add-module-infos</id>
+            <phase>package</phase>
+            <goals>
+              <goal>add-module-info</goal>
+            </goals>
+            <configuration>
+              <jvmVersion>${mainJdk}</jvmVersion>
+              <overwriteExistingFiles>true</overwriteExistingFiles>
+              <module>
+                <moduleInfo>
+                  <name>org.zeroturnaround.exec</name>
+                  <!-- export everything -->
+                  <exports>*;</exports>
+                  <!-- declare services consumed by the artifact -->
+                  <addServiceUses>true</addServiceUses>
+                </moduleInfo>
+              </module>
+              <jdepsExtraArgs>
+                <arg>--multi-release=9</arg>
+              </jdepsExtraArgs>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
   <profiles>
@@ -181,6 +235,82 @@ Export-Package:\
                 <goals>
                   <goal>sign</goal>
                 </goals>
+              </execution>
+            </executions>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>java6</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-compiler-plugin</artifactId>
+            <configuration combine.self="override">
+              <source>1.6</source>
+              <target>1.6</target>
+            </configuration>
+            <executions>
+              <execution>
+                <id>default-testCompile</id>
+                <configuration>
+                  <testRelease>${testJdk}</testRelease>
+                  <jdkToolchain>
+                    <version>${testJdk}</version>
+                  </jdkToolchain>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <version>3.0.0</version>
+            <executions>
+              <execution>
+                <id>default-test</id>
+                <configuration>
+                  <jdkToolchain>
+                    <version>${testJdk}</version>
+                  </jdkToolchain>
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-toolchains-plugin</artifactId>
+            <executions>
+              <execution>
+                <goals>
+                  <goal>toolchain</goal>
+                </goals>
+              </execution>
+            </executions>
+            <configuration>
+              <toolchains>
+                <jdk>
+                  <version>6</version>
+                </jdk>
+              </toolchains>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    <profile>
+      <id>java8</id>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>org.moditect</groupId>
+            <artifactId>moditect-maven-plugin</artifactId>
+            <version>1.0.0.RC3</version>
+            <executions>
+              <execution>
+                <id>add-module-infos</id>
+                <phase>none</phase>
               </execution>
             </executions>
           </plugin>
