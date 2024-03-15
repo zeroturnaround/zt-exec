@@ -136,8 +136,8 @@ public class ProcessExecutor {
     // Run in case of any constructor
     exitValues(DEFAULT_EXIT_VALUES);
     stopper(DestroyProcessStopper.INSTANCE);
-    redirectOutput(null);
-    redirectError(null);
+    redirectOutput(NullOutputStream.NULL_OUTPUT_STREAM);
+    redirectError(NullOutputStream.NULL_OUTPUT_STREAM);
     destroyer(null);
     redirectErrorStream(DEFAULT_REDIRECT_ERROR_STREAM);
   }
@@ -472,6 +472,19 @@ public class ProcessExecutor {
   }
 
   /**
+   * Redirects the process' output stream to given line consumer.
+   * If this method is invoked multiple times each call overwrites the previous.
+   * Use {@link #redirectOutputAlsoTo(OutputStream)} if you want to redirect the output to multiple streams.
+   *
+   * @param consumer consumer where the process output is redirected to.
+   * @return This process executor.
+   * @see #redirectOutput(OutputStream)
+   */
+  public ProcessExecutor redirectOutput(LineConsumer consumer) {
+    return redirectOutput(LogOutputStream.create(consumer));
+  }
+
+  /**
    * Redirects the process' error stream to given output stream.
    * If this method is invoked multiple times each call overwrites the previous.
    * Use {@link #redirectErrorAlsoTo(OutputStream)} if you want to redirect the error to multiple streams.
@@ -490,6 +503,19 @@ public class ProcessExecutor {
     streams(new PumpStreamHandler(pumps == null ? null : pumps.getOut(), output, pumps == null ? null : pumps.getInput()));
     redirectErrorStream(false);
     return this;
+  }
+
+  /**
+   * Redirects the process' error stream to given line consumer.
+   * If this method is invoked multiple times each call overwrites the previous.
+   * Use {@link #redirectErrorAlsoTo(OutputStream)} if you want to redirect the output to multiple streams.
+   *
+   * @param consumer consumer where the process error is redirected to.
+   * @return This process executor.
+   * @see #redirectError(OutputStream)
+   */
+  public ProcessExecutor redirectError(LineConsumer consumer) {
+    return redirectError(LogOutputStream.create(consumer));
   }
 
   /**

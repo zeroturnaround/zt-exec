@@ -160,7 +160,17 @@ new ProcessExecutor().command("java", "-version")
 
 <hr/>
 
-* Handling output line-by-line while process is running
+* Handling output line-by-line while process is running (Java 8+)
+
+```java
+new ProcessExecutor().command("java", "-version")
+    .redirectOutput(line -> ...)
+    .execute();
+```
+
+<hr/>
+
+* Handling output line-by-line while process is running (prior to Java 8)
 
 ```java
 new ProcessExecutor().command("java", "-version")
@@ -264,4 +274,3 @@ Future<ProcessResult> future = new ProcessExecutor()
 // do some stuff
 String output = future.get(60, TimeUnit.SECONDS).outputUTF8();
 ```
-

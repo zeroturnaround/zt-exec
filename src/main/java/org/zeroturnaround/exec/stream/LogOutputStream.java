@@ -21,7 +21,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
-import java.nio.charset.Charset;
 
 /**
  * Base class to connect a logging system to the output and/or
@@ -32,7 +31,7 @@ import java.nio.charset.Charset;
 public abstract class LogOutputStream extends OutputStream {
 
   /** Initial buffer size. */
-  private static final int INTIAL_SIZE = 132;
+  private static final int INITIAL_SIZE = 132;
 
   /** Carriage return */
   private static final int CR = 0x0d;
@@ -42,7 +41,7 @@ public abstract class LogOutputStream extends OutputStream {
 
   /** the internal buffer */
   private final ByteArrayOutputStream buffer = new ByteArrayOutputStream(
-      INTIAL_SIZE);
+      INITIAL_SIZE);
 
   byte lastReceivedByte;
 
@@ -159,4 +158,22 @@ public abstract class LogOutputStream extends OutputStream {
    */
   protected abstract void processLine(String line);
 
+  /**
+   * Factory method to create a <code>LogOutputStream</code> that passes each line to the specified consumer.
+   * <p>Mostly useful with Java 8+, so the consumer can be passed as a lambda expression.</p>
+   *
+   * @param consumer the consumer to consume the log lines
+   * @return the created <code>LogOutputStream</code>, passing each line to the specified consumer.
+   */
+  public static LogOutputStream create(final LineConsumer consumer) {
+    if (consumer == null) {
+      throw new IllegalArgumentException("Line consumer must be provided.");
+    }
+    return new LogOutputStream() {
+      @Override
+      protected void processLine(String line) {
+        consumer.accept(line);
+      }
+    };
+  }
 }
