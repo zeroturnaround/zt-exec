@@ -160,7 +160,7 @@ new ProcessExecutor().command("java", "-version")
 
 <hr/>
 
-* Handling output line-by-line while process is running (java 8+)
+* Handling output line-by-line while process is running (Java 8+)
 
 ```java
 new ProcessExecutor().command("java", "-version")
@@ -170,7 +170,7 @@ new ProcessExecutor().command("java", "-version")
 
 <hr/>
 
-* Handling output line-by-line while process is running (prior to java 8)
+* Handling output line-by-line while process is running (prior to Java 8)
 
 ```java
 new ProcessExecutor().command("java", "-version")
