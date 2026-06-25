@@ -23,11 +23,21 @@ import org.slf4j.MDC;
 import org.zeroturnaround.exec.close.ProcessCloser;
 import org.zeroturnaround.exec.close.StandardProcessCloser;
 import org.zeroturnaround.exec.close.TimeoutProcessCloser;
-import org.zeroturnaround.exec.listener.*;
+import org.zeroturnaround.exec.listener.CompositeProcessListener;
+import org.zeroturnaround.exec.listener.DestroyerListenerAdapter;
+import org.zeroturnaround.exec.listener.ProcessDestroyer;
+import org.zeroturnaround.exec.listener.ProcessListener;
+import org.zeroturnaround.exec.listener.ShutdownHookProcessDestroyer;
 import org.zeroturnaround.exec.stop.DestroyProcessStopper;
 import org.zeroturnaround.exec.stop.NopProcessStopper;
 import org.zeroturnaround.exec.stop.ProcessStopper;
-import org.zeroturnaround.exec.stream.*;
+import org.zeroturnaround.exec.stream.CallerLoggerUtil;
+import org.zeroturnaround.exec.stream.ExecuteStreamHandler;
+import org.zeroturnaround.exec.stream.LineConsumer;
+import org.zeroturnaround.exec.stream.LogOutputStream;
+import org.zeroturnaround.exec.stream.NullOutputStream;
+import org.zeroturnaround.exec.stream.PumpStreamHandler;
+import org.zeroturnaround.exec.stream.TeeOutputStream;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jDebugOutputStream;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jInfoOutputStream;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
@@ -37,32 +47,39 @@ import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
 
-
-
 /**
  * Helper for executing sub processes.
  * <p>
- * It's implemented as a wrapper of {@link ProcessBuilder} complementing it with additional features such as:
+ * It's implemented as a wrapper of {@link ProcessBuilder} complementing it with
+ * additional features such as:
  * </p>
  * <ul>
- *   <li>Handling process streams (copied from Commons Exec library).</li>
- *   <li>Destroying process on VM exit (copied from Commons Exec library).</li>
- *   <li>Checking process exit code.</li>
- *   <li>Setting a timeout for running the process and automatically stopping it in case of timeout.</li>
- *   <li>Either waiting for the process to finish ({@link #execute()}) or returning a {@link Future} ({@link #start()}.</li>
- *   <li>Reading the process output stream into a buffer ({@link #readOutput(boolean)}, {@link ProcessResult}).</li>
+ * <li>Handling process streams (copied from Commons Exec library).</li>
+ * <li>Destroying process on VM exit (copied from Commons Exec library).</li>
+ * <li>Checking process exit code.</li>
+ * <li>Setting a timeout for running the process and automatically stopping it
+ * in case of timeout.</li>
+ * <li>Either waiting for the process to finish ({@link #execute()}) or
+ * returning a {@link Future} ({@link #start()}.</li>
+ * <li>Reading the process output stream into a buffer
+ * ({@link #readOutput(boolean)}, {@link ProcessResult}).</li>
  * </ul>
  *
  * <p>
  * The default configuration for executing a process is following:
  * </p>
  * <ul>
- *   <li>Process is not automatically destroyed on VM exit.</li>
- *   <li>Error stream is redirected to its output stream. Use {@link #redirectErrorStream(boolean)} to override it.</li>
- *   <li>Output stream is pumped to a {@link NullOutputStream}, Use {@link #streams(ExecuteStreamHandler)}, {@link #redirectOutput(OutputStream)},
- *   or any of the <code>redirectOutputAs*</code> methods.to override it.</li>
- *   <li>Any exit code is allowed. Use {@link #exitValues(Integer...)} to override it.</li>
- *   <li>In case of timeout or cancellation {@link Process#destroy()} is invoked.</li>
+ * <li>Process is not automatically destroyed on VM exit.</li>
+ * <li>Error stream is redirected to its output stream. Use
+ * {@link #redirectErrorStream(boolean)} to override it.</li>
+ * <li>Output stream is pumped to a {@link NullOutputStream}, Use
+ * {@link #streams(ExecuteStreamHandler)},
+ * {@link #redirectOutput(OutputStream)},
+ * or any of the <code>redirectOutputAs*</code> methods.to override it.</li>
+ * <li>Any exit code is allowed. Use {@link #exitValues(Integer...)} to override
+ * it.</li>
+ * <li>In case of timeout or cancellation {@link Process#destroy()} is
+ * invoked.</li>
  * </ul>
  *
  * @author Rein Raudjärv
@@ -86,17 +103,20 @@ public class ProcessExecutor {
   private final ProcessBuilder builder = new ProcessBuilder();
 
   /**
-   * Environment variables which are added (removed in case of <code>null</code> values) to the process being started.
+   * Environment variables which are added (removed in case of <code>null</code>
+   * values) to the process being started.
    */
   private final Map<String, String> environment = new LinkedHashMap<String, String>();
 
   /**
-   * Set of accepted exit codes or <code>null</code> if all exit codes are allowed.
+   * Set of accepted exit codes or <code>null</code> if all exit codes are
+   * allowed.
    */
   private Set<Integer> allowedExitValues;
 
   /**
-   * Timeout for running a process. If the process is running too long a {@link TimeoutException} is thrown and the process is destroyed.
+   * Timeout for running a process. If the process is running too long a
+   * {@link TimeoutException} is thrown and the process is destroyed.
    */
   private Long timeout;
   private TimeUnit timeoutUnit;
@@ -105,20 +125,24 @@ public class ProcessExecutor {
    * Helper for stopping the process in case of timeout or cancellation.
    */
   private ProcessStopper stopper;
+  /// usr/bin/java
 
   /**
-   * Process stream Handler (copied from Commons Exec library). If <code>null</code> streams are not handled.
+   * Process stream Handler (copied from Commons Exec library). If
+   * <code>null</code> streams are not handled.
    */
   private ExecuteStreamHandler streams;
 
   /**
-   * Timeout for closing process' standard streams. In case this timeout is reached we just log a warning but don't throw an error.
+   * Timeout for closing process' standard streams. In case this timeout is
+   * reached we just log a warning but don't throw an error.
    */
   private Long closeTimeout;
   private TimeUnit closeTimeoutUnit;
 
   /**
-   * <code>true</code> if the process output should be read to a buffer and returned by {@link ProcessResult#output()}.
+   * <code>true</code> if the process output should be read to a buffer and
+   * returned by {@link ProcessResult#output()}.
    */
   private boolean readOutput;
 
@@ -149,7 +173,9 @@ public class ProcessExecutor {
   }
 
   /**
-   * Creates new {@link ProcessExecutor} instance for the given program and its arguments.
+   * Creates new {@link ProcessExecutor} instance for the given program and its
+   * arguments.
+   * 
    * @param command The list containing the program and its arguments.
    */
   public ProcessExecutor(List<String> command) {
@@ -157,7 +183,9 @@ public class ProcessExecutor {
   }
 
   /**
-   * Creates new {@link ProcessExecutor} instance for the given program and its arguments.
+   * Creates new {@link ProcessExecutor} instance for the given program and its
+   * arguments.
+   * 
    * @param command A string array containing the program and its arguments.
    */
   public ProcessExecutor(String... command) {
@@ -165,7 +193,9 @@ public class ProcessExecutor {
   }
 
   /**
-   * Creates new {@link ProcessExecutor} instance for the given program and its arguments.
+   * Creates new {@link ProcessExecutor} instance for the given program and its
+   * arguments.
+   * 
    * @param command The iterable containing the program and its arguments.
    * @since 1.8
    */
@@ -177,7 +207,8 @@ public class ProcessExecutor {
    * Returns this process executor's operating system program and arguments.
    * The returned list is a copy.
    *
-   * @return this process executor's program and its arguments (not <code>null</code>).
+   * @return this process executor's program and its arguments (not
+   *         <code>null</code>).
    */
   public List<String> getCommand() {
     return new ArrayList<String>(builder.command());
@@ -186,8 +217,8 @@ public class ProcessExecutor {
   /**
    * Sets the program and its arguments which are being executed.
    *
-   * @param   command  The list containing the program and its arguments.
-   * @return  This process executor.
+   * @param command The list containing the program and its arguments.
+   * @return This process executor.
    */
   public ProcessExecutor command(List<String> command) {
     builder.command(fixArguments(command));
@@ -197,8 +228,8 @@ public class ProcessExecutor {
   /**
    * Sets the program and its arguments which are being executed.
    *
-   * @param   command  A string array containing the program and its arguments.
-   * @return  This process executor.
+   * @param command A string array containing the program and its arguments.
+   * @return This process executor.
    */
   public ProcessExecutor command(String... command) {
     builder.command(fixArguments(Arrays.asList(command)));
@@ -208,8 +239,8 @@ public class ProcessExecutor {
   /**
    * Sets the program and its arguments which are being executed.
    *
-   * @param   command  The iterable containing the program and its arguments.
-   * @return  This process executor.
+   * @param command The iterable containing the program and its arguments.
+   * @return This process executor.
    * @since 1.8
    */
   public ProcessExecutor command(Iterable<String> command) {
@@ -222,14 +253,16 @@ public class ProcessExecutor {
   }
 
   /**
-   * Splits string by spaces and passes it to {@link ProcessExecutor#command(String...)}<br>
+   * Splits string by spaces and passes it to
+   * {@link ProcessExecutor#command(String...)}<br>
    *
    * NB: this method do not handle whitespace escaping,
    * <code>"mkdir new\ folder"</code> would be interpreted as
    * <code>{"mkdir", "new\", "folder"}</code> command.
    *
-   * @param   commandWithArgs  A string array containing the program and its arguments.
-   * @return  This process executor.
+   * @param commandWithArgs A string array containing the program and its
+   *                        arguments.
+   * @return This process executor.
    */
   public ProcessExecutor commandSplit(String commandWithArgs) {
     builder.command(commandWithArgs.split("\\s+"));
@@ -239,7 +272,8 @@ public class ProcessExecutor {
   /**
    * Returns this process executor's working directory.
    *
-   * Subprocesses subsequently started by this object will use this as their working directory.
+   * Subprocesses subsequently started by this object will use this as their
+   * working directory.
    * The returned value may be {@code null} -- this means to use
    * the working directory of the current Java process, usually the
    * directory named by the system property {@code user.dir},
@@ -258,8 +292,8 @@ public class ProcessExecutor {
    * directory named by the system property <code>user.dir</code>,
    * as the working directory of the child process.
    *
-   * @param   directory  The new working directory
-   * @return  This process executor.
+   * @param directory The new working directory
+   * @return This process executor.
    */
   public ProcessExecutor directory(File directory) {
     builder.directory(directory);
@@ -270,7 +304,8 @@ public class ProcessExecutor {
    * Returns this process executor's additional environment variables.
    * The returned value is not a copy.
    *
-   * @return this process executor's environment variables (not <code>null</code>).
+   * @return this process executor's environment variables (not
+   *         <code>null</code>).
    */
   public Map<String, String> getEnvironment() {
     return environment;
@@ -282,7 +317,7 @@ public class ProcessExecutor {
    * @param env environment variables added to the process being executed.
    * @return This process executor.
    */
-  public ProcessExecutor environment(Map<String,String> env) {
+  public ProcessExecutor environment(Map<String, String> env) {
     environment.putAll(env);
     return this;
   }
@@ -290,8 +325,10 @@ public class ProcessExecutor {
   /**
    * Adds a single additional environment variable for the process being executed.
    *
-   * @param name name of the environment variable added to the process being executed.
-   * @param value value of the environment variable added to the process being executed.
+   * @param name  name of the environment variable added to the process being
+   *              executed.
+   * @param value value of the environment variable added to the process being
+   *              executed.
    * @return This process executor.
    *
    * @since 1.7
@@ -304,12 +341,16 @@ public class ProcessExecutor {
   /**
    * Sets this process executor's <code>redirectErrorStream</code> property.
    *
-   * <p>If this property is <code>true</code>, then any error output generated by subprocesses will be merged with the standard output.
-   * This makes it easier to correlate error messages with the corresponding output.
-   * The initial value is <code>true</code>.</p>
+   * <p>
+   * If this property is <code>true</code>, then any error output generated by
+   * subprocesses will be merged with the standard output.
+   * This makes it easier to correlate error messages with the corresponding
+   * output.
+   * The initial value is <code>true</code>.
+   * </p>
    *
-   * @param   redirectErrorStream  The new property value
-   * @return  This process executor.
+   * @param redirectErrorStream The new property value
+   * @return This process executor.
    */
   public ProcessExecutor redirectErrorStream(boolean redirectErrorStream) {
     builder.redirectErrorStream(redirectErrorStream);
@@ -337,17 +378,19 @@ public class ProcessExecutor {
   /**
    * Sets the allowed exit value for the process being executed.
    *
-   * @param exitValue single exit value or <code>null</code> if all exit values are allowed.
+   * @param exitValue single exit value or <code>null</code> if all exit values
+   *                  are allowed.
    * @return This process executor.
    */
   public ProcessExecutor exitValue(Integer exitValue) {
-    return exitValues(exitValue == null ? null : new Integer[] { exitValue } );
+    return exitValues(exitValue == null ? null : new Integer[] { exitValue });
   }
 
   /**
    * Sets the allowed exit values for the process being executed.
    *
-   * @param exitValues set of exit values or <code>null</code> if all exit values are allowed.
+   * @param exitValues set of exit values or <code>null</code> if all exit values
+   *                   are allowed.
    * @return This process executor.
    */
   public ProcessExecutor exitValues(Integer... exitValues) {
@@ -358,25 +401,30 @@ public class ProcessExecutor {
   /**
    * Sets the allowed exit values for the process being executed.
    *
-   * @param exitValues set of exit values or <code>null</code> if all exit values are allowed.
+   * @param exitValues set of exit values or <code>null</code> if all exit values
+   *                   are allowed.
    * @return This process executor.
    */
   public ProcessExecutor exitValues(int[] exitValues) {
-    if (exitValues == null)
+    if (exitValues == null) {
       return exitValueAny();
+    }
     // Convert int[] -> Integer[]
     Integer[] array = new Integer[exitValues.length];
-    for (int i = 0; i < array.length; i++)
+    for (int i = 0; i < array.length; i++) {
       array[i] = exitValues[i];
+    }
     return exitValues(array);
   }
 
   /**
-   * Sets a timeout for the process being executed. When this timeout is reached a {@link TimeoutException} is thrown and the process is destroyed.
-   * This only applies to <code>execute</code> methods not <code>start</code> methods.
+   * Sets a timeout for the process being executed. When this timeout is reached a
+   * {@link TimeoutException} is thrown and the process is destroyed.
+   * This only applies to <code>execute</code> methods not <code>start</code>
+   * methods.
    *
    * @param timeout timeout for running a process.
-   * @param unit the time unit of the timeout
+   * @param unit    the time unit of the timeout
    * @return This process executor.
    */
   public ProcessExecutor timeout(long timeout, TimeUnit unit) {
@@ -388,9 +436,11 @@ public class ProcessExecutor {
   /**
    * Sets the helper for stopping the process in case of timeout or cancellation.
    * <p>
-   * By default {@link DestroyProcessStopper} is used which just invokes {@link Process#destroy()}.
+   * By default {@link DestroyProcessStopper} is used which just invokes
+   * {@link Process#destroy()}.
    *
-   * @param stopper helper for stopping the process (<code>null</code> means {@link NopProcessStopper} - process is not stopped).
+   * @param stopper helper for stopping the process (<code>null</code> means
+   *                {@link NopProcessStopper} - process is not stopped).
    * @return This process executor.
    */
   public ProcessExecutor stopper(ProcessStopper stopper) {
@@ -410,7 +460,8 @@ public class ProcessExecutor {
 
   /**
    * Sets a stream handler for the process being executed.
-   * This will overwrite any stream redirection that was previously set to use the provided handler.
+   * This will overwrite any stream redirection that was previously set to use the
+   * provided handler.
    *
    * @param streams the stream handler
    * @return This process executor.
@@ -423,17 +474,20 @@ public class ProcessExecutor {
 
   /**
    * Sets a timeout for closing standard streams of the process being executed.
-   * When this timeout is reached we log a warning but consider that the process has finished.
+   * When this timeout is reached we log a warning but consider that the process
+   * has finished.
    * We also flush the streams so that all output read so far is available.
    * <p>
-   * This can be used on Windows in case a process exits quickly but closing the streams blocks forever.
+   * This can be used on Windows in case a process exits quickly but closing the
+   * streams blocks forever.
    * </p>
    * <p>
-   * Closing timeout must fit into the general execution timeout (see {@link #timeout(long, TimeUnit)}).
+   * Closing timeout must fit into the general execution timeout (see
+   * {@link #timeout(long, TimeUnit)}).
    * By default there's no closing timeout.
    *
    * @param timeout timeout for closing streams of a process.
-   * @param unit the time unit of the timeout
+   * @param unit    the time unit of the timeout
    * @return This process executor.
    */
   public ProcessExecutor closeTimeout(long timeout, TimeUnit unit) {
@@ -446,35 +500,45 @@ public class ProcessExecutor {
    * Sets the input stream to redirect to the process' input stream.
    * If this method is invoked multiple times each call overwrites the previous.
    *
-   * @param input input stream that will be written to the process input stream (<code>null</code> means nothing will be written to the process input stream).
+   * @param input input stream that will be written to the process input stream
+   *              (<code>null</code> means nothing will be written to the process
+   *              input stream).
    * @return This process executor.
    */
   public ProcessExecutor redirectInput(InputStream input) {
     PumpStreamHandler pumps = pumps();
-    // Only set the input stream handler, preserve the same output and error stream handler
-    return streams(new PumpStreamHandler(pumps == null ? null : pumps.getOut(), pumps == null ? null : pumps.getErr(), input));
+    // Only set the input stream handler, preserve the same output and error stream
+    // handler
+    return streams(
+        new PumpStreamHandler(pumps == null ? null : pumps.getOut(), pumps == null ? null : pumps.getErr(), input));
   }
 
   /**
    * Redirects the process' output stream to given output stream.
    * If this method is invoked multiple times each call overwrites the previous.
-   * Use {@link #redirectOutputAlsoTo(OutputStream)} if you want to redirect the output to multiple streams.
+   * Use {@link #redirectOutputAlsoTo(OutputStream)} if you want to redirect the
+   * output to multiple streams.
    *
-   * @param output output stream where the process output is redirected to (<code>null</code> means {@link NullOutputStream} which acts like a <code>/dev/null</code>).
+   * @param output output stream where the process output is redirected to
+   *               (<code>null</code> means {@link NullOutputStream} which acts
+   *               like a <code>/dev/null</code>).
    * @return This process executor.
    */
   public ProcessExecutor redirectOutput(OutputStream output) {
-    if (output == null)
+    if (output == null) {
       output = NullOutputStream.NULL_OUTPUT_STREAM;
+    }
     PumpStreamHandler pumps = pumps();
     // Only set the output stream handler, preserve the same error stream handler
-    return streams(new PumpStreamHandler(output, pumps == null ? null : pumps.getErr(), pumps == null ? null : pumps.getInput()));
+    return streams(
+        new PumpStreamHandler(output, pumps == null ? null : pumps.getErr(), pumps == null ? null : pumps.getInput()));
   }
 
   /**
    * Redirects the process' output stream to given line consumer.
    * If this method is invoked multiple times each call overwrites the previous.
-   * Use {@link #redirectOutputAlsoTo(OutputStream)} if you want to redirect the output to multiple streams.
+   * Use {@link #redirectOutputAlsoTo(OutputStream)} if you want to redirect the
+   * output to multiple streams.
    *
    * @param consumer consumer where the process output is redirected to.
    * @return This process executor.
@@ -487,20 +551,26 @@ public class ProcessExecutor {
   /**
    * Redirects the process' error stream to given output stream.
    * If this method is invoked multiple times each call overwrites the previous.
-   * Use {@link #redirectErrorAlsoTo(OutputStream)} if you want to redirect the error to multiple streams.
+   * Use {@link #redirectErrorAlsoTo(OutputStream)} if you want to redirect the
+   * error to multiple streams.
    * <p>
-   * Calling this method automatically disables merging the process error stream to its output stream.
+   * Calling this method automatically disables merging the process error stream
+   * to its output stream.
    * </p>
    *
-   * @param output output stream where the process error is redirected to (<code>null</code> means {@link NullOutputStream} which acts like a <code>/dev/null</code>).
+   * @param output output stream where the process error is redirected to
+   *               (<code>null</code> means {@link NullOutputStream} which acts
+   *               like a <code>/dev/null</code>).
    * @return This process executor.
    */
   public ProcessExecutor redirectError(OutputStream output) {
-    if (output == null)
+    if (output == null) {
       output = NullOutputStream.NULL_OUTPUT_STREAM;
+    }
     PumpStreamHandler pumps = pumps();
     // Only set the error stream handler, preserve the same output stream handler
-    streams(new PumpStreamHandler(pumps == null ? null : pumps.getOut(), output, pumps == null ? null : pumps.getInput()));
+    streams(
+        new PumpStreamHandler(pumps == null ? null : pumps.getOut(), output, pumps == null ? null : pumps.getInput()));
     redirectErrorStream(false);
     return this;
   }
@@ -508,7 +578,8 @@ public class ProcessExecutor {
   /**
    * Redirects the process' error stream to given line consumer.
    * If this method is invoked multiple times each call overwrites the previous.
-   * Use {@link #redirectErrorAlsoTo(OutputStream)} if you want to redirect the output to multiple streams.
+   * Use {@link #redirectErrorAlsoTo(OutputStream)} if you want to redirect the
+   * output to multiple streams.
    *
    * @param consumer consumer where the process error is redirected to.
    * @return This process executor.
@@ -533,7 +604,8 @@ public class ProcessExecutor {
    * Redirects the process' error stream also to a given output stream.
    * This method can be used to redirect error to multiple streams.
    * <p>
-   * Calling this method automatically disables merging the process error stream to its output stream.
+   * Calling this method automatically disables merging the process error stream
+   * to its output stream.
    * </p>
    *
    * @param output the output stream to redirect the error stream to
@@ -547,15 +619,18 @@ public class ProcessExecutor {
 
   /**
    * @return current PumpStreamHandler (maybe <code>null</code>).
-   * @throws IllegalStateException if the current stream handler is not an instance of {@link PumpStreamHandler}.
+   * @throws IllegalStateException if the current stream handler is not an
+   *                               instance of {@link PumpStreamHandler}.
    *
    * @see #streams()
    */
   public PumpStreamHandler pumps() {
-    if (streams == null)
+    if (streams == null) {
       return null;
-    if (!(streams instanceof PumpStreamHandler))
+    }
+    if (!(streams instanceof PumpStreamHandler)) {
       throw new IllegalStateException("Only PumpStreamHandler is supported.");
+    }
     return (PumpStreamHandler) streams;
   }
 
@@ -565,8 +640,9 @@ public class ProcessExecutor {
    * @return new stream handler created.
    */
   private static PumpStreamHandler redirectOutputAlsoTo(PumpStreamHandler pumps, OutputStream output) {
-    if (output == null)
+    if (output == null) {
       throw new IllegalArgumentException("OutputStream must be provided.");
+    }
     OutputStream current = pumps.getOut();
     if (current != null && !(current instanceof NullOutputStream)) {
       output = new TeeOutputStream(current, output);
@@ -580,8 +656,9 @@ public class ProcessExecutor {
    * @return new stream handler created.
    */
   private static PumpStreamHandler redirectErrorAlsoTo(PumpStreamHandler pumps, OutputStream output) {
-    if (output == null)
+    if (output == null) {
       throw new IllegalArgumentException("OutputStream must be provided.");
+    }
     OutputStream current = pumps.getErr();
     if (current != null && !(current instanceof NullOutputStream)) {
       output = new TeeOutputStream(current, output);
@@ -592,12 +669,15 @@ public class ProcessExecutor {
   /**
    * Sets this process executor's <code>readOutput</code> property.
    *
-   * <p>If this property is <code>true</code>,
-   * the process output should be read to a buffer and returned by {@link ProcessResult#output()}.
-   * The initial value is <code>false</code>.</p>
+   * <p>
+   * If this property is <code>true</code>,
+   * the process output should be read to a buffer and returned by
+   * {@link ProcessResult#output()}.
+   * The initial value is <code>false</code>.
+   * </p>
    *
-   * @param   readOutput  The new property value
-   * @return  This process executor.
+   * @param readOutput The new property value
+   * @return This process executor.
    */
   public ProcessExecutor readOutput(boolean readOutput) {
     validateStreams(streams, readOutput);
@@ -606,15 +686,18 @@ public class ProcessExecutor {
   }
 
   /**
-   * Validates that if <code>readOutput</code> is <code>true</code> the output could be read with the given {@link ExecuteStreamHandler} instance.
+   * Validates that if <code>readOutput</code> is <code>true</code> the output
+   * could be read with the given {@link ExecuteStreamHandler} instance.
    */
   private void validateStreams(ExecuteStreamHandler streams, boolean readOutput) {
-    if (readOutput && !(streams instanceof PumpStreamHandler))
+    if (readOutput && !(streams instanceof PumpStreamHandler)) {
       throw new IllegalStateException("Only PumpStreamHandler is supported if readOutput is true.");
+    }
   }
 
   /**
-   * Logs the process' output to a given {@link Logger} with <code>info</code> level.
+   * Logs the process' output to a given {@link Logger} with <code>info</code>
+   * level.
    *
    * @param log the logger to process the output to
    * @return This process executor.
@@ -625,7 +708,8 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' output to a given {@link Logger} with <code>debug</code> level.
+   * Logs the process' output to a given {@link Logger} with <code>debug</code>
+   * level.
    *
    * @param log the logger to process the output to
    * @return This process executor.
@@ -636,7 +720,8 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' output to a {@link Logger} with given name using <code>info</code> level.
+   * Logs the process' output to a {@link Logger} with given name using
+   * <code>info</code> level.
    *
    * @param name the name of the logger to process the output to
    * @return This process executor.
@@ -647,7 +732,8 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' output to a {@link Logger} with given name using <code>debug</code> level.
+   * Logs the process' output to a {@link Logger} with given name using
+   * <code>debug</code> level.
    *
    * @param name the name of the logger to process the output to
    * @return This process executor.
@@ -658,7 +744,8 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' output to a {@link Logger} of the caller class using <code>info</code> level.
+   * Logs the process' output to a {@link Logger} of the caller class using
+   * <code>info</code> level.
    *
    * @return This process executor.
    * @deprecated use {@link #redirectOutput(OutputStream)} and {@link Slf4jStream}
@@ -668,7 +755,9 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' output to a {@link Logger} of the caller class using <code>debug</code> level.
+   * Logs the process' output to a {@link Logger} of the caller class using
+   * <code>debug</code> level.
+   * 
    * @return This process executor.
    * @deprecated use {@link #redirectOutput(OutputStream)} and {@link Slf4jStream}
    */
@@ -677,7 +766,8 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' output to a given {@link Logger} with <code>info</code> level.
+   * Logs the process' output to a given {@link Logger} with <code>info</code>
+   * level.
    *
    * @param log the logger to output the message to
    * @return This process executor.
@@ -688,7 +778,8 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' output to a given {@link Logger} with <code>debug</code> level.
+   * Logs the process' output to a given {@link Logger} with <code>debug</code>
+   * level.
    *
    * @param log the logger to output the message to
    * @return This process executor.
@@ -699,7 +790,8 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' output to a {@link Logger} with given name using <code>info</code> level.
+   * Logs the process' output to a {@link Logger} with given name using
+   * <code>info</code> level.
    *
    * @param name the name of the logger to log to
    * @return This process executor.
@@ -710,7 +802,8 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' output to a {@link Logger} with given name using <code>debug</code> level.
+   * Logs the process' output to a {@link Logger} with given name using
+   * <code>debug</code> level.
    *
    * @param name the name of the logger to process output to
    * @return This process executor.
@@ -721,7 +814,9 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' output to a {@link Logger} of the caller class using <code>info</code> level.
+   * Logs the process' output to a {@link Logger} of the caller class using
+   * <code>info</code> level.
+   * 
    * @return This process executor.
    * @deprecated use {@link #redirectOutput(OutputStream)} and {@link Slf4jStream}
    */
@@ -730,7 +825,9 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' output to a {@link Logger} of the caller class using <code>debug</code> level.
+   * Logs the process' output to a {@link Logger} of the caller class using
+   * <code>debug</code> level.
+   * 
    * @return This process executor.
    * @deprecated use {@link #redirectOutput(OutputStream)} and {@link Slf4jStream}
    */
@@ -739,7 +836,8 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' error to a given {@link Logger} with <code>info</code> level.
+   * Logs the process' error to a given {@link Logger} with <code>info</code>
+   * level.
    *
    * @param log the logger to process output to
    * @return This process executor.
@@ -750,7 +848,8 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' error to a given {@link Logger} with <code>debug</code> level.
+   * Logs the process' error to a given {@link Logger} with <code>debug</code>
+   * level.
    *
    * @param log the logger to process the error to
    * @return This process executor.
@@ -761,7 +860,8 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' error to a {@link Logger} with given name using <code>info</code> level.
+   * Logs the process' error to a {@link Logger} with given name using
+   * <code>info</code> level.
    *
    * @param name the name of the logger to process the error to
    * @return This process executor.
@@ -772,7 +872,8 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' error to a {@link Logger} with given name using <code>debug</code> level.
+   * Logs the process' error to a {@link Logger} with given name using
+   * <code>debug</code> level.
    *
    * @param name the name of the logger to process the error to
    * @return This process executor.
@@ -783,7 +884,9 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' error to a {@link Logger} of the caller class using <code>info</code> level.
+   * Logs the process' error to a {@link Logger} of the caller class using
+   * <code>info</code> level.
+   * 
    * @return This process executor.
    * @deprecated use {@link #redirectError(OutputStream)} and {@link Slf4jStream}
    */
@@ -792,7 +895,9 @@ public class ProcessExecutor {
   }
 
   /**
-   * Logs the process' error to a {@link Logger} of the caller class using <code>debug</code> level.
+   * Logs the process' error to a {@link Logger} of the caller class using
+   * <code>debug</code> level.
+   * 
    * @return This process executor.
    * @deprecated use {@link #redirectError(OutputStream)} and {@link Slf4jStream}
    */
@@ -812,7 +917,9 @@ public class ProcessExecutor {
 
   /**
    * Adds a process destroyer to be notified when the process starts and stops.
-   * @param destroyer helper for destroying all processes on certain event such as VM exit (not <code>null</code>).
+   * 
+   * @param destroyer helper for destroying all processes on certain event such as
+   *                  VM exit (not <code>null</code>).
    *
    * @return This process executor.
    */
@@ -823,21 +930,25 @@ public class ProcessExecutor {
   /**
    * Sets the process destroyer to be notified when the process starts and stops.
    * <p>
-   * This methods always removes any other {@link ProcessDestroyer} registered. Use {@link #addDestroyer(ProcessDestroyer)} to keep the existing ones.
+   * This methods always removes any other {@link ProcessDestroyer} registered.
+   * Use {@link #addDestroyer(ProcessDestroyer)} to keep the existing ones.
    *
-   * @param destroyer helper for destroying all processes on certain event such as VM exit (maybe <code>null</code>).
+   * @param destroyer helper for destroying all processes on certain event such as
+   *                  VM exit (maybe <code>null</code>).
    *
    * @return This process executor.
    */
   public ProcessExecutor destroyer(ProcessDestroyer destroyer) {
     removeListeners(DestroyerListenerAdapter.class);
-    if (destroyer != null)
+    if (destroyer != null) {
       addListener(new DestroyerListenerAdapter(destroyer));
+    }
     return this;
   }
 
   /**
-   * Sets the started process to be destroyed on VM exit (shutdown hooks are executed).
+   * Sets the started process to be destroyed on VM exit (shutdown hooks are
+   * executed).
    * If this VM gets killed the started process may not get destroyed.
    * <p>
    * To undo this command call <code>destroyer(null)</code>.
@@ -850,19 +961,22 @@ public class ProcessExecutor {
 
   /**
    * Unregister all existing process event handlers and register new one.
+   * 
    * @param listener process event handler to be set (maybe <code>null</code>).
    *
    * @return This process executor.
    */
   public ProcessExecutor listener(ProcessListener listener) {
     clearListeners();
-    if (listener != null)
+    if (listener != null) {
       addListener(listener);
+    }
     return this;
   }
 
   /**
    * Register new process event handler.
+   * 
    * @param listener process event handler to be added.
    *
    * @return This process executor.
@@ -874,6 +988,7 @@ public class ProcessExecutor {
 
   /**
    * Unregister existing process event handler.
+   * 
    * @param listener process event handler to be removed.
    *
    * @return This process executor.
@@ -885,6 +1000,7 @@ public class ProcessExecutor {
 
   /**
    * Unregister existing process event handlers of given type or its sub-types.
+   * 
    * @param listenerType process event handler type.
    *
    * @return This process executor.
@@ -905,9 +1021,11 @@ public class ProcessExecutor {
   }
 
   /**
-   * Changes how most common messages about starting and waiting for processes are actually logged.
+   * Changes how most common messages about starting and waiting for processes are
+   * actually logged.
    * By default {@link MessageLoggers#DEBUG} is used.
-   * However if someone is executing a process every second {@link MessageLoggers#TRACE} may be used e.g.
+   * However if someone is executing a process every second
+   * {@link MessageLoggers#TRACE} may be used e.g.
    *
    * @param messageLogger message logger for certain level.
    *
@@ -919,14 +1037,19 @@ public class ProcessExecutor {
   }
 
   /**
-   * Executes the sub process. This method waits until the process exits, a timeout occurs or the caller thread gets interrupted.
+   * Executes the sub process. This method waits until the process exits, a
+   * timeout occurs or the caller thread gets interrupted.
    * In the latter cases the process gets destroyed as well.
    *
    * @return exit code of the finished process.
-   * @throws IOException an error occurred when process was started or stopped.
-   * @throws InterruptedException this thread was interrupted.
-   * @throws TimeoutException timeout set by {@link #timeout(long, TimeUnit)} was reached.
-   * @throws InvalidExitValueException if invalid exit value was returned (@see {@link #exitValues(Integer...)}).
+   * @throws IOException               an error occurred when process was started
+   *                                   or stopped.
+   * @throws InterruptedException      this thread was interrupted.
+   * @throws TimeoutException          timeout set by
+   *                                   {@link #timeout(long, TimeUnit)} was
+   *                                   reached.
+   * @throws InvalidExitValueException if invalid exit value was returned (@see
+   *                                   {@link #exitValues(Integer...)}).
    */
   public ProcessResult execute() throws IOException, InterruptedException, TimeoutException, InvalidExitValueException {
     return waitFor(startInternal());
@@ -934,12 +1057,15 @@ public class ProcessExecutor {
 
   /**
    * Executes the sub process. This method waits until the process exits.
-   * Value passed to {@link #timeout(long, TimeUnit)} is ignored (use {@link #execute()} for timeout).
+   * Value passed to {@link #timeout(long, TimeUnit)} is ignored (use
+   * {@link #execute()} for timeout).
    *
    * @return exit code of the finished process.
-   * @throws IOException an error occurred when process was started or stopped.
-   * @throws InterruptedException this thread was interrupted.
-   * @throws InvalidExitValueException if invalid exit value was returned (@see {@link #exitValues(Integer...)}).
+   * @throws IOException               an error occurred when process was started
+   *                                   or stopped.
+   * @throws InterruptedException      this thread was interrupted.
+   * @throws InvalidExitValueException if invalid exit value was returned (@see
+   *                                   {@link #exitValues(Integer...)}).
    */
   public ProcessResult executeNoTimeout() throws IOException, InterruptedException, InvalidExitValueException {
     return startInternal().call();
@@ -980,7 +1106,8 @@ public class ProcessExecutor {
    * Start the process and its stream handlers.
    *
    * @return process the started process.
-   * @throws IOException the process or its stream handlers couldn't start (in the latter case we also destroy the process).
+   * @throws IOException the process or its stream handlers couldn't start (in the
+   *                     latter case we also destroy the process).
    */
   protected final WaitForProcess startInternal() throws IOException {
     // Invoke listeners - they can modify this executor
@@ -1012,17 +1139,16 @@ public class ProcessExecutor {
    */
   private ProcessAttributes getAttributes() {
     return new ProcessAttributes(
-          getCommand(),
-          getDirectory(),
-          new LinkedHashMap<String, String>(environment),
-          allowedExitValues == null ? null : new HashSet<Integer>(allowedExitValues));
+        getCommand(),
+        getDirectory(),
+        new LinkedHashMap<String, String>(environment),
+        allowedExitValues == null ? null : new HashSet<Integer>(allowedExitValues));
   }
 
   private Process invokeStart() throws IOException {
     try {
       return builder.start();
-    }
-    catch (IOException e) {
+    } catch (IOException e) {
       if (e.getClass().equals(IOException.class)) {
         String message = getExecutingErrorMessage();
         ProcessInitException p = ProcessInitException.newInstance(message, e);
@@ -1032,8 +1158,7 @@ public class ProcessExecutor {
         throw new IOException(message, e);
       }
       throw e;
-    }
-    catch (RuntimeException e) {
+    } catch (RuntimeException e) {
       if (e.getClass().equals(IllegalArgumentException.class)) {
         throw new IllegalArgumentException(getExecutingErrorMessage(), e);
       }
@@ -1061,15 +1186,16 @@ public class ProcessExecutor {
     return result;
   }
 
-  private WaitForProcess startInternal(Process process, ProcessAttributes attributes, ExecuteStreamHandler streams, ByteArrayOutputStream out) throws IOException {
+  private WaitForProcess startInternal(Process process, ProcessAttributes attributes, ExecuteStreamHandler streams,
+      ByteArrayOutputStream out) throws IOException {
     if (streams != null) {
       try {
         streams.setProcessInputStream(process.getOutputStream());
         streams.setProcessOutputStream(process.getInputStream());
-        if (!builder.redirectErrorStream())
+        if (!builder.redirectErrorStream()) {
           streams.setProcessErrorStream(process.getErrorStream());
-      }
-      catch (IOException e) {
+        }
+      } catch (IOException e) {
         process.destroy();
         throw e;
       }
@@ -1078,8 +1204,10 @@ public class ProcessExecutor {
 
     ProcessCloser closer = newProcessCloser(streams);
 
-    WaitForProcess result = new WaitForProcess(process, attributes, stopper, closer, out, listeners.clone(), messageLogger);
-    // Invoke listeners - changing this executor does not affect the started process any more
+    WaitForProcess result = new WaitForProcess(process, attributes, stopper, closer, out, listeners.clone(),
+        messageLogger);
+    // Invoke listeners - changing this executor does not affect the started process
+    // any more
     listeners.afterStart(process, this);
     return result;
   }
@@ -1092,7 +1220,8 @@ public class ProcessExecutor {
   }
 
   /**
-   * Wait until the process stops, a timeout occurs and the caller thread gets interrupted.
+   * Wait until the process stops, a timeout occurs and the caller thread gets
+   * interrupted.
    * In the latter cases the process gets destroyed as well.
    */
   private ProcessResult waitFor(WaitForProcess task) throws IOException, InterruptedException, TimeoutException {
@@ -1100,17 +1229,15 @@ public class ProcessExecutor {
     if (timeout == null) {
       // Use the current thread
       result = task.call();
-    }
-    else {
+    } else {
       // Fork another thread to invoke Process.waitFor()
       ExecutorService service = newExecutor(task);
       // Copy values to not conflict with further executions
-      long _timeout = timeout;
+      long timeoutValue = timeout;
       TimeUnit unit = timeoutUnit;
       try {
-        result = invokeSubmit(service, task).get(_timeout, unit);
-      }
-      catch (ExecutionException e) {
+        result = invokeSubmit(service, task).get(timeoutValue, unit);
+      } catch (ExecutionException e) {
         Throwable c = e.getCause();
         if (c instanceof IOException) {
           throw (IOException) c;
@@ -1131,13 +1258,12 @@ public class ProcessExecutor {
           throw new InvalidResultException(p.getMessage(), p.getResult());
         }
         throw new IllegalStateException("Error occured while waiting for process to finish:", c);
-      }
-      catch (TimeoutException e) {
+      } catch (TimeoutException e) {
         messageLogger.message(log, "{} is running too long", task);
-        throw newTimeoutException(_timeout, unit, task);
-      }
-      finally {
-        // Interrupt the task if it's still running and release the ExecutorService's resources
+        throw newTimeoutException(timeoutValue, unit, task);
+      } finally {
+        // Interrupt the task if it's still running and release the ExecutorService's
+        // resources
         service.shutdownNow();
       }
     }
@@ -1152,22 +1278,22 @@ public class ProcessExecutor {
     // Use daemon thread as we don't want to postpone the shutdown
     // If #destroyOnExit() is used we wait for the process to be destroyed anyway
     final String name = "WaitForProcess-" + processName;
-    ExecutorService service = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+    return Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+      @Override
       public Thread newThread(Runnable r) {
         Thread t = new Thread(r, name);
         t.setDaemon(true);
         return t;
       }
     });
-    return service;
   }
 
   /**
    * Override this to customize how the waiting task is started in the background.
    *
-   * @param <T> the type of the task
+   * @param <T>      the type of the task
    * @param executor the executor service to submit the task on
-   * @param task the task to be submitted
+   * @param task     the task to be submitted
    * @return the future of the task
    */
   protected <T> Future<T> invokeSubmit(ExecutorService executor, Callable<T> task) {
@@ -1177,15 +1303,15 @@ public class ProcessExecutor {
   /**
    * Override this to customize how the background task is created.
    *
-   * @param <T> the type of the Task
+   * @param <T>  the type of the Task
    * @param task the Task to be wrapped
    * @return the wrapped task
    */
   protected <T> Callable<T> wrapTask(Callable<T> task) {
     // Preserve the MDC context of the caller thread.
-    Map contextMap = MDC.getCopyOfContextMap();
+    Map<String, String> contextMap = MDC.getCopyOfContextMap();
     if (contextMap != null) {
-      return new MDCCallableAdapter(task, contextMap);
+      return new MDCCallableAdapter<>(task, contextMap);
     }
     return task;
   }
@@ -1196,8 +1322,7 @@ public class ProcessExecutor {
     Integer exitValue = getExitCodeOrNull(process);
     if (exitValue == null) {
       sb.append("Timed out waiting for ").append(process).append(" to finish");
-    }
-    else {
+    } else {
       sb.append("Timed out finishing ").append(process);
       sb.append(", exit value: ").append(exitValue);
     }
@@ -1226,8 +1351,7 @@ public class ProcessExecutor {
   private static Integer getExitCodeOrNull(Process process) {
     try {
       return process.exitValue();
-    }
-    catch (IllegalThreadStateException e) {
+    } catch (IllegalThreadStateException e) {
       return null;
     }
   }
@@ -1242,15 +1366,15 @@ public class ProcessExecutor {
       String value = e.getValue();
       if (value == null) {
         env.remove(key);
-      }
-      else {
+      } else {
         env.put(key, value);
       }
     }
   }
 
   /**
-   * Fixes the command line arguments on Windows by replacing empty arguments with <code>""</code>. Otherwise these arguments would be just skipped.
+   * Fixes the command line arguments on Windows by replacing empty arguments with
+   * <code>""</code>. Otherwise these arguments would be just skipped.
    *
    * @see http://bugs.java.com/view_bug.do?bug_id=7028124
    * @see https://bugs.openjdk.java.net/browse/JDK-6518827
@@ -1259,8 +1383,8 @@ public class ProcessExecutor {
     if (!IS_OS_WINDOWS) {
       return command;
     }
-    List<String> result = new ArrayList<String>(command);
-    for (ListIterator it = result.listIterator(); it.hasNext(); ) {
+    List<String> result = new ArrayList<>(command);
+    for (ListIterator<String> it = result.listIterator(); it.hasNext();) {
       if ("".equals(it.next())) {
         it.set("\"\"");
       }

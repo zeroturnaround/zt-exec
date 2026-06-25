@@ -23,7 +23,7 @@ import org.zeroturnaround.exec.stream.slf4j.Level;
 /**
  * Contains {@link MessageLogger} instances for various log levels.
  */
-public class MessageLoggers {
+final public class MessageLoggers {
 
   public static final MessageLogger NOP = new MessageLogger() {
     public void message(Logger log, String format, Object... arguments) {
@@ -49,7 +49,7 @@ public class MessageLoggers {
     }
   };
 
-  public static final MessageLogger get(Level level) {
+  public static MessageLogger get(Level level) {
     switch (level) {
     case TRACE: return TRACE;
     case DEBUG: return DEBUG;
