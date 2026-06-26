@@ -37,7 +37,6 @@
  */
 package org.zeroturnaround.exec.listener;
 
-import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
 
