@@ -1,5 +1,5 @@
 [versions]
-slf4j = "1.7.32"
+slf4j = "2.0.18"
 junit = "4.13.2"
 logback = "1.5.38"
 commons-lang3 = "3.20.0"
