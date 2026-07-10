@@ -10,7 +10,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: Set up Java
         uses: actions/setup-java@v5
@@ -19,7 +19,7 @@ jobs:
           java-version: 24
 
       - name: Set up Gradle
-        uses: gradle/actions/setup-gradle@v4
+        uses: gradle/actions/setup-gradle@v6
 
       # `build` runs `assemble` + `check` (which includes `test`). The Java
       # toolchain needed to compile is auto-provisioned by the foojay resolver.
@@ -27,7 +27,7 @@ jobs:
         run: ./gradlew build
 
       - name: Upload jar
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: zt-exec
           path: build/libs/*.jar
@@ -35,7 +35,7 @@ jobs:
 
       - name: Upload test reports
         if: always()
-        uses: actions/upload-artifact@v6
+        uses: actions/upload-artifact@v7
         with:
           name: test-reports
           path: build/reports/tests/
