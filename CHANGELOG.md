@@ -10,10 +10,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 
 - `LogOutputStream.create(LineConsumer)` to build a `LogOutputStream` from a lambda ([#107](https://github.com/zeroturnaround/zt-exec/pull/107)).
+- `LogOutputStream.setOutputCharset(String)` to control the charset used to decode the process output ([#89](https://github.com/zeroturnaround/zt-exec/pull/89)).
+- An OSGi bundle manifest (`Bundle-SymbolicName`, `Export-Package`) in the published jar ([#85](https://github.com/zeroturnaround/zt-exec/pull/85)).
+- A JPMS module descriptor for module `org.zeroturnaround.exec`, shipped as a Java 9 multi-release entry ([#106](https://github.com/zeroturnaround/zt-exec/pull/106)).
 
 ### Changed
 
-- Migrated the build from Maven to Gradle. The published jar now ships a JPMS module descriptor for `org.zeroturnaround.exec` (as a Java 9 multi-release entry) alongside the existing OSGi bundle manifest, and releases are published to Maven Central through the Sonatype Central Portal.
+- Raised the minimum Java runtime from 6 to 8 (bytecode target moved from 1.6 to 1.8).
+- Upgraded the `slf4j-api` dependency from 1.7.2 to 1.7.32.
+- Migrated the build from Maven to Gradle; releases now publish to Maven Central through the Sonatype Central Portal.
 
 ## [1.12] - 2020-09-02
 
