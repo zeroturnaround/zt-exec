@@ -4,7 +4,7 @@ on:
   workflow_dispatch:
     inputs:
       version:
-        description: 'Release version (e.g., 1.13)'
+        description: 'Release version (e.g., 1.13.0)'
         required: true
         type: string
 
@@ -65,24 +65,24 @@ jobs:
 
       - name: Tag and push
         run: |
-          git tag "zt-exec-${{ inputs.version }}"
+          git tag "v${{ inputs.version }}"
           git push origin HEAD
-          git push origin "zt-exec-${{ inputs.version }}"
+          git push origin "v${{ inputs.version }}"
 
       - name: Create GitHub Release
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh release create "zt-exec-${{ inputs.version }}" \
-            --title "zt-exec-${{ inputs.version }}" \
+          gh release create "v${{ inputs.version }}" \
+            --title "v${{ inputs.version }}" \
             --generate-notes \
             build/libs/*.jar
 
       - name: Set next development version
         run: |
           VERSION="${{ inputs.version }}"
-          # Increment the last numeric component, matching the historical
-          # versioning (1.13 -> 1.14; 1.13.1 -> 1.13.2).
+          # Increment the last numeric component to the next patch development
+          # version (1.13.0 -> 1.13.1); bump the minor or major by hand when needed.
           PREFIX="${VERSION%.*}"
           LAST="${VERSION##*.}"
           if [ "$PREFIX" = "$VERSION" ]; then
