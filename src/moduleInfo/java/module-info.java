@@ -16,6 +16,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+// slf4j-api 1.7.x has no module descriptor, so org.slf4j is an automatic module.
+// `requires transitive` on it is intentional (see below) and the usual caveat — an
+// unstable derived module name — does not apply: slf4j-api pins
+// `Automatic-Module-Name: org.slf4j`, which is also slf4j 2.x's real module name.
+@SuppressWarnings({"requires-transitive-automatic", "requires-automatic"})
 module org.zeroturnaround.exec {
   // slf4j types appear in the public API (e.g. ProcessExecutor.info(org.slf4j.Logger)),
   // so consumers reading this module also read org.slf4j.
