@@ -2,7 +2,7 @@
 slf4j = "1.7.32"
 junit = "4.13.2"
 logback = "1.2.13"
-commons-lang3 = "3.12.0"
+commons-lang3 = "3.18.0"
 commons-io = "2.14.0"
 maven-publish = "0.37.0"
 bnd = "7.1.0"
