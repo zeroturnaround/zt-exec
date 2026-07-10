@@ -26,14 +26,14 @@ Maven:
 <dependency>
     <groupId>org.zeroturnaround</groupId>
     <artifactId>zt-exec</artifactId>
-    <version>1.12</version>
+    <version>1.13.0</version>
 </dependency>
 ```
 
 Gradle:
 
 ```kotlin
-implementation("org.zeroturnaround:zt-exec:1.12")
+implementation("org.zeroturnaround:zt-exec:1.13.0")
 ```
 
 ## Motivation

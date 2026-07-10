@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.13.0] - 2026-07-10
+
 ### Added
 
 - `LogOutputStream.create(LineConsumer)` to build a `LogOutputStream` from a lambda ([#107](https://github.com/zeroturnaround/zt-exec/pull/107)).
@@ -128,7 +130,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Starting processes on JVM shutdown.
 - Supporting Java 1.5.
 
-[Unreleased]: https://github.com/zeroturnaround/zt-exec/compare/zt-exec-1.12...HEAD
+[Unreleased]: https://github.com/zeroturnaround/zt-exec/compare/v1.13.0...HEAD
+[1.13.0]: https://github.com/zeroturnaround/zt-exec/compare/zt-exec-1.12...v1.13.0
 [1.12]: https://github.com/zeroturnaround/zt-exec/compare/zt-exec-1.11...zt-exec-1.12
 [1.11]: https://github.com/zeroturnaround/zt-exec/compare/zt-exec-1.10...zt-exec-1.11
 [1.10]: https://github.com/zeroturnaround/zt-exec/compare/zt-exec-1.9...zt-exec-1.10
