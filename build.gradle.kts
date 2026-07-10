@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2013 ZeroTurnaround <support@zeroturnaround.com>
+ * Copyright (C) 2026 Neeme Praks
  * Contains fragments of code from Apache Commons Exec, rights owned
  * by Apache Software Foundation (ASF).
  *
@@ -180,10 +181,6 @@ mavenPublishing {
     name.set("ZT Process Executor")
     description.set(project.description)
     url.set("https://github.com/zeroturnaround/zt-exec")
-    organization {
-      name.set("ZeroTurnaround")
-      url.set("https://zeroturnaround.com/")
-    }
     licenses {
       license {
         name.set("The Apache Software License, Version 2.0")
@@ -201,16 +198,10 @@ mavenPublishing {
       developer {
         id.set("rein")
         name.set("Rein")
-        email.set("rein@zeroturnaround.com")
-        organization.set("ZeroTurnaround")
-        organizationUrl.set("https://zeroturnaround.com")
       }
       developer {
         id.set("toomasr")
         name.set("Toomas")
-        email.set("toomas@zeroturnaround.com")
-        organization.set("ZeroTurnaround")
-        organizationUrl.set("https://zeroturnaround.com")
       }
     }
     scm {
