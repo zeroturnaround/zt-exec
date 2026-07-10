@@ -29,7 +29,7 @@ plugins {
 }
 
 group = "org.zeroturnaround"
-version = "1.13.0"
+version = "1.13.1-SNAPSHOT"
 description = "A lightweight library to execute external processes from Java."
 
 val moduleName = "org.zeroturnaround.exec"
