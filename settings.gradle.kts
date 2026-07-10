@@ -1,5 +1,6 @@
 /*
  * Copyright (C) 2013 ZeroTurnaround <support@zeroturnaround.com>
+ * Copyright (C) 2026 Neeme Praks
  * Contains fragments of code from Apache Commons Exec, rights owned
  * by Apache Software Foundation (ASF).
  *
