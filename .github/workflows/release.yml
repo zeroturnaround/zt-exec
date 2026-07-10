@@ -47,6 +47,9 @@ jobs:
           # Maven coordinate snippet: <artifactId>zt-exec</artifactId> ... <version>VERSION</version>
           perl -0pi -e 's{(<artifactId>zt-exec</artifactId>\s*<version>)[^<]+}{${1}${{ inputs.version }}}g' README.md
 
+      - name: Promote changelog Unreleased section
+        run: bash .github/scripts/prepare-changelog-release.sh "${{ inputs.version }}"
+
       - name: Run full build (validates everything compiles + tests pass)
         run: ./gradlew clean build
 
@@ -60,7 +63,7 @@ jobs:
 
       - name: Commit version bump
         run: |
-          git add build.gradle.kts README.md
+          git add build.gradle.kts README.md CHANGELOG.md
           git commit -m "Release ${{ inputs.version }}"
 
       - name: Tag and push
