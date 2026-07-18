@@ -18,7 +18,6 @@ final class ExceptionUtil {
     }
     catch (Exception e) {
       // ignore
-      System.out.println(e);
     }
     return null;
   }

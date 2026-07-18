@@ -125,7 +125,6 @@ public class ProcessExecutor {
    * Helper for stopping the process in case of timeout or cancellation.
    */
   private ProcessStopper stopper;
-  /// usr/bin/java
 
   /**
    * Process stream Handler (copied from Commons Exec library). If
