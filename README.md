@@ -2,7 +2,7 @@ ZT Process Executor
 ================
 
 ### Continuous Integration
-![Build Status](https://github.com/zeroturnaround/zt-exec/actions/workflows/maven.yml/badge.svg)
+[![Build](https://github.com/zeroturnaround/zt-exec/actions/workflows/build.yml/badge.svg)](https://github.com/zeroturnaround/zt-exec/actions/workflows/build.yml)
 
 ### Quick Overview
 
@@ -12,24 +12,28 @@ the user gets the functionality from both **java.lang.ProcessBuilder** and [Apac
 
 ### Dependencies
 
-* Minimal required Java version is 6 (tested also with 8, 11 and 17).
+* Minimal required Java version is 8.
 * The only 3rd-party dependency is [SLF4J](https://www.slf4j.org/).
 
 ### Installation
-[![Maven Central](https://maven-badges.herokuapp.com/maven-central/org.zeroturnaround/zt-exec/badge.svg)](https://maven-badges.herokuapp.com/maven-central/org.zeroturnaround/zt-exec)
+[![Maven Central](https://img.shields.io/maven-central/v/org.zeroturnaround/zt-exec.svg?label=Maven%20Central)](https://central.sonatype.com/artifact/org.zeroturnaround/zt-exec)
 
-The project artifacts are available in [Maven Central Repository](https://search.maven.org/artifact/org.zeroturnaround/zt-exec/).
+The project artifacts are available in [Maven Central Repository](https://central.sonatype.com/artifact/org.zeroturnaround/zt-exec).
 
-To include it in your maven project then you have to specify the dependency.
+Maven:
 
 ```xml
-...
 <dependency>
     <groupId>org.zeroturnaround</groupId>
     <artifactId>zt-exec</artifactId>
-    <version>1.12</version>
+    <version>1.13.0</version>
 </dependency>
-...
+```
+
+Gradle:
+
+```kotlin
+implementation("org.zeroturnaround:zt-exec:1.13.0")
 ```
 
 ## Motivation
@@ -274,3 +278,32 @@ Future<ProcessResult> future = new ProcessExecutor()
 // do some stuff
 String output = future.get(60, TimeUnit.SECONDS).outputUTF8();
 ```
+
+## Building
+
+The project is built with [Gradle](https://gradle.org/) via the bundled wrapper, so no local
+Gradle installation is required:
+
+```sh
+./gradlew build
+```
+
+The main classes target Java 8 bytecode; the JPMS `module-info` for `org.zeroturnaround.exec`
+is shipped as a Java 9 multi-release entry. The build resolves the required Java toolchain
+automatically (it is downloaded on demand if not already installed), so the build itself runs
+on any modern JDK.
+
+## Releasing
+
+Versions follow [Semantic Versioning](https://semver.org/) (`MAJOR.MINOR.PATCH`, e.g. `1.13.0`)
+and release tags use the `vMAJOR.MINOR.PATCH` form (e.g. `v1.13.0`). Tags created before this
+convention use the older `zt-exec-<version>` form.
+
+Releases are cut with the **Release** GitHub Actions workflow (Actions → Release → Run workflow).
+It takes the release version (e.g. `1.13.0`) and then builds, publishes to Maven Central, tags
+the commit, creates the GitHub release, and sets the next development version.
+
+The workflow also promotes the `## [Unreleased]` section of [CHANGELOG.md](CHANGELOG.md) into a
+dated `## [x.y.z]` section and updates the comparison links, so the only changelog task is to make
+sure the changes being released are listed under `## [Unreleased]` beforehand. (The release fails
+if that section is empty.)
