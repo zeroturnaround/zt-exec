@@ -8,7 +8,7 @@ import java.util.concurrent.TimeoutException;
  */
 final class InvalidExitUtil {
   private InvalidExitUtil(){
-    // ** making the contructor private to prevent instantiation of this utility class **
+    // ** making the constructor private to prevent instantiation of this utility class **
   }
 
   /**
