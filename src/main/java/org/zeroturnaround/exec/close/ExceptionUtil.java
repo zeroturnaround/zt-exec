@@ -2,7 +2,10 @@ package org.zeroturnaround.exec.close;
 
 import java.lang.reflect.Method;
 
-class ExceptionUtil {
+final class ExceptionUtil {
+  private ExceptionUtil() {
+    // ** Making constructor private to avoid instantiation of utility class **
+  }
 
   /**
    * Throwable.addSuppressed(Throwable) added in Java 7.

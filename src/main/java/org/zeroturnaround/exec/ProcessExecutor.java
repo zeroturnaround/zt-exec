@@ -362,12 +362,14 @@ public class ProcessExecutor {
    * @return This process executor.
    */
   public ProcessExecutor exitValues(int[] exitValues) {
-    if (exitValues == null)
+    if (exitValues == null){
       return exitValueAny();
+    }
     // Convert int[] -> Integer[]
     Integer[] array = new Integer[exitValues.length];
-    for (int i = 0; i < array.length; i++)
+    for (int i = 0; i < array.length; i++){
       array[i] = exitValues[i];
+    }
     return exitValues(array);
   }
 
@@ -464,8 +466,9 @@ public class ProcessExecutor {
    * @return This process executor.
    */
   public ProcessExecutor redirectOutput(OutputStream output) {
-    if (output == null)
+    if (output == null){
       output = NullOutputStream.NULL_OUTPUT_STREAM;
+    }
     PumpStreamHandler pumps = pumps();
     // Only set the output stream handler, preserve the same error stream handler
     return streams(new PumpStreamHandler(output, pumps == null ? null : pumps.getErr(), pumps == null ? null : pumps.getInput()));
@@ -496,8 +499,9 @@ public class ProcessExecutor {
    * @return This process executor.
    */
   public ProcessExecutor redirectError(OutputStream output) {
-    if (output == null)
+    if (output == null){
       output = NullOutputStream.NULL_OUTPUT_STREAM;
+    }
     PumpStreamHandler pumps = pumps();
     // Only set the error stream handler, preserve the same output stream handler
     streams(new PumpStreamHandler(pumps == null ? null : pumps.getOut(), output, pumps == null ? null : pumps.getInput()));
@@ -552,10 +556,12 @@ public class ProcessExecutor {
    * @see #streams()
    */
   public PumpStreamHandler pumps() {
-    if (streams == null)
+    if (streams == null){
       return null;
-    if (!(streams instanceof PumpStreamHandler))
+    }
+    if (!(streams instanceof PumpStreamHandler)){
       throw new IllegalStateException("Only PumpStreamHandler is supported.");
+    }
     return (PumpStreamHandler) streams;
   }
 
@@ -565,8 +571,9 @@ public class ProcessExecutor {
    * @return new stream handler created.
    */
   private static PumpStreamHandler redirectOutputAlsoTo(PumpStreamHandler pumps, OutputStream output) {
-    if (output == null)
+    if (output == null){
       throw new IllegalArgumentException("OutputStream must be provided.");
+    }
     OutputStream current = pumps.getOut();
     if (current != null && !(current instanceof NullOutputStream)) {
       output = new TeeOutputStream(current, output);
@@ -580,8 +587,9 @@ public class ProcessExecutor {
    * @return new stream handler created.
    */
   private static PumpStreamHandler redirectErrorAlsoTo(PumpStreamHandler pumps, OutputStream output) {
-    if (output == null)
+    if (output == null){
       throw new IllegalArgumentException("OutputStream must be provided.");
+    }
     OutputStream current = pumps.getErr();
     if (current != null && !(current instanceof NullOutputStream)) {
       output = new TeeOutputStream(current, output);
@@ -609,8 +617,9 @@ public class ProcessExecutor {
    * Validates that if <code>readOutput</code> is <code>true</code> the output could be read with the given {@link ExecuteStreamHandler} instance.
    */
   private void validateStreams(ExecuteStreamHandler streams, boolean readOutput) {
-    if (readOutput && !(streams instanceof PumpStreamHandler))
+    if (readOutput && !(streams instanceof PumpStreamHandler)){
       throw new IllegalStateException("Only PumpStreamHandler is supported if readOutput is true.");
+    }
   }
 
   /**
@@ -831,8 +840,9 @@ public class ProcessExecutor {
    */
   public ProcessExecutor destroyer(ProcessDestroyer destroyer) {
     removeListeners(DestroyerListenerAdapter.class);
-    if (destroyer != null)
+    if (destroyer != null){
       addListener(new DestroyerListenerAdapter(destroyer));
+    }
     return this;
   }
 
@@ -856,8 +866,9 @@ public class ProcessExecutor {
    */
   public ProcessExecutor listener(ProcessListener listener) {
     clearListeners();
-    if (listener != null)
+    if (listener != null){
       addListener(listener);
+    }
     return this;
   }
 
@@ -1105,10 +1116,10 @@ public class ProcessExecutor {
       // Fork another thread to invoke Process.waitFor()
       ExecutorService service = newExecutor(task);
       // Copy values to not conflict with further executions
-      long _timeout = timeout;
+      long timeoutValue = timeout;
       TimeUnit unit = timeoutUnit;
       try {
-        result = invokeSubmit(service, task).get(_timeout, unit);
+        result = invokeSubmit(service, task).get(timeoutValue, unit);
       }
       catch (ExecutionException e) {
         Throwable c = e.getCause();
@@ -1134,7 +1145,7 @@ public class ProcessExecutor {
       }
       catch (TimeoutException e) {
         messageLogger.message(log, "{} is running too long", task);
-        throw newTimeoutException(_timeout, unit, task);
+        throw newTimeoutException(timeoutValue, unit, task);
       }
       finally {
         // Interrupt the task if it's still running and release the ExecutorService's resources
@@ -1152,14 +1163,14 @@ public class ProcessExecutor {
     // Use daemon thread as we don't want to postpone the shutdown
     // If #destroyOnExit() is used we wait for the process to be destroyed anyway
     final String name = "WaitForProcess-" + processName;
-    ExecutorService service = Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+    return Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+      @Override
       public Thread newThread(Runnable r) {
         Thread t = new Thread(r, name);
         t.setDaemon(true);
         return t;
       }
     });
-    return service;
   }
 
   /**
@@ -1183,9 +1194,9 @@ public class ProcessExecutor {
    */
   protected <T> Callable<T> wrapTask(Callable<T> task) {
     // Preserve the MDC context of the caller thread.
-    Map contextMap = MDC.getCopyOfContextMap();
+    Map<String, String> contextMap = MDC.getCopyOfContextMap();
     if (contextMap != null) {
-      return new MDCCallableAdapter(task, contextMap);
+      return new MDCCallableAdapter<>(task, contextMap);
     }
     return task;
   }
@@ -1259,8 +1270,8 @@ public class ProcessExecutor {
     if (!IS_OS_WINDOWS) {
       return command;
     }
-    List<String> result = new ArrayList<String>(command);
-    for (ListIterator it = result.listIterator(); it.hasNext(); ) {
+    List<String> result = new ArrayList<>(command);
+    for (ListIterator<String> it = result.listIterator(); it.hasNext(); ) {
       if ("".equals(it.next())) {
         it.set("\"\"");
       }

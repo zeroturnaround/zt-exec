@@ -6,7 +6,10 @@ import java.util.concurrent.TimeoutException;
 /**
  * Helper for checking the exit code of the finished process.
  */
-class InvalidExitUtil {
+final class InvalidExitUtil {
+  private InvalidExitUtil(){
+    // ** making the constructor private to prevent instantiation of this utility class **
+  }
 
   /**
    * In case {@link InvalidExitValueException} or {@link TimeoutException} is thrown and we have read the process output

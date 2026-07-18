@@ -372,7 +372,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
    */
   protected Runnable wrapTask(Runnable task) {
     // Preserve the MDC context of the caller thread.
-    Map contextMap = MDC.getCopyOfContextMap();
+    Map<String, String> contextMap = MDC.getCopyOfContextMap();
     if (contextMap != null) {
       return new MDCRunnableAdapter(task, contextMap);
     }

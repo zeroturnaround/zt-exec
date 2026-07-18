@@ -48,12 +48,15 @@ public abstract class CallerLoggerUtil {
   public static String getName(String name, int level) {
     level++;
     String fullName;
-    if (name == null)
+    if (name == null){
       fullName = getCallerClassName(level);
-    else if (name.contains("."))
+    }
+    else if (name.contains(".")){
       fullName = name;
-    else
+    }
+    else{
       fullName = getCallerClassName(level) + "." + name;
+    }
     return fullName;
   }
 
