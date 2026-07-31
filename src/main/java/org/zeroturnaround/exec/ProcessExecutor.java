@@ -362,12 +362,12 @@ public class ProcessExecutor {
    * @return This process executor.
    */
   public ProcessExecutor exitValues(int[] exitValues) {
-    if (exitValues == null){
+    if (exitValues == null) {
       return exitValueAny();
     }
     // Convert int[] -> Integer[]
     Integer[] array = new Integer[exitValues.length];
-    for (int i = 0; i < array.length; i++){
+    for (int i = 0; i < array.length; i++) {
       array[i] = exitValues[i];
     }
     return exitValues(array);
@@ -466,7 +466,7 @@ public class ProcessExecutor {
    * @return This process executor.
    */
   public ProcessExecutor redirectOutput(OutputStream output) {
-    if (output == null){
+    if (output == null) {
       output = NullOutputStream.NULL_OUTPUT_STREAM;
     }
     PumpStreamHandler pumps = pumps();
@@ -499,7 +499,7 @@ public class ProcessExecutor {
    * @return This process executor.
    */
   public ProcessExecutor redirectError(OutputStream output) {
-    if (output == null){
+    if (output == null) {
       output = NullOutputStream.NULL_OUTPUT_STREAM;
     }
     PumpStreamHandler pumps = pumps();
@@ -556,10 +556,10 @@ public class ProcessExecutor {
    * @see #streams()
    */
   public PumpStreamHandler pumps() {
-    if (streams == null){
+    if (streams == null) {
       return null;
     }
-    if (!(streams instanceof PumpStreamHandler)){
+    if (!(streams instanceof PumpStreamHandler)) {
       throw new IllegalStateException("Only PumpStreamHandler is supported.");
     }
     return (PumpStreamHandler) streams;
@@ -571,7 +571,7 @@ public class ProcessExecutor {
    * @return new stream handler created.
    */
   private static PumpStreamHandler redirectOutputAlsoTo(PumpStreamHandler pumps, OutputStream output) {
-    if (output == null){
+    if (output == null) {
       throw new IllegalArgumentException("OutputStream must be provided.");
     }
     OutputStream current = pumps.getOut();
@@ -587,7 +587,7 @@ public class ProcessExecutor {
    * @return new stream handler created.
    */
   private static PumpStreamHandler redirectErrorAlsoTo(PumpStreamHandler pumps, OutputStream output) {
-    if (output == null){
+    if (output == null) {
       throw new IllegalArgumentException("OutputStream must be provided.");
     }
     OutputStream current = pumps.getErr();
@@ -617,7 +617,7 @@ public class ProcessExecutor {
    * Validates that if <code>readOutput</code> is <code>true</code> the output could be read with the given {@link ExecuteStreamHandler} instance.
    */
   private void validateStreams(ExecuteStreamHandler streams, boolean readOutput) {
-    if (readOutput && !(streams instanceof PumpStreamHandler)){
+    if (readOutput && !(streams instanceof PumpStreamHandler)) {
       throw new IllegalStateException("Only PumpStreamHandler is supported if readOutput is true.");
     }
   }
@@ -840,7 +840,7 @@ public class ProcessExecutor {
    */
   public ProcessExecutor destroyer(ProcessDestroyer destroyer) {
     removeListeners(DestroyerListenerAdapter.class);
-    if (destroyer != null){
+    if (destroyer != null) {
       addListener(new DestroyerListenerAdapter(destroyer));
     }
     return this;
@@ -866,7 +866,7 @@ public class ProcessExecutor {
    */
   public ProcessExecutor listener(ProcessListener listener) {
     clearListeners();
-    if (listener != null){
+    if (listener != null) {
       addListener(listener);
     }
     return this;
@@ -1077,8 +1077,9 @@ public class ProcessExecutor {
       try {
         streams.setProcessInputStream(process.getOutputStream());
         streams.setProcessOutputStream(process.getInputStream());
-        if (!builder.redirectErrorStream())
+        if (!builder.redirectErrorStream()) {
           streams.setProcessErrorStream(process.getErrorStream());
+        }
       }
       catch (IOException e) {
         process.destroy();
