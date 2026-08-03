@@ -7,6 +7,17 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+
+- `PumpStreamHandler.getThreadName(String)` to customize the names of the pump threads ([#120](https://github.com/zeroturnaround/zt-exec/issues/120)).
+- `PumpStreamHandler.newThread(PumpThreadSpec)`, which receives the task, the stream the thread pumps and the name to give it, so a pump thread can be constructed complete. It supersedes `newThread(Runnable)`, which still works and is still called.
+- `PumpStreamHandler.getPumpRole(Runnable)` telling which of the process streams a pump serves.
+- `StreamPumper.getInputStream()` and `StreamPumper.getOutputStream()`.
+
+### Changed
+
+- The pump threads are named `zt-exec-stdout-N`, `zt-exec-stderr-N` and `zt-exec-stdin-N` instead of keeping the `Thread-N` names assigned by the JVM.
+
 ## [1.13.0] - 2026-07-10
 
 ### Added

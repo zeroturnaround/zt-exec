@@ -41,6 +41,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,6 +56,31 @@ import org.zeroturnaround.exec.MDCRunnableAdapter;
 public class PumpStreamHandler implements ExecuteStreamHandler {
 
   private static final Logger log = LoggerFactory.getLogger(PumpStreamHandler.class);
+
+  /**
+   * Role name of the thread pumping the standard output of the process.
+   */
+  protected static final String STDOUT = "stdout";
+
+  /**
+   * Role name of the thread pumping the standard error of the process.
+   */
+  protected static final String STDERR = "stderr";
+
+  /**
+   * Role name of the thread pumping the standard input of the process.
+   */
+  protected static final String STDIN = "stdin";
+
+  /**
+   * Role name used for a pump serving none of the streams this handler was given.
+   */
+  protected static final String PUMP = "pump";
+
+  /**
+   * Makes the default pump thread names unique within the JVM.
+   */
+  private static final AtomicInteger threadCount = new AtomicInteger();
 
   protected Thread outputThread;
 
@@ -353,15 +379,72 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
   }
 
   /**
-   * Override this to customize how the background task is created.
+   * Describes the thread about to be created and hands it to
+   * {@link #newThread(PumpThreadSpec)}. Overriding this still works, but
+   * {@link #newThread(PumpThreadSpec)} is the better place to customize the thread and
+   * {@link #getThreadName(String)} the better place to customize just its name.
    *
    * @param task the task to be run in the background
    * @return the thread of the task
    */
   protected Thread newThread(Runnable task) {
-    Thread result = new Thread(wrapTask(task));
+    String role = getPumpRole(task);
+    return newThread(new PumpThreadSpec(task, role, getThreadName(role)));
+  }
+
+  /**
+   * Works out which of the process streams a pump serves, by matching the streams it copies
+   * between against the ones this handler was given. When the output and error streams are
+   * the same, both pumps write to it as {@link #STDOUT}.
+   *
+   * @param task the pump about to be given a thread
+   * @return one of {@link #STDOUT}, {@link #STDERR} or {@link #STDIN}, or {@link #PUMP} for
+   *         a pump serving none of the streams this handler was given
+   */
+  protected String getPumpRole(Runnable task) {
+    if (task == inputStreamPumper) {
+      return STDIN;
+    }
+    if (task instanceof StreamPumper) {
+      StreamPumper pumper = (StreamPumper) task;
+      if (input != null && pumper.getInputStream() == input) {
+        return STDIN;
+      }
+      if (out != null && pumper.getOutputStream() == out) {
+        return STDOUT;
+      }
+      if (err != null && pumper.getOutputStream() == err) {
+        return STDERR;
+      }
+    }
+    return PUMP;
+  }
+
+  /**
+   * Override this to customize how the background task is created. Everything known about
+   * the thread is in the spec, so the thread can be constructed complete and nothing about
+   * it is reassigned afterwards.
+   *
+   * @param spec what the thread is to run, which stream it pumps and what to name it
+   * @return the thread of the task
+   */
+  protected Thread newThread(PumpThreadSpec spec) {
+    Thread result = new Thread(wrapTask(spec.getTask()), spec.getName());
     result.setDaemon(true);
     return result;
+  }
+
+  /**
+   * Returns the name to give a pump thread. This is the hook for customizing the names
+   * appearing in log output and thread dumps; it is called once per pump thread, before
+   * the thread is constructed.
+   *
+   * @param role which of the process streams the thread pumps, one of {@link #STDOUT},
+   *             {@link #STDERR}, {@link #STDIN} or {@link #PUMP}
+   * @return the name of the pump thread
+   */
+  protected String getThreadName(String role) {
+    return "zt-exec-" + role + "-" + threadCount.incrementAndGet();
   }
 
   /**

@@ -199,6 +199,20 @@ public class StreamPumper implements Runnable {
   }
 
   /**
+   * @return the stream this pumper copies from.
+   */
+  public InputStream getInputStream() {
+    return is;
+  }
+
+  /**
+   * @return the stream this pumper copies into.
+   */
+  public OutputStream getOutputStream() {
+    return os;
+  }
+
+  /**
    * This method blocks until the stream pumper finishes.
    *
    * @see #isFinished()
