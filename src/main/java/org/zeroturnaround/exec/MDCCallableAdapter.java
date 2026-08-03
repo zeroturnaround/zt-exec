@@ -12,13 +12,14 @@ public class MDCCallableAdapter<T> implements Callable<T> {
 
   private final Callable<T> target;
 
-  private final Map contextMap;
+  private final Map<String, String> contextMap;
 
-  public MDCCallableAdapter(Callable<T> target, Map contextMap) {
+  public MDCCallableAdapter(Callable<T> target, Map<String, String> contextMap) {
     this.target = target;
     this.contextMap = contextMap;
   }
 
+  @Override
   public T call() throws Exception {
     MDC.setContextMap(contextMap);
     try {

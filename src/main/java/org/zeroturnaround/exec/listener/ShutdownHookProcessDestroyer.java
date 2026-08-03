@@ -37,7 +37,7 @@
  */
 package org.zeroturnaround.exec.listener;
 
-import java.util.Enumeration;
+import java.util.List;
 import java.util.Vector;
 
 import org.slf4j.Logger;
@@ -58,7 +58,7 @@ public class ShutdownHookProcessDestroyer implements ProcessDestroyer, Runnable 
   public static final ProcessDestroyer INSTANCE = new ShutdownHookProcessDestroyer();
   
   /** the list of currently running processes */
-  private final Vector<Process> processes = new Vector<Process>();
+  private final List<Process> processes = new Vector<>();
 
   /** The thread registered at the JVM to execute the shutdown handler */
   private ProcessDestroyerImpl destroyProcessThread = null;
@@ -82,6 +82,7 @@ public class ShutdownHookProcessDestroyer implements ProcessDestroyer, Runnable 
       super("ProcessDestroyer Shutdown Hook");
     }
 
+    @Override
     public void run() {
       if (shouldDestroy) {
         ShutdownHookProcessDestroyer.this.run();
@@ -184,7 +185,7 @@ public class ShutdownHookProcessDestroyer implements ProcessDestroyer, Runnable 
           destroy(process);
         }
       }
-      processes.addElement(process);
+      processes.add(process);
       return processes.contains(process);
     }
   }
@@ -200,7 +201,7 @@ public class ShutdownHookProcessDestroyer implements ProcessDestroyer, Runnable 
    */
   public boolean remove(final Process process) {
     synchronized (processes) {
-      boolean processRemoved = processes.removeElement(process);
+      boolean processRemoved = processes.remove(process);
       if (processRemoved && processes.size() == 0) {
         try {
           removeShutdownHook();
@@ -225,6 +226,8 @@ public class ShutdownHookProcessDestroyer implements ProcessDestroyer, Runnable 
   /**
    * Invoked by the VM when it is exiting.
    */
+
+  @Override
   public void run() {
     /* check if running the routine is still necessary */
     if(shutDownHookExecuted) {
@@ -232,9 +235,8 @@ public class ShutdownHookProcessDestroyer implements ProcessDestroyer, Runnable 
     }
     synchronized (processes) {
       running = true;
-      Enumeration e = processes.elements();
-      while (e.hasMoreElements()) {
-        destroy((Process) e.nextElement());
+      for (Process process : processes) {
+        destroy(process);
       }
       processes.clear();
       shutDownHookExecuted = true;

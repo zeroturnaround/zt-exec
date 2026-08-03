@@ -53,7 +53,7 @@ public class StandardProcessCloser implements ProcessCloser {
       process.getOutputStream().close();
     }
     catch (IOException e) {
-      if (e.getMessage().equals("Stream closed")) {
+      if ("Stream closed".equals(e.getMessage())) {
         /**
          * OutputStream's contract for the close() method: If the stream is already closed then invoking this method has no effect.
          *

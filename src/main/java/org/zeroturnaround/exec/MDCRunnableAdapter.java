@@ -11,13 +11,14 @@ public class MDCRunnableAdapter implements Runnable {
 
   private final Runnable target;
 
-  private final Map contextMap;
+  private final Map<String, String> contextMap;
 
-  public MDCRunnableAdapter(Runnable target, Map contextMap) {
+  public MDCRunnableAdapter(Runnable target, Map<String, String> contextMap) {
     this.target = target;
     this.contextMap = contextMap;
   }
 
+  @Override
   public void run() {
     MDC.setContextMap(contextMap);
     try {

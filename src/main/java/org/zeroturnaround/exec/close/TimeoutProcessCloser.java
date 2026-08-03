@@ -61,6 +61,7 @@ public class TimeoutProcessCloser extends StandardProcessCloser {
   public void close(final Process process) throws IOException, InterruptedException {
     ExecutorService service = Executors.newSingleThreadScheduledExecutor();
     Future<Void> future = service.submit(new Callable<Void>() {
+      @Override
       public Void call() throws Exception {
         doClose(process);
         return null;
