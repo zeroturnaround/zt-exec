@@ -5,7 +5,7 @@ logback = "1.6.3"
 commons-lang3 = "3.20.0"
 commons-io = "2.22.0"
 maven-publish = "0.37.0"
-bnd = "7.3.0"
+bnd = "7.4.0"
 
 [libraries]
 slf4j-api = { module = "org.slf4j:slf4j-api", version.ref = "slf4j" }
