@@ -224,7 +224,7 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
         inputThread = null;
       }
       catch (InterruptedException e) {
-        // ignore
+        Thread.currentThread().interrupt();
       }
     }
 
@@ -235,7 +235,8 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
         outputThread = null;
       }
       catch (InterruptedException e) {
-        // ignore
+        outputThread.interrupt();
+        Thread.currentThread().interrupt();
       }
     }
 
@@ -246,7 +247,8 @@ public class PumpStreamHandler implements ExecuteStreamHandler {
         errorThread = null;
       }
       catch (InterruptedException e) {
-        // ignore
+        errorThread.interrupt();
+        Thread.currentThread().interrupt();
       }
     }
 

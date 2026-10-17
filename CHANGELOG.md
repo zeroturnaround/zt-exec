@@ -18,6 +18,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 - The pump threads are named `zt-exec-stdout-N`, `zt-exec-stderr-N` and `zt-exec-stdin-N` instead of keeping the `Thread-N` names assigned by the JVM.
 
+### Fixed
+
+- Propagate interruption while stopping stream pumps and preserve the stopping thread's interrupt status ([#60](https://github.com/zeroturnaround/zt-exec/issues/60)).
+
 ## [1.13.0] - 2026-07-10
 
 ### Added
