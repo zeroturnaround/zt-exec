@@ -104,6 +104,7 @@ public class TeeOutputStreamTest {
         Assert.assertTrue(left.isClosed());
         Assert.assertTrue(right.isClosed());
     }
+
     @Test
     public void shouldFlushSecondStreamWhenFlushingFirstFails() {
         ExceptionOnFlushByteArrayOutputStream left = new ExceptionOnFlushByteArrayOutputStream();
@@ -119,5 +120,4 @@ public class TeeOutputStreamTest {
         Assert.assertTrue(left.isFlushed());
         Assert.assertTrue(right.isFlushed());
     }
-
 }
