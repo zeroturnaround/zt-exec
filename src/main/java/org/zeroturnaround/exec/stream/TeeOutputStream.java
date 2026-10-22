@@ -42,8 +42,11 @@ public class TeeOutputStream extends OutputStream {
      * @throws IOException on error.
      */
     public void write(byte[] b, int off, int len) throws IOException {
-        left.write(b, off, len);
-        right.write(b, off, len);
+        try {
+            left.write(b, off, len);
+        } finally {
+            right.write(b, off, len);
+        }
     }
 
 
@@ -54,8 +57,11 @@ public class TeeOutputStream extends OutputStream {
      * @throws IOException on error.
      */
     public void write(int b) throws IOException {
-        left.write(b);
-        right.write(b);
+        try {
+            left.write(b);
+        } finally {
+            right.write(b);
+        }
     }
 
 
@@ -66,8 +72,11 @@ public class TeeOutputStream extends OutputStream {
      * @throws IOException on error.
      */
     public void write(byte[] b) throws IOException {
-        left.write(b);
-        right.write(b);
+        try {
+            left.write(b);
+        } finally {
+            right.write(b);
+        }
     }
 
     /**

@@ -63,6 +63,19 @@ public class TeeOutputStreamTest {
         }
     }
 
+    public static class ExceptionOnWriteOutputStream extends OutputStream {
+
+        @Override
+        public void write(int b) throws IOException {
+            throw new IOException();
+        }
+
+        @Override
+        public void write(byte[] b, int off, int len) throws IOException {
+            throw new IOException();
+        }
+    }
+
     @Test
     public void shouldCopyContentsToBothStreams() throws IOException {
         ByteArrayOutputStream left = new ByteArrayOutputStream();
@@ -119,5 +132,47 @@ public class TeeOutputStreamTest {
 
         Assert.assertTrue(left.isFlushed());
         Assert.assertTrue(right.isFlushed());
+    }
+
+    @Test
+    public void shouldWriteByteToSecondStreamWhenWritingToFirstFails() {
+        ByteArrayOutputStream right = new ByteArrayOutputStream();
+        TeeOutputStream teeOutputStream = new TeeOutputStream(new ExceptionOnWriteOutputStream(), right);
+        try {
+            teeOutputStream.write(10);
+            Assert.fail("Was expecting an exception!");
+        } catch (IOException expected) {
+
+        }
+
+        Assert.assertArrayEquals(new byte[]{10}, right.toByteArray());
+    }
+
+    @Test
+    public void shouldWriteArrayToSecondStreamWhenWritingToFirstFails() {
+        ByteArrayOutputStream right = new ByteArrayOutputStream();
+        TeeOutputStream teeOutputStream = new TeeOutputStream(new ExceptionOnWriteOutputStream(), right);
+        try {
+            teeOutputStream.write(new byte[]{1, 2, 3});
+            Assert.fail("Was expecting an exception!");
+        } catch (IOException expected) {
+
+        }
+
+        Assert.assertArrayEquals(new byte[]{1, 2, 3}, right.toByteArray());
+    }
+
+    @Test
+    public void shouldWriteRangeToSecondStreamWhenWritingToFirstFails() {
+        ByteArrayOutputStream right = new ByteArrayOutputStream();
+        TeeOutputStream teeOutputStream = new TeeOutputStream(new ExceptionOnWriteOutputStream(), right);
+        try {
+            teeOutputStream.write(new byte[]{10, 11, 12, 13, 14}, 2, 3);
+            Assert.fail("Was expecting an exception!");
+        } catch (IOException expected) {
+
+        }
+
+        Assert.assertArrayEquals(new byte[]{12, 13, 14}, right.toByteArray());
     }
 }

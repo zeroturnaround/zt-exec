@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - `TeeOutputStream.flush()` flushes the second stream when flushing the first one fails.
+- `TeeOutputStream.write(...)` writes to the second stream when writing to the first one fails.
 
 ## [1.13.0] - 2026-07-10
 
