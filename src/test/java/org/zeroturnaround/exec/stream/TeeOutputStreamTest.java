@@ -40,6 +40,32 @@ public class TeeOutputStreamTest {
     }
 
     @Test
+    public void shouldFlushSecondStreamWhenFlushingFirstFails() throws IOException {
+        final IOException failure = new IOException("left flush failed");
+        final boolean[] rightFlushed = {false};
+        OutputStream left = new ByteArrayOutputStream() {
+            @Override
+            public void flush() throws IOException {
+                throw failure;
+            }
+        };
+        OutputStream right = new ByteArrayOutputStream() {
+            @Override
+            public void flush() {
+                rightFlushed[0] = true;
+            }
+        };
+
+        try {
+            new TeeOutputStream(left, right).flush();
+            Assert.fail("Expected the left flush failure");
+        } catch (IOException expected) {
+            Assert.assertSame(failure, expected);
+        }
+        Assert.assertTrue("The second stream must also be flushed", rightFlushed[0]);
+    }
+
+    @Test
     public void shouldCopyContentsToBothStreams() throws IOException {
         ByteArrayOutputStream left = new ByteArrayOutputStream();
         ByteArrayOutputStream right = new ByteArrayOutputStream();
