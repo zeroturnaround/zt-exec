@@ -39,6 +39,30 @@ public class TeeOutputStreamTest {
         }
     }
 
+    public static class RememberFlushByteArrayOutputStream extends ByteArrayOutputStream {
+        private boolean flushed;
+
+        @Override
+        public void flush() throws IOException {
+            super.flush();
+            flushed = true;
+        }
+
+        public boolean isFlushed() {
+            return flushed;
+        }
+    }
+
+    public static class ExceptionOnFlushByteArrayOutputStream extends RememberFlushByteArrayOutputStream {
+        private final IOException failure = new IOException("flush failed");
+
+        @Override
+        public void flush() throws IOException {
+            super.flush();
+            throw failure;
+        }
+    }
+
     @Test
     public void shouldCopyContentsToBothStreams() throws IOException {
         ByteArrayOutputStream left = new ByteArrayOutputStream();
@@ -79,5 +103,21 @@ public class TeeOutputStreamTest {
 
         Assert.assertTrue(left.isClosed());
         Assert.assertTrue(right.isClosed());
+    }
+
+    @Test
+    public void shouldFlushSecondStreamWhenFlushingFirstFails() {
+        ExceptionOnFlushByteArrayOutputStream left = new ExceptionOnFlushByteArrayOutputStream();
+        RememberFlushByteArrayOutputStream right = new RememberFlushByteArrayOutputStream();
+        TeeOutputStream teeOutputStream = new TeeOutputStream(left, right);
+        try {
+            teeOutputStream.flush();
+            Assert.fail("Expected the left flush failure");
+        } catch (IOException expected) {
+            Assert.assertSame(left.failure, expected);
+        }
+
+        Assert.assertTrue(left.isFlushed());
+        Assert.assertTrue(right.isFlushed());
     }
 }

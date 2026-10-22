@@ -92,7 +92,10 @@ public class TeeOutputStream extends OutputStream {
      */
     @Override
     public void flush() throws IOException {
-        left.flush();
-        right.flush();
+        try {
+            left.flush();
+        } finally {
+            right.flush();
+        }
     }
 }
