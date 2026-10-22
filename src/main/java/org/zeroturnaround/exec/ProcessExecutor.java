@@ -971,6 +971,11 @@ public class ProcessExecutor {
    * Value passed to {@link #timeout(long, TimeUnit)} is ignored.
    * Use {@link Future#get()} to wait for the process to finish.
    * Invoke <code>future.cancel(true);</code> to destroy the process.
+   * <p>
+   * If a {@link ProcessListener} fails in {@link ProcessListener#afterStart(Process, ProcessExecutor)},
+   * this method stops the process, waits until its streams are closed
+   * (without a limit unless {@link #closeTimeout(long, TimeUnit)} is set)
+   * and throws the failure of the listener.
    *
    * @return Future representing the exit value of the finished process.
    * @throws IOException an error occurred when process was started.
@@ -989,6 +994,7 @@ public class ProcessExecutor {
 
   /**
    * Start the process and its stream handlers.
+   * If a listener fails after the process started, we stop the process and throw the failure of the listener.
    *
    * @return process the started process.
    * @throws IOException the process or its stream handlers couldn't start (in the latter case we also destroy the process).
@@ -1091,8 +1097,15 @@ public class ProcessExecutor {
     ProcessCloser closer = newProcessCloser(streams);
 
     WaitForProcess result = new WaitForProcess(process, attributes, stopper, closer, out, listeners.clone(), messageLogger);
-    // Invoke listeners - changing this executor does not affect the started process any more
-    listeners.afterStart(process, this);
+    try {
+      // Invoke listeners - changing this executor does not affect the started process any more
+      listeners.afterStart(process, this);
+    }
+    catch (Throwable t) {
+      // The process is running but nobody waits for it, so stop it as if the execution was cancelled
+      result.abort(t);
+      throw t;
+    }
     return result;
   }
 

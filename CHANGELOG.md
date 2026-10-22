@@ -23,6 +23,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `TeeOutputStream.flush()` flushes the second stream when flushing the first one fails. If both streams fail, `flush()` and `close()` throw the failure of the first stream and add the failure of the second stream to it as suppressed.
 - A failure while stopping the process, closing its streams or running `ProcessListener.afterStop` no longer replaces the exception that ended the execution. It is added to that exception as suppressed. The streams are now closed even if stopping the process fails.
 - `CompositeProcessListener` notifies every listener of `afterStop`, even if an earlier listener fails. It throws the first failure and adds the later ones to it as suppressed.
+- If a `ProcessListener` fails in `afterStart`, the executor stops the process, closes its streams and notifies the listeners that the process stopped, instead of leaving the process running. `CompositeProcessListener` notifies every listener of `afterStart`, even if an earlier listener fails.
 
 ## [1.13.0] - 2026-07-10
 

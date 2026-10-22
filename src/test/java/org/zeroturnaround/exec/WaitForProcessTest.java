@@ -218,4 +218,64 @@ public class WaitForProcessTest {
 
     Assert.assertNull(waitForProcess.getStackTrace());
   }
+
+  @Test
+  public void shouldStopCloseAndNotifyWhenAborted() {
+    RememberStopper stopper = new RememberStopper(null);
+    RememberCloser closer = new RememberCloser(null);
+    AfterStopListener listener = new AfterStopListener(null);
+    FakeProcess process = new FakeProcess(0, null);
+    WaitForProcess waitForProcess = newWaitForProcess(process, null, stopper, closer, listener);
+    IllegalStateException failure = new IllegalStateException("start failed");
+
+    waitForProcess.abort(failure);
+
+    Assert.assertTrue(stopper.stopped.get());
+    Assert.assertTrue(closer.closed.get());
+    Assert.assertTrue(listener.stopped.get());
+    Assert.assertEquals(0, failure.getSuppressed().length);
+  }
+
+  @Test
+  public void shouldAddFailuresToAbortFailureAsSuppressed() {
+    RuntimeException stopFailure = new IllegalStateException("stop failed");
+    IOException closeFailure = new IOException("close failed");
+    RuntimeException afterStopFailure = new IllegalStateException("after stop failed");
+    RememberStopper stopper = new RememberStopper(stopFailure);
+    RememberCloser closer = new RememberCloser(closeFailure);
+    AfterStopListener listener = new AfterStopListener(afterStopFailure);
+    FakeProcess process = new FakeProcess(0, null);
+    WaitForProcess waitForProcess = newWaitForProcess(process, null, stopper, closer, listener);
+    IllegalStateException failure = new IllegalStateException("start failed");
+
+    waitForProcess.abort(failure);
+
+    Assert.assertArrayEquals(
+        new Throwable[] { stopFailure, closeFailure, afterStopFailure }, failure.getSuppressed());
+    Assert.assertTrue(closer.closed.get());
+    Assert.assertTrue(listener.stopped.get());
+  }
+
+  @Test
+  public void shouldKeepInterruptFlagWhenClosingIsInterruptedAfterAbort() {
+    InterruptedException interrupt = new InterruptedException("interrupted");
+    ProcessCloser closer = process -> {
+      throw interrupt;
+    };
+    AfterStopListener listener = new AfterStopListener(null);
+    WaitForProcess waitForProcess = newWaitForProcess(
+        new FakeProcess(0, null), null, new RememberStopper(null), closer, listener);
+    IllegalStateException failure = new IllegalStateException("start failed");
+
+    try {
+      waitForProcess.abort(failure);
+
+      Assert.assertTrue(Thread.currentThread().isInterrupted());
+      Assert.assertArrayEquals(new Throwable[] { interrupt }, failure.getSuppressed());
+      Assert.assertTrue(listener.stopped.get());
+    }
+    finally {
+      Thread.interrupted();
+    }
+  }
 }
