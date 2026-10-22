@@ -120,6 +120,35 @@ class WaitForProcess implements Callable<ProcessResult> {
   }
 
   /**
+   * Stops a process that nobody waits for, closes its streams and notifies the listener that it stopped.
+   * The failures of these steps are added to the given failure as suppressed.
+   *
+   * @param failure the failure that makes this operation never run.
+   */
+  void abort(Throwable failure) {
+    stop(failure);
+    runAndSuppress(() -> closer.close(process), failure);
+    runAndSuppress(() -> listener.afterStop(process), failure);
+  }
+
+  /**
+   * Runs the step. A failure of the step is added to the given failure as suppressed.
+   */
+  private static void runAndSuppress(OnExit step, Throwable failure) {
+    try {
+      step.close();
+    }
+    catch (Throwable t) {
+      if (t instanceof InterruptedException) {
+        Thread.currentThread().interrupt();
+      }
+      if (t != failure) {
+        failure.addSuppressed(t);
+      }
+    }
+  }
+
+  /**
    * Stops the process after waiting for it failed.
    * A failure of the stopper is added to the given failure as suppressed.
    */

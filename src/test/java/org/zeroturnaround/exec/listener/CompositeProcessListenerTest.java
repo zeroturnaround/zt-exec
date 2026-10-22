@@ -32,6 +32,14 @@ public class CompositeProcessListenerTest {
     }
 
     @Override
+    public void afterStart(Process process, ProcessExecutor executor) {
+      events.add(name + ".afterStart");
+      if (failure != null) {
+        throw failure;
+      }
+    }
+
+    @Override
     public void afterFinish(Process process, ProcessResult result) {
       events.add(name + ".afterFinish");
       if (failure != null) {
@@ -138,5 +146,51 @@ public class CompositeProcessListenerTest {
     }
 
     Assert.assertEquals(Arrays.asList("first.beforeStart"), events);
+  }
+
+  @Test
+  public void shouldNotifyAllListenersAfterStartWhenOneFails() {
+    List<String> events = new ArrayList<String>();
+    RuntimeException firstFailure = new IllegalStateException("first failed");
+    RuntimeException thirdFailure = new IllegalStateException("third failed");
+    CompositeProcessListener composite = new CompositeProcessListener();
+    composite.add(new RememberListener("first", events, firstFailure));
+    composite.add(new RememberListener("second", events, null));
+    composite.add(new RememberListener("third", events, thirdFailure));
+
+    try {
+      composite.afterStart(null, null);
+      Assert.fail("Was expecting an exception!");
+    }
+    catch (IllegalStateException expected) {
+      Assert.assertSame(firstFailure, expected);
+      Assert.assertArrayEquals(new Throwable[] { thirdFailure }, expected.getSuppressed());
+    }
+
+    Assert.assertEquals(Arrays.asList("first.afterStart", "second.afterStart", "third.afterStart"), events);
+  }
+
+  @Test
+  public void shouldThrowErrorAtOnceAfterStart() {
+    List<String> events = new ArrayList<String>();
+    CompositeProcessListener composite = new CompositeProcessListener();
+    composite.add(new ProcessListener() {
+      @Override
+      public void afterStart(Process process, ProcessExecutor executor) {
+        events.add("first.afterStart");
+        throw new AssertionError("error");
+      }
+    });
+    composite.add(new RememberListener("second", events, null));
+
+    try {
+      composite.afterStart(null, null);
+      Assert.fail("Was expecting an error!");
+    }
+    catch (AssertionError expected) {
+      Assert.assertEquals("error", expected.getMessage());
+    }
+
+    Assert.assertEquals(Arrays.asList("first.afterStart"), events);
   }
 }

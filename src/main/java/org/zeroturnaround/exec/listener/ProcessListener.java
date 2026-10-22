@@ -43,6 +43,9 @@ public abstract class ProcessListener {
 
   /**
    * Invoked after a process has started.
+   * <p>
+   * If this method fails, the {@link ProcessExecutor} stops the process, waits until its streams are closed,
+   * notifies the listeners with {@link #afterStop(Process)} and throws the failure to its caller.
    *
    * @param process the process started.
    * @param executor executor used for starting the process.

@@ -90,11 +90,16 @@ public class CompositeProcessListener extends ProcessListener implements Cloneab
     }
   }
 
+  /**
+   * Notifies every child, even if an earlier child fails with a {@link RuntimeException},
+   * so that each one is notified of the start before it is notified of the stop,
+   * unless a child throws an Error.
+   * If children fail, the first failure is thrown and the others are added to it as suppressed.
+   * An {@link Error} is thrown at once, and the children after it are not notified.
+   */
   @Override
   public void afterStart(Process process, ProcessExecutor executor) {
-    for (ProcessListener child : children) {
-      child.afterStart(process, executor);
-    }
+    notifyEvery(child -> child.afterStart(process, executor));
   }
 
   @Override
@@ -112,10 +117,14 @@ public class CompositeProcessListener extends ProcessListener implements Cloneab
    */
   @Override
   public void afterStop(Process process) {
+    notifyEvery(child -> child.afterStop(process));
+  }
+
+  private void notifyEvery(Notification notification) {
     RuntimeException failure = null;
     for (ProcessListener child : children) {
       try {
-        child.afterStop(process);
+        notification.send(child);
       }
       catch (RuntimeException e) {
         if (failure == null) {
@@ -129,6 +138,10 @@ public class CompositeProcessListener extends ProcessListener implements Cloneab
     if (failure != null) {
       throw failure;
     }
+  }
+
+  private interface Notification {
+    void send(ProcessListener child);
   }
 
 }
