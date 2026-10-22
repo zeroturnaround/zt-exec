@@ -21,7 +21,9 @@ import org.apache.commons.lang3.SystemUtils;
 import org.hamcrest.CoreMatchers;
 import org.junit.Assert;
 import org.junit.Test;
+import org.zeroturnaround.exec.InvalidExitValueException;
 import org.zeroturnaround.exec.ProcessExecutor;
+import org.zeroturnaround.exec.listener.ProcessListener;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -54,6 +56,28 @@ public class ProcessExecutorTimeoutTest {
     }
     catch (TimeoutException e) {
       Assert.assertNull(e.getMessage());
+    }
+  }
+
+  @Test
+  public void testTimeoutKeepsSuppressedFailuresOfInvalidExit() throws Exception {
+    final IllegalStateException afterStopFailure = new IllegalStateException("after stop failed");
+    ProcessListener listener = new ProcessListener() {
+      @Override
+      public void afterStop(Process process) {
+        throw afterStopFailure;
+      }
+    };
+    try {
+      new ProcessExecutor("java", "-version")
+          .exitValues(1)
+          .addListener(listener)
+          .timeout(1, TimeUnit.MINUTES)
+          .execute();
+      Assert.fail("InvalidExitValueException expected.");
+    }
+    catch (InvalidExitValueException e) {
+      Assert.assertArrayEquals(new Throwable[] { afterStopFailure }, e.getSuppressed());
     }
   }
 

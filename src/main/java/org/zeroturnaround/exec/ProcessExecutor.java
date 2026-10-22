@@ -1132,15 +1132,15 @@ public class ProcessExecutor {
         }
         if (c instanceof InvalidExitValueException) {
           InvalidExitValueException i = (InvalidExitValueException) c;
-          throw new InvalidExitValueException(i.getMessage(), i.getResult());
+          throw withSuppressed(new InvalidExitValueException(i.getMessage(), i.getResult()), i);
         }
         if (c instanceof InvalidOutputException) {
           InvalidOutputException i = (InvalidOutputException) c;
-          throw new InvalidOutputException(i.getMessage(), i.getResult());
+          throw withSuppressed(new InvalidOutputException(i.getMessage(), i.getResult()), i);
         }
         if (c.getClass().equals(InvalidResultException.class)) {
           InvalidResultException p = (InvalidResultException) c;
-          throw new InvalidResultException(p.getMessage(), p.getResult());
+          throw withSuppressed(new InvalidResultException(p.getMessage(), p.getResult()), p);
         }
         throw new IllegalStateException("Error occured while waiting for process to finish:", c);
       }
@@ -1154,6 +1154,17 @@ public class ProcessExecutor {
       }
     }
     return result;
+  }
+
+  /**
+   * Copies the suppressed exceptions of the original exception to its copy,
+   * which is thrown in the caller thread instead.
+   */
+  private static <T extends Throwable> T withSuppressed(T copy, Throwable original) {
+    for (Throwable suppressed : original.getSuppressed()) {
+      copy.addSuppressed(suppressed);
+    }
+    return copy;
   }
 
   private ExecutorService newExecutor(WaitForProcess task) {
