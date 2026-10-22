@@ -92,22 +92,21 @@ class WaitForProcess implements Callable<ProcessResult> {
   }
 
   public ProcessResult call() throws IOException, InterruptedException {
-    try {
+    // Listeners are invoked regardless the process finished or got cancelled.
+    // A failure of a listener or of the closer never replaces the failure that ended the operation,
+    // it is added to it as suppressed.
+    try (OnExit afterStop = () -> listener.afterStop(process)) {
       workerThread = Thread.currentThread();
       int exit;
-      boolean finished = false;
-      try {
-        exit = process.waitFor();
-        finished = true;
-        messageLogger.message(log, "{} stopped with exit code {}", this, exit);
-      }
-      finally {
-        if (!finished) {
-          messageLogger.message(log, "Stopping {}...", this);
-          stopper.stop(process);
+      try (OnExit close = () -> closer.close(process)) {
+        try {
+          exit = process.waitFor();
         }
-
-        closer.close(process);
+        catch (Throwable t) {
+          stop(t);
+          throw t;
+        }
+        messageLogger.message(log, "{} stopped with exit code {}", this, exit);
       }
       ProcessOutput output = getCurrentOutput();
       ProcessResult result = new ProcessResult(exit, output);
@@ -116,10 +115,32 @@ class WaitForProcess implements Callable<ProcessResult> {
       return result;
     }
     finally {
-      // Invoke listeners - regardless process finished or got cancelled
-      listener.afterStop(process);
       workerThread = null;
     }
+  }
+
+  /**
+   * Stops the process after waiting for it failed.
+   * A failure of the stopper is added to the given failure as suppressed.
+   */
+  private void stop(Throwable failure) {
+    try {
+      messageLogger.message(log, "Stopping {}...", this);
+      stopper.stop(process);
+    }
+    catch (Throwable t) {
+      failure.addSuppressed(t);
+    }
+  }
+
+  /**
+   * An action that runs when a try-with-resources block ends.
+   */
+  private interface OnExit extends AutoCloseable {
+
+    @Override
+    void close() throws IOException, InterruptedException;
+
   }
 
   private ProcessOutput getCurrentOutput() {
