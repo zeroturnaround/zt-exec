@@ -104,10 +104,30 @@ public class CompositeProcessListener extends ProcessListener implements Cloneab
     }
   }
 
+  /**
+   * Notifies every child, even if an earlier child fails,
+   * so that each one can release what it holds for the process.
+   * If children fail, the first failure is thrown and the others are added to it as suppressed.
+   * Only a {@link RuntimeException} is collected, an {@link Error} is thrown at once.
+   */
   @Override
   public void afterStop(Process process) {
+    RuntimeException failure = null;
     for (ProcessListener child : children) {
-      child.afterStop(process);
+      try {
+        child.afterStop(process);
+      }
+      catch (RuntimeException e) {
+        if (failure == null) {
+          failure = e;
+        }
+        else if (e != failure) {
+          failure.addSuppressed(e);
+        }
+      }
+    }
+    if (failure != null) {
+      throw failure;
     }
   }
 

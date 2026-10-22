@@ -28,6 +28,7 @@ import org.junit.Assert;
 import org.junit.Test;
 import org.zeroturnaround.exec.ProcessExecutor;
 import org.zeroturnaround.exec.ProcessResult;
+import org.zeroturnaround.exec.listener.ProcessListener;
 import org.zeroturnaround.exec.stream.ExecuteStreamHandler;
 import org.zeroturnaround.exec.stream.slf4j.Slf4jStream;
 
@@ -124,6 +125,26 @@ public class ProcessExecutorMainTest {
   public void testProcessDestroyerEvents() throws Exception {
     MockProcessDestroyer mock = new MockProcessDestroyer();
     new ProcessExecutor().command("java", "-version").destroyer(mock).execute();
+    Assert.assertNotNull(mock.added);
+    Assert.assertEquals(mock.added, mock.removed);
+  }
+
+  @Test
+  public void testProcessDestroyerEventsWhenAnotherListenerFailsAfterStop() throws Exception {
+    MockProcessDestroyer mock = new MockProcessDestroyer();
+    ProcessListener failing = new ProcessListener() {
+      @Override
+      public void afterStop(Process process) {
+        throw new IllegalStateException("after stop failed");
+      }
+    };
+    try {
+      new ProcessExecutor().command("java", "-version").addListener(failing).destroyer(mock).execute();
+      Assert.fail("IllegalStateException expected");
+    }
+    catch (IllegalStateException e) {
+      Assert.assertEquals("after stop failed", e.getMessage());
+    }
     Assert.assertNotNull(mock.added);
     Assert.assertEquals(mock.added, mock.removed);
   }
