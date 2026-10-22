@@ -71,31 +71,54 @@ public class TeeOutputStream extends OutputStream {
     }
 
     /**
-     * Closes both output streams
+     * Closes both output streams. The right stream is closed even if closing the left stream fails.
+     * If closing both fails, the failure of the left stream is thrown
+     * and the failure of the right stream is added to it as suppressed.
      *
      * @throws IOException on error.
      */
     @Override
     public void close() throws IOException {
-        try {
-            left.close();
-        } finally {
-            right.close();
-        }
+        onBoth(OutputStream::close);
     }
 
 
     /**
-     * Flush both output streams.
+     * Flush both output streams. The right stream is flushed even if flushing the left stream fails.
+     * If flushing both fails, the failure of the left stream is thrown
+     * and the failure of the right stream is added to it as suppressed.
      *
      * @throws IOException on error
      */
     @Override
     public void flush() throws IOException {
+        onBoth(OutputStream::flush);
+    }
+
+    /**
+     * Runs the action on the left stream and then on the right stream,
+     * even if the action fails on the left stream.
+     * If the action fails on both streams, the failure of the left stream is thrown
+     * and the failure of the right stream is added to it as suppressed.
+     */
+    private void onBoth(StreamAction action) throws IOException {
         try {
-            left.flush();
-        } finally {
-            right.flush();
+            action.run(left);
+        } catch (Throwable t) {
+            try {
+                action.run(right);
+            } catch (Throwable suppressed) {
+                // A stream on both sides throws the same instance twice, and a throwable cannot suppress itself.
+                if (suppressed != t) {
+                    t.addSuppressed(suppressed);
+                }
+            }
+            throw t;
         }
+        action.run(right);
+    }
+
+    private interface StreamAction {
+        void run(OutputStream stream) throws IOException;
     }
 }

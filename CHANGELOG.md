@@ -20,7 +20,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Fixed
 
-- `TeeOutputStream.flush()` flushes the second stream when flushing the first one fails.
+- `TeeOutputStream.flush()` flushes the second stream when flushing the first one fails. If both streams fail, `flush()` and `close()` throw the failure of the first stream and add the failure of the second stream to it as suppressed.
 
 ## [1.13.0] - 2026-07-10
 
