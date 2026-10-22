@@ -39,30 +39,28 @@ public class TeeOutputStreamTest {
         }
     }
 
-    @Test
-    public void shouldFlushSecondStreamWhenFlushingFirstFails() throws IOException {
-        final IOException failure = new IOException("left flush failed");
-        final boolean[] rightFlushed = {false};
-        OutputStream left = new ByteArrayOutputStream() {
-            @Override
-            public void flush() throws IOException {
-                throw failure;
-            }
-        };
-        OutputStream right = new ByteArrayOutputStream() {
-            @Override
-            public void flush() {
-                rightFlushed[0] = true;
-            }
-        };
+    public static class RememberFlushByteArrayOutputStream extends ByteArrayOutputStream {
+        private boolean flushed;
 
-        try {
-            new TeeOutputStream(left, right).flush();
-            Assert.fail("Expected the left flush failure");
-        } catch (IOException expected) {
-            Assert.assertSame(failure, expected);
+        @Override
+        public void flush() throws IOException {
+            super.flush();
+            flushed = true;
         }
-        Assert.assertTrue("The second stream must also be flushed", rightFlushed[0]);
+
+        public boolean isFlushed() {
+            return flushed;
+        }
+    }
+
+    public static class ExceptionOnFlushByteArrayOutputStream extends RememberFlushByteArrayOutputStream {
+        private final IOException failure = new IOException("flush failed");
+
+        @Override
+        public void flush() throws IOException {
+            super.flush();
+            throw failure;
+        }
     }
 
     @Test
@@ -106,4 +104,20 @@ public class TeeOutputStreamTest {
         Assert.assertTrue(left.isClosed());
         Assert.assertTrue(right.isClosed());
     }
+    @Test
+    public void shouldFlushSecondStreamWhenFlushingFirstFails() {
+        ExceptionOnFlushByteArrayOutputStream left = new ExceptionOnFlushByteArrayOutputStream();
+        RememberFlushByteArrayOutputStream right = new RememberFlushByteArrayOutputStream();
+        TeeOutputStream teeOutputStream = new TeeOutputStream(left, right);
+        try {
+            teeOutputStream.flush();
+            Assert.fail("Expected the left flush failure");
+        } catch (IOException expected) {
+            Assert.assertSame(left.failure, expected);
+        }
+
+        Assert.assertTrue(left.isFlushed());
+        Assert.assertTrue(right.isFlushed());
+    }
+
 }
