@@ -28,6 +28,8 @@ public class TeeOutputStreamTest {
 
     public static class ExceptionOnCloseByteArrayOutputStream extends RememberCloseOutputStream {
 
+        private final IOException failure = new IOException("close failed");
+
         public ExceptionOnCloseByteArrayOutputStream(OutputStream out) {
             super(out);
         }
@@ -35,7 +37,7 @@ public class TeeOutputStreamTest {
         @Override
         public void close() throws IOException {
             super.close();
-            throw new IOException();
+            throw failure;
         }
     }
 
@@ -119,5 +121,52 @@ public class TeeOutputStreamTest {
 
         Assert.assertTrue(left.isFlushed());
         Assert.assertTrue(right.isFlushed());
+    }
+
+    @Test
+    public void shouldKeepFirstFailureAndSuppressSecondWhenClosingBothFails() {
+        ExceptionOnCloseByteArrayOutputStream left = new ExceptionOnCloseByteArrayOutputStream(NullOutputStream.NULL_OUTPUT_STREAM);
+        ExceptionOnCloseByteArrayOutputStream right = new ExceptionOnCloseByteArrayOutputStream(NullOutputStream.NULL_OUTPUT_STREAM);
+        TeeOutputStream teeOutputStream = new TeeOutputStream(left, right);
+        try {
+            teeOutputStream.close();
+            Assert.fail("Was expecting an exception!");
+        } catch (IOException expected) {
+            Assert.assertSame(left.failure, expected);
+            Assert.assertArrayEquals(new Throwable[]{right.failure}, expected.getSuppressed());
+        }
+
+        Assert.assertTrue(left.isClosed());
+        Assert.assertTrue(right.isClosed());
+    }
+
+    @Test
+    public void shouldKeepFirstFailureAndSuppressSecondWhenFlushingBothFails() {
+        ExceptionOnFlushByteArrayOutputStream left = new ExceptionOnFlushByteArrayOutputStream();
+        ExceptionOnFlushByteArrayOutputStream right = new ExceptionOnFlushByteArrayOutputStream();
+        TeeOutputStream teeOutputStream = new TeeOutputStream(left, right);
+        try {
+            teeOutputStream.flush();
+            Assert.fail("Was expecting an exception!");
+        } catch (IOException expected) {
+            Assert.assertSame(left.failure, expected);
+            Assert.assertArrayEquals(new Throwable[]{right.failure}, expected.getSuppressed());
+        }
+
+        Assert.assertTrue(left.isFlushed());
+        Assert.assertTrue(right.isFlushed());
+    }
+
+    @Test
+    public void shouldThrowFailureOnceWhenSameStreamIsOnBothSides() {
+        ExceptionOnFlushByteArrayOutputStream stream = new ExceptionOnFlushByteArrayOutputStream();
+        TeeOutputStream teeOutputStream = new TeeOutputStream(stream, stream);
+        try {
+            teeOutputStream.flush();
+            Assert.fail("Was expecting an exception!");
+        } catch (IOException expected) {
+            Assert.assertSame(stream.failure, expected);
+            Assert.assertEquals(0, expected.getSuppressed().length);
+        }
     }
 }
