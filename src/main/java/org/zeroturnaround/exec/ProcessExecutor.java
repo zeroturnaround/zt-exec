@@ -36,6 +36,7 @@ import java.io.*;
 import java.util.*;
 import java.util.Map.Entry;
 import java.util.concurrent.*;
+import java.util.function.Supplier;
 
 
 
@@ -982,8 +983,8 @@ public class ProcessExecutor {
    */
   public StartedProcess start() throws IOException {
     WaitForProcess task = startInternal();
-    ExecutorService service = newExecutor(task);
-    Future<ProcessResult> future = invokeSubmit(service, task);
+    ExecutorService service = abortOnFailure(task, () -> newExecutor(task));
+    Future<ProcessResult> future = abortOnFailure(task, () -> invokeSubmit(service, task));
     // Previously submitted tasks are executed but no new tasks will be accepted.
     // However sub classes could return null as the ExecutorService
     if (service != null) {
@@ -1128,12 +1129,13 @@ public class ProcessExecutor {
     }
     else {
       // Fork another thread to invoke Process.waitFor()
-      ExecutorService service = newExecutor(task);
+      ExecutorService service = abortOnFailure(task, () -> newExecutor(task));
       // Copy values to not conflict with further executions
       long timeoutValue = timeout;
       TimeUnit unit = timeoutUnit;
       try {
-        result = invokeSubmit(service, task).get(timeoutValue, unit);
+        Future<ProcessResult> future = abortOnFailure(task, () -> invokeSubmit(service, task));
+        result = future.get(timeoutValue, unit);
       }
       catch (ExecutionException e) {
         Throwable c = e.getCause();
@@ -1178,6 +1180,20 @@ public class ProcessExecutor {
       copy.addSuppressed(suppressed);
     }
     return copy;
+  }
+
+  /**
+   * Runs the action that makes a background thread run the task.
+   * If the action fails, the task never runs, so we stop the process and throw the failure.
+   */
+  private <T> T abortOnFailure(WaitForProcess task, Supplier<T> action) {
+    try {
+      return action.get();
+    }
+    catch (Throwable t) {
+      task.abort(t);
+      throw t;
+    }
   }
 
   private ExecutorService newExecutor(WaitForProcess task) {
