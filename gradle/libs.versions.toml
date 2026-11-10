@@ -1,7 +1,7 @@
 [versions]
 slf4j = "2.0.20"
 junit = "4.13.2"
-logback = "1.6.5"
+logback = "1.6.6"
 commons-lang3 = "3.21.0"
 commons-io = "2.22.0"
 maven-publish = "0.37.0"
